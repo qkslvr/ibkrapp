@@ -106,6 +106,7 @@ export function HoldingsTable({ positions }: HoldingsTableProps) {
               <SortableHeader label="Symbol" sortKeyName="symbol" />
               <SortableHeader label="Shares" sortKeyName="shares" className="text-right" />
               <SortableHeader label="Avg Price" sortKeyName="avgCost" className="text-right" />
+              <SortableHeader label="Current Price" sortKeyName="currentPrice" className="text-right" />
               <SortableHeader label="Invested" sortKeyName="costBasis" className="text-right" />
               <SortableHeader label="Current Value" sortKeyName="marketValue" className="text-right" />
               <SortableHeader label="Total Return" sortKeyName="unrealizedPL" className="text-right" />
@@ -141,6 +142,9 @@ export function HoldingsTable({ positions }: HoldingsTableProps) {
                 </TableCell>
                 <TableCell className="text-right font-mono">
                   ${position.avgCost.toFixed(2)}
+                </TableCell>
+                <TableCell className="text-right font-mono">
+                  ${position.currentPrice.toFixed(2)}
                 </TableCell>
                 <TableCell className="text-right font-mono">
                   ${position.costBasis.toLocaleString(undefined, { maximumFractionDigits: 2 })}
@@ -181,6 +185,7 @@ export function HoldingsTable({ positions }: HoldingsTableProps) {
               <TableCell className="text-muted-foreground text-xs uppercase tracking-wide">
                 Total
               </TableCell>
+              <TableCell />
               <TableCell />
               <TableCell />
               <TableCell className="text-right font-mono font-semibold">
