@@ -16,14 +16,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ChangeIndicator } from "@/components/dashboard/change-indicator";
 import { useStockFundamentals } from "@/hooks/useStockFundamentals";
 import { useStockProfile } from "@/hooks/useStockProfile";
-import { formatMarketCap } from "@/lib/utils";
+import { cn, formatMarketCap } from "@/lib/utils";
 import { StockQuote } from "@/types";
 import { Trash2 } from "lucide-react";
 
-const compact = new Intl.NumberFormat("en", {
-  notation: "compact",
-  maximumFractionDigits: 1,
-});
+// App green/red used elsewhere (ChangeIndicator) for consistent up/down coloring.
+const POSITIVE = "text-[oklch(0.72_0.19_145)]";
+const NEGATIVE = "text-[oklch(0.65_0.22_25)]";
 
 interface WatchlistTableProps {
   symbols: string[];
@@ -69,10 +68,9 @@ export function WatchlistTable({
             <TableHead className="text-right">Price</TableHead>
             <TableHead className="text-right">Day Change</TableHead>
             <TableHead className="text-right">52W Range</TableHead>
-            <TableHead className="text-right">Avg Vol</TableHead>
+            <TableHead className="text-right">% Above Low</TableHead>
+            <TableHead className="text-right">% Below High</TableHead>
             <TableHead className="text-right">P/E</TableHead>
-            <TableHead className="text-right">EPS</TableHead>
-            <TableHead className="text-right">Div Yield</TableHead>
             <TableHead className="text-right">Market Cap</TableHead>
             <TableHead>Sector</TableHead>
             <TableHead className="w-10" />
@@ -111,9 +109,16 @@ function WatchlistRow({
   const { data: fundamentals } = useStockFundamentals(symbol);
   const { data: profile } = useStockProfile(symbol);
   const pe = fundamentals?.fundamentals?.peRatio;
-  const eps = fundamentals?.fundamentals?.eps;
-  const divYield = fundamentals?.dividend?.yield;
   const sector = profile?.finnhubIndustry;
+
+  const hasRange = !!quote && quote.low52w > 0 && quote.high52w > 0;
+  // How far the current price sits above the 52W low / below the 52W high.
+  const aboveLow = hasRange
+    ? ((quote!.price - quote!.low52w) / quote!.low52w) * 100
+    : null;
+  const belowHigh = hasRange
+    ? ((quote!.price - quote!.high52w) / quote!.high52w) * 100
+    : null;
 
   return (
     <TableRow className="transition-colors hover:bg-accent/50">
@@ -153,21 +158,18 @@ function WatchlistRow({
         )}
       </TableCell>
       <TableCell className="whitespace-nowrap text-right font-mono text-sm">
-        {quote && quote.low52w > 0 && quote.high52w > 0
-          ? `$${quote.low52w.toFixed(2)} – $${quote.high52w.toFixed(2)}`
+        {hasRange
+          ? `$${quote!.low52w.toFixed(2)} – $${quote!.high52w.toFixed(2)}`
           : "—"}
       </TableCell>
-      <TableCell className="text-right font-mono text-sm">
-        {quote && quote.avgVolume > 0 ? compact.format(quote.avgVolume) : "—"}
+      <TableCell className={cn("text-right font-mono text-sm", POSITIVE)}>
+        {aboveLow !== null ? `+${aboveLow.toFixed(1)}%` : "—"}
+      </TableCell>
+      <TableCell className={cn("text-right font-mono text-sm", NEGATIVE)}>
+        {belowHigh !== null ? `${belowHigh.toFixed(1)}%` : "—"}
       </TableCell>
       <TableCell className="text-right font-mono text-sm">
         {pe && pe > 0 ? pe.toFixed(1) : "—"}
-      </TableCell>
-      <TableCell className="text-right font-mono text-sm">
-        {eps && eps !== 0 ? `$${eps.toFixed(2)}` : "—"}
-      </TableCell>
-      <TableCell className="text-right font-mono text-sm">
-        {divYield && divYield > 0 ? `${divYield.toFixed(2)}%` : "—"}
       </TableCell>
       <TableCell className="text-right font-mono text-sm">
         {quote ? formatMarketCap(quote.marketCap) : "—"}
