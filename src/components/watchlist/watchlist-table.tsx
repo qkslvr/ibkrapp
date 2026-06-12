@@ -112,13 +112,15 @@ function WatchlistRow({
   const sector = profile?.finnhubIndustry;
 
   const hasRange = !!quote && quote.low52w > 0 && quote.high52w > 0;
+  // Finnhub's 52W high/low can lag the latest price. If the current price is
+  // outside the reported range, it IS the new extreme — clamp accordingly.
+  const low52w = hasRange ? Math.min(quote!.low52w, quote!.price) : null;
+  const high52w = hasRange ? Math.max(quote!.high52w, quote!.price) : null;
   // How far the current price sits above the 52W low / below the 52W high.
-  const aboveLow = hasRange
-    ? ((quote!.price - quote!.low52w) / quote!.low52w) * 100
-    : null;
-  const belowHigh = hasRange
-    ? ((quote!.price - quote!.high52w) / quote!.high52w) * 100
-    : null;
+  const aboveLow =
+    low52w !== null ? ((quote!.price - low52w) / low52w) * 100 : null;
+  const belowHigh =
+    high52w !== null ? ((quote!.price - high52w) / high52w) * 100 : null;
 
   return (
     <TableRow className="transition-colors hover:bg-accent/50">
@@ -159,7 +161,7 @@ function WatchlistRow({
       </TableCell>
       <TableCell className="whitespace-nowrap text-right font-mono text-sm">
         {hasRange
-          ? `$${quote!.low52w.toFixed(2)} – $${quote!.high52w.toFixed(2)}`
+          ? `$${low52w!.toFixed(2)} – $${high52w!.toFixed(2)}`
           : "—"}
       </TableCell>
       <TableCell className={cn("text-right font-mono text-sm", POSITIVE)}>
