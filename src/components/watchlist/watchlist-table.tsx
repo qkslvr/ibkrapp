@@ -11,12 +11,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChangeIndicator } from "@/components/dashboard/change-indicator";
 import { useStockFundamentals } from "@/hooks/useStockFundamentals";
+import { useStockProfile } from "@/hooks/useStockProfile";
 import { formatMarketCap } from "@/lib/utils";
 import { StockQuote } from "@/types";
 import { Trash2 } from "lucide-react";
+
+const compact = new Intl.NumberFormat("en", {
+  notation: "compact",
+  maximumFractionDigits: 1,
+});
 
 interface WatchlistTableProps {
   symbols: string[];
@@ -61,8 +68,13 @@ export function WatchlistTable({
             <TableHead>Symbol</TableHead>
             <TableHead className="text-right">Price</TableHead>
             <TableHead className="text-right">Day Change</TableHead>
+            <TableHead className="text-right">52W Range</TableHead>
+            <TableHead className="text-right">Avg Vol</TableHead>
             <TableHead className="text-right">P/E</TableHead>
+            <TableHead className="text-right">EPS</TableHead>
+            <TableHead className="text-right">Div Yield</TableHead>
             <TableHead className="text-right">Market Cap</TableHead>
+            <TableHead>Sector</TableHead>
             <TableHead className="w-10" />
           </TableRow>
         </TableHeader>
@@ -97,7 +109,11 @@ function WatchlistRow({
   removing?: boolean;
 }) {
   const { data: fundamentals } = useStockFundamentals(symbol);
+  const { data: profile } = useStockProfile(symbol);
   const pe = fundamentals?.fundamentals?.peRatio;
+  const eps = fundamentals?.fundamentals?.eps;
+  const divYield = fundamentals?.dividend?.yield;
+  const sector = profile?.finnhubIndustry;
 
   return (
     <TableRow className="transition-colors hover:bg-accent/50">
@@ -136,11 +152,34 @@ function WatchlistRow({
           <span className="text-muted-foreground">—</span>
         )}
       </TableCell>
+      <TableCell className="whitespace-nowrap text-right font-mono text-sm">
+        {quote && quote.low52w > 0 && quote.high52w > 0
+          ? `$${quote.low52w.toFixed(2)} – $${quote.high52w.toFixed(2)}`
+          : "—"}
+      </TableCell>
+      <TableCell className="text-right font-mono text-sm">
+        {quote && quote.avgVolume > 0 ? compact.format(quote.avgVolume) : "—"}
+      </TableCell>
       <TableCell className="text-right font-mono text-sm">
         {pe && pe > 0 ? pe.toFixed(1) : "—"}
       </TableCell>
       <TableCell className="text-right font-mono text-sm">
+        {eps && eps !== 0 ? `$${eps.toFixed(2)}` : "—"}
+      </TableCell>
+      <TableCell className="text-right font-mono text-sm">
+        {divYield && divYield > 0 ? `${divYield.toFixed(2)}%` : "—"}
+      </TableCell>
+      <TableCell className="text-right font-mono text-sm">
         {quote ? formatMarketCap(quote.marketCap) : "—"}
+      </TableCell>
+      <TableCell>
+        {sector ? (
+          <Badge variant="secondary" className="whitespace-nowrap text-xs">
+            {sector}
+          </Badge>
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        )}
       </TableCell>
       <TableCell className="text-right">
         <Button
