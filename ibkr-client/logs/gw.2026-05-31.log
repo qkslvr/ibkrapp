@@ -1,0 +1,122 @@
+00:59:05.620 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|726ms
+00:59:05.621 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+01:04:05.225 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|332ms
+01:04:05.230 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+01:09:05.177 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|285ms
+01:09:05.179 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+01:14:05.209 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|319ms
+01:14:05.210 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+04:22:59.663 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.io.IOException: Operation timed out
+04:22:59.675 ERROR vert.x-eventloop-thread-0 BaseServiceProxy     : request failed Operation timed out
+java.io.IOException: Operation timed out
+	at java.base/sun.nio.ch.SocketDispatcher.read0(Native Method)
+	at java.base/sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:48)
+	at java.base/sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:341)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:295)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:270)
+	at java.base/sun.nio.ch.SocketChannelImpl.implRead(SocketChannelImpl.java:422)
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:489)
+	at io.netty.buffer.PooledUnsafeDirectByteBuf.setBytes(PooledUnsafeDirectByteBuf.java:288)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1106)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:373)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:123)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+10:20:05.277 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|1068ms
+10:20:05.282 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "false"}
+15:10:40.816 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.io.IOException: Operation timed out
+15:10:40.822 ERROR vert.x-eventloop-thread-0 BaseServiceProxy     : request failed Operation timed out
+java.io.IOException: Operation timed out
+	at java.base/sun.nio.ch.SocketDispatcher.read0(Native Method)
+	at java.base/sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:48)
+	at java.base/sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:341)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:295)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:270)
+	at java.base/sun.nio.ch.SocketChannelImpl.implRead(SocketChannelImpl.java:422)
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:489)
+	at io.netty.buffer.PooledUnsafeDirectByteBuf.setBytes(PooledUnsafeDirectByteBuf.java:288)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1106)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:373)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:123)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+16:11:02.229 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|1152ms
+16:11:02.230 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "false"}
+19:04:24.344 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.io.IOException: Operation timed out
+19:04:24.348 ERROR vert.x-eventloop-thread-0 BaseServiceProxy     : request failed Operation timed out
+java.io.IOException: Operation timed out
+	at java.base/sun.nio.ch.SocketDispatcher.read0(Native Method)
+	at java.base/sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:48)
+	at java.base/sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:341)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:295)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:270)
+	at java.base/sun.nio.ch.SocketChannelImpl.implRead(SocketChannelImpl.java:422)
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:489)
+	at io.netty.buffer.PooledUnsafeDirectByteBuf.setBytes(PooledUnsafeDirectByteBuf.java:288)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1106)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:373)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:123)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+20:50:55.607 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|687ms
+20:50:55.609 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "false"}
+22:00:46.596 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.io.IOException: Operation timed out
+22:00:46.601 ERROR vert.x-eventloop-thread-0 BaseServiceProxy     : request failed Operation timed out
+java.io.IOException: Operation timed out
+	at java.base/sun.nio.ch.SocketDispatcher.read0(Native Method)
+	at java.base/sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:48)
+	at java.base/sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:341)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:295)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:270)
+	at java.base/sun.nio.ch.SocketChannelImpl.implRead(SocketChannelImpl.java:422)
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:489)
+	at io.netty.buffer.PooledUnsafeDirectByteBuf.setBytes(PooledUnsafeDirectByteBuf.java:288)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1106)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:373)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:123)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+22:04:24.605 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|635ms
+22:04:24.606 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+22:09:24.400 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|431ms
+22:09:24.405 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+22:14:24.295 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|324ms
+22:14:24.296 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+22:19:24.335 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|366ms
+22:19:24.337 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+23:32:32.309 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.io.IOException: Operation timed out
+23:32:32.313 ERROR vert.x-eventloop-thread-0 BaseServiceProxy     : request failed Operation timed out
+java.io.IOException: Operation timed out
+	at java.base/sun.nio.ch.SocketDispatcher.read0(Native Method)
+	at java.base/sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:48)
+	at java.base/sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:341)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:295)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:270)
+	at java.base/sun.nio.ch.SocketChannelImpl.implRead(SocketChannelImpl.java:422)
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:489)
+	at io.netty.buffer.PooledUnsafeDirectByteBuf.setBytes(PooledUnsafeDirectByteBuf.java:288)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1106)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:373)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:123)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)

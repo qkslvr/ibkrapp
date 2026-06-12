@@ -1,0 +1,371 @@
+00:01:14.773 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|488ms
+00:01:14.774 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+00:06:14.618 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|331ms
+00:06:14.621 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+00:11:14.587 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|299ms
+00:11:14.589 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+00:16:14.587 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|301ms
+00:16:14.590 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+00:21:14.624 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|341ms
+00:21:14.626 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+00:26:14.580 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|296ms
+00:26:14.581 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+00:31:14.572 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|289ms
+00:31:14.574 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+00:36:14.592 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|312ms
+00:36:14.594 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+00:41:14.609 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|329ms
+00:41:14.615 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "false"}
+00:46:14.572 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|292ms
+00:46:14.574 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+00:51:14.580 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|300ms
+00:51:14.583 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+00:56:14.583 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|302ms
+00:56:14.588 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "false"}
+01:14:58.816 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.net.SocketException: Connection reset
+01:31:52.405 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|532ms
+01:31:52.407 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "false"}
+01:36:52.233 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|360ms
+01:36:52.236 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+01:41:52.184 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|311ms
+01:41:52.186 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+01:46:52.171 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|298ms
+01:46:52.172 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "false"}
+01:51:52.235 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|362ms
+01:51:52.238 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+01:56:52.163 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|290ms
+01:56:52.165 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+02:01:52.320 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|448ms
+02:01:52.323 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+02:06:52.176 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|301ms
+02:06:52.181 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+02:11:52.501 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|626ms
+02:11:52.505 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+02:16:52.173 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|297ms
+02:16:52.175 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+02:21:52.285 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|411ms
+02:21:52.291 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+02:26:52.179 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|306ms
+02:26:52.181 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+02:31:52.161 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|288ms
+02:31:52.164 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+02:36:52.245 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|370ms
+02:36:52.248 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+02:58:52.343 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.net.SocketException: Connection reset
+03:14:52.480 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|540ms
+03:14:52.481 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+07:24:43.311 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.net.SocketException: Connection reset
+10:06:16.110 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|515ms
+10:06:16.116 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "false"}
+10:11:15.866 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|291ms
+10:11:15.868 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+10:16:15.883 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|309ms
+10:16:15.884 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+10:21:15.866 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|293ms
+10:21:15.870 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+10:26:16.000 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|427ms
+10:26:16.002 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+10:31:15.870 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|298ms
+10:31:15.872 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+10:36:15.871 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|307ms
+10:36:15.874 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+10:41:15.919 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|355ms
+10:41:15.921 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+10:46:15.855 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|291ms
+10:46:15.857 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+10:51:15.855 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|291ms
+10:51:15.857 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+10:56:15.858 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|295ms
+10:56:15.861 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+11:01:15.861 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|300ms
+11:01:15.864 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+11:06:15.848 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|287ms
+11:06:15.850 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+11:11:15.861 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|302ms
+11:11:15.865 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+11:16:15.858 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|300ms
+11:16:15.860 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+11:21:15.874 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|317ms
+11:21:15.876 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+11:26:15.869 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|297ms
+11:26:15.873 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+11:31:15.865 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|293ms
+11:31:15.868 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+11:36:15.868 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|297ms
+11:36:15.871 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+11:41:15.867 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|293ms
+11:41:15.869 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+11:46:15.867 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|294ms
+11:46:15.870 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+11:51:44.411 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.io.IOException: Can't assign requested address
+11:51:44.431 ERROR vert.x-eventloop-thread-0 BaseServiceProxy     : request failed Can't assign requested address
+java.io.IOException: Can't assign requested address
+	at java.base/sun.nio.ch.SocketDispatcher.read0(Native Method)
+	at java.base/sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:48)
+	at java.base/sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:341)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:295)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:270)
+	at java.base/sun.nio.ch.SocketChannelImpl.implRead(SocketChannelImpl.java:422)
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:489)
+	at io.netty.buffer.PooledUnsafeDirectByteBuf.setBytes(PooledUnsafeDirectByteBuf.java:288)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1106)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:373)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:123)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+11:56:15.986 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|410ms
+11:56:15.988 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+12:01:15.867 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|295ms
+12:01:15.869 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+12:06:15.868 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|294ms
+12:06:15.870 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+12:11:15.881 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|299ms
+12:11:15.883 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+12:16:15.873 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|290ms
+12:16:15.876 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+12:21:15.871 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|289ms
+12:21:15.873 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+12:26:15.874 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|291ms
+12:26:15.876 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+12:31:15.888 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|299ms
+12:31:15.890 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+12:36:15.876 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|291ms
+12:36:15.879 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+12:41:15.875 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|290ms
+12:41:15.879 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+12:46:15.877 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|292ms
+12:46:15.880 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+12:51:15.873 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|287ms
+12:51:15.876 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+12:56:15.883 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|299ms
+12:56:15.885 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+13:01:15.867 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|280ms
+13:01:15.869 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+13:06:15.897 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|310ms
+13:06:15.901 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+13:11:15.922 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|335ms
+13:11:15.925 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+13:16:15.891 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|300ms
+13:16:15.894 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+13:21:15.883 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|293ms
+13:21:15.885 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+13:26:15.934 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|344ms
+13:26:15.938 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+13:31:15.868 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|288ms
+13:31:15.870 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+13:36:15.945 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|365ms
+13:36:15.947 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+13:41:47.894 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.io.IOException: Can't assign requested address
+13:41:47.899 ERROR vert.x-eventloop-thread-0 BaseServiceProxy     : request failed Can't assign requested address
+java.io.IOException: Can't assign requested address
+	at java.base/sun.nio.ch.SocketDispatcher.read0(Native Method)
+	at java.base/sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:48)
+	at java.base/sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:341)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:295)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:270)
+	at java.base/sun.nio.ch.SocketChannelImpl.implRead(SocketChannelImpl.java:422)
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:489)
+	at io.netty.buffer.PooledUnsafeDirectByteBuf.setBytes(PooledUnsafeDirectByteBuf.java:288)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1106)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:373)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:123)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+13:46:15.936 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|358ms
+13:46:15.938 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+14:06:36.048 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.io.IOException: Can't assign requested address
+14:06:36.052 ERROR vert.x-eventloop-thread-0 BaseServiceProxy     : request failed Can't assign requested address
+java.io.IOException: Can't assign requested address
+	at java.base/sun.nio.ch.SocketDispatcher.read0(Native Method)
+	at java.base/sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:48)
+	at java.base/sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:341)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:295)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:270)
+	at java.base/sun.nio.ch.SocketChannelImpl.implRead(SocketChannelImpl.java:422)
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:489)
+	at io.netty.buffer.PooledUnsafeDirectByteBuf.setBytes(PooledUnsafeDirectByteBuf.java:288)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1106)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:373)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:123)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+14:11:15.034 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|490ms
+14:11:15.037 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+14:16:14.974 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|431ms
+14:16:14.976 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+14:21:14.875 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|325ms
+14:21:14.883 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+14:26:15.019 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|470ms
+14:26:15.026 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+14:31:14.979 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|429ms
+14:31:14.982 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+14:36:14.905 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|347ms
+14:36:14.907 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+14:41:14.938 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|381ms
+14:41:14.940 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+14:46:14.871 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|314ms
+14:46:14.873 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+14:51:14.935 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|390ms
+14:51:14.939 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+14:56:14.968 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|423ms
+14:56:14.970 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+15:01:14.861 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|313ms
+15:01:14.862 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+15:06:14.942 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|393ms
+15:06:14.944 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+15:11:14.913 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|367ms
+15:11:14.916 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+15:16:14.847 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|296ms
+15:16:14.849 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+15:21:14.973 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|421ms
+15:21:14.975 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+15:26:15.076 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|522ms
+15:26:15.077 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+15:31:14.867 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|310ms
+15:31:14.869 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+15:36:14.934 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|377ms
+15:36:14.936 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+15:41:15.046 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|488ms
+15:41:15.048 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+15:46:14.909 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|344ms
+15:46:14.912 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+15:51:14.906 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|335ms
+15:51:14.907 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+15:56:15.000 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|430ms
+15:56:15.003 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+16:01:14.995 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|423ms
+16:01:14.996 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+16:06:14.945 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|368ms
+16:06:14.947 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+16:11:14.992 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|413ms
+16:11:14.998 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+16:16:14.986 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|407ms
+16:16:14.987 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+16:21:14.897 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|307ms
+16:21:14.899 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+16:26:14.916 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|329ms
+16:26:14.918 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+16:31:14.919 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|330ms
+16:31:14.921 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+16:36:15.028 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|439ms
+16:36:15.029 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+16:41:49.390 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|459ms
+16:41:49.392 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+16:46:56.205 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|632ms
+16:46:56.209 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+16:51:55.882 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|308ms
+16:51:55.883 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+16:56:55.886 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|313ms
+16:56:55.888 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+17:01:55.873 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|290ms
+17:01:55.875 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+17:06:55.873 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|293ms
+17:06:55.879 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+17:11:55.898 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|316ms
+17:11:55.900 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+17:16:56.594 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|1017ms
+17:16:56.600 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+17:21:56.112 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|532ms
+17:21:56.114 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+17:26:55.971 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|391ms
+17:26:55.973 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+17:31:55.886 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|309ms
+17:31:55.889 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+17:36:55.938 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|359ms
+17:36:55.940 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+17:41:55.877 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|295ms
+17:41:55.879 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+17:46:55.942 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|364ms
+17:46:55.943 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+17:51:55.896 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|319ms
+17:51:55.898 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+17:56:55.872 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|293ms
+17:56:55.874 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+18:01:55.886 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|310ms
+18:01:55.888 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+18:06:55.899 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|311ms
+18:06:55.902 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+18:11:56.134 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|555ms
+18:11:56.136 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+18:16:55.883 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|301ms
+18:16:55.886 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+18:21:55.894 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|311ms
+18:21:55.895 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+18:26:55.899 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|315ms
+18:26:55.902 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+18:31:55.887 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|303ms
+18:31:55.890 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+18:36:55.977 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|389ms
+18:36:55.980 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+18:41:55.950 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|369ms
+18:41:55.952 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+18:46:55.927 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|344ms
+18:46:55.932 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+18:51:55.906 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|327ms
+18:51:55.907 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+18:56:55.964 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|376ms
+18:56:55.966 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+19:01:55.888 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|304ms
+19:01:55.890 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+19:06:56.031 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|446ms
+19:06:56.038 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+19:11:55.900 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|315ms
+19:11:55.903 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+19:16:56.014 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|428ms
+19:16:56.016 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+19:21:55.997 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|414ms
+19:21:56.000 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+19:26:55.876 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|293ms
+19:26:55.878 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+19:31:56.028 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|443ms
+19:31:56.033 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+19:36:55.925 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|342ms
+19:36:55.928 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+22:58:50.207 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.io.IOException: Can't assign requested address
+22:58:50.235 ERROR vert.x-eventloop-thread-0 BaseServiceProxy     : request failed Can't assign requested address
+java.io.IOException: Can't assign requested address
+	at java.base/sun.nio.ch.SocketDispatcher.read0(Native Method)
+	at java.base/sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:48)
+	at java.base/sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:341)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:295)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:270)
+	at java.base/sun.nio.ch.SocketChannelImpl.implRead(SocketChannelImpl.java:422)
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:489)
+	at io.netty.buffer.PooledUnsafeDirectByteBuf.setBytes(PooledUnsafeDirectByteBuf.java:288)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1106)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:373)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:123)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+23:20:09.821 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|739ms
+23:20:09.827 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "false"}
+23:25:09.419 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|355ms
+23:25:09.421 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+23:30:09.417 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|352ms
+23:30:09.418 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+23:35:09.432 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|369ms
+23:35:09.434 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+23:40:09.372 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|309ms
+23:40:09.374 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+23:45:09.526 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|463ms
+23:45:09.569 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+23:50:09.376 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|320ms
+23:50:09.378 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+23:55:10.318 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|1262ms
+23:55:10.319 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}

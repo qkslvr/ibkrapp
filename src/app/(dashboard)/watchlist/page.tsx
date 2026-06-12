@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { WatchlistCard } from "@/components/watchlist/watchlist-card";
+import { WatchlistTable } from "@/components/watchlist/watchlist-table";
 import { AddStockDialog } from "@/components/watchlist/add-stock-dialog";
 import {
   useWatchlist,
@@ -46,25 +46,19 @@ export default function WatchlistPage() {
 
       {/* Loading state */}
       {isLoading ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-[132px] rounded-xl" />
-          ))}
-        </div>
+        <Skeleton className="h-64 w-full rounded-lg" />
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((symbol) => (
-            <WatchlistCard
-              key={symbol}
-              symbol={symbol}
-              onRemove={(s) => removeFromWatchlist.mutate(s)}
-              removing={
-                removeFromWatchlist.isPending &&
-                removeFromWatchlist.variables === symbol
-              }
-            />
-          ))}
-        </div>
+        filtered.length > 0 && (
+          <WatchlistTable
+            symbols={filtered}
+            onRemove={(s) => removeFromWatchlist.mutate(s)}
+            removingSymbol={
+              removeFromWatchlist.isPending
+                ? (removeFromWatchlist.variables as string)
+                : undefined
+            }
+          />
+        )
       )}
 
       {!isLoading && filtered.length === 0 && (

@@ -1,0 +1,557 @@
+03:59:05.584 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|2013ms
+03:59:05.600 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "false"}
+08:21:08.782 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.net.SocketException: Connection reset
+08:21:08.856 ERROR vert.x-eventloop-thread-0 BaseServiceProxy     : request failed Connection reset
+java.net.SocketException: Connection reset
+	at java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:399)
+	at java.base/sun.nio.ch.SocketChannelImpl.implRead(SocketChannelImpl.java:431)
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:489)
+	at io.netty.buffer.PooledUnsafeDirectByteBuf.setBytes(PooledUnsafeDirectByteBuf.java:288)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1106)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:373)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:123)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+10:47:47.206 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|3453ms
+10:47:47.359 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "false"}
+12:12:14.014 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.net.SocketException: Connection reset
+12:12:14.138 ERROR vert.x-eventloop-thread-0 BaseServiceProxy     : request failed Connection reset
+java.net.SocketException: Connection reset
+	at java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:399)
+	at java.base/sun.nio.ch.SocketChannelImpl.implRead(SocketChannelImpl.java:431)
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:489)
+	at io.netty.buffer.PooledUnsafeDirectByteBuf.setBytes(PooledUnsafeDirectByteBuf.java:288)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1106)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:373)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:123)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+12:23:56.603 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|2462ms
+12:23:56.628 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+12:28:55.442 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|1308ms
+12:28:55.447 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+12:33:55.410 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|1291ms
+12:33:55.492 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+12:38:55.110 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|989ms
+12:38:55.114 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+12:43:54.528 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|407ms
+12:43:54.539 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "false"}
+12:48:54.505 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|382ms
+12:48:54.518 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+13:06:54.042 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.net.SocketException: Connection reset
+13:15:46.720 ERROR vert.x-eventloop-thread-0 BaseServiceProxy     : request failed api.ibkr.com: nodename nor servname provided, or not known
+java.net.UnknownHostException: api.ibkr.com: nodename nor servname provided, or not known
+	at java.base/java.net.Inet4AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet4AddressImpl.lookupAllHostAddr(Inet4AddressImpl.java:45)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(InetAddress.java:1134)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(InetAddress.java:1712)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(InetAddress.java:1060)
+	at java.base/java.net.InetAddress.getAllByName0(InetAddress.java:1702)
+	at java.base/java.net.InetAddress.getAllByName(InetAddress.java:1582)
+	at java.base/java.net.InetAddress.getByName(InetAddress.java:1492)
+	at io.netty.util.internal.SocketUtils$8.run(SocketUtils.java:146)
+	at io.netty.util.internal.SocketUtils$8.run(SocketUtils.java:143)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:251)
+	at io.netty.util.internal.SocketUtils.addressByName(SocketUtils.java:143)
+	at io.netty.resolver.DefaultNameResolver.doResolve(DefaultNameResolver.java:43)
+	at io.netty.resolver.SimpleNameResolver.resolve(SimpleNameResolver.java:63)
+	at io.netty.resolver.SimpleNameResolver.resolve(SimpleNameResolver.java:55)
+	at io.netty.resolver.InetSocketAddressResolver.doResolve(InetSocketAddressResolver.java:57)
+	at io.netty.resolver.InetSocketAddressResolver.doResolve(InetSocketAddressResolver.java:32)
+	at io.netty.resolver.AbstractAddressResolver.resolve(AbstractAddressResolver.java:108)
+	at io.netty.bootstrap.Bootstrap.doResolveAndConnect0(Bootstrap.java:208)
+	at io.netty.bootstrap.Bootstrap.doResolveAndConnect(Bootstrap.java:170)
+	at io.netty.bootstrap.Bootstrap.connect(Bootstrap.java:145)
+	at io.vertx.core.net.impl.ChannelProvider.connect(ChannelProvider.java:38)
+	at io.vertx.core.http.impl.ConnectionManager$ChannelConnector.connect(ConnectionManager.java:537)
+	at io.vertx.core.http.impl.ConnectionManager$ConnQueue.createNewConnection(ConnectionManager.java:294)
+	at io.vertx.core.http.impl.ConnectionManager$ConnQueue.getConnection(ConnectionManager.java:237)
+	at io.vertx.core.http.impl.ConnectionManager.getConnectionForRequest(ConnectionManager.java:171)
+	at io.vertx.core.http.impl.HttpClientImpl.getConnectionForRequest(HttpClientImpl.java:950)
+	at io.vertx.core.http.impl.HttpClientRequestImpl.connect(HttpClientRequestImpl.java:745)
+	at io.vertx.core.http.impl.HttpClientRequestImpl.write(HttpClientRequestImpl.java:867)
+	at io.vertx.core.http.impl.HttpClientRequestImpl.end(HttpClientRequestImpl.java:358)
+	at ibgroup.web.core.clientportal.gw.services.SsoService.tickleSession(SsoService.java:255)
+	at ibgroup.web.core.clientportal.gw.services.SsoService.onTimerEvent(SsoService.java:100)
+	at io.vertx.core.impl.VertxImpl$InternalTimerHandler.handle(VertxImpl.java:870)
+	at io.vertx.core.impl.VertxImpl$InternalTimerHandler.handle(VertxImpl.java:829)
+	at io.vertx.core.impl.ContextImpl.lambda$wrapTask$2(ContextImpl.java:344)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:403)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:463)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+13:28:57.973 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|733ms
+13:28:57.983 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "false"}
+13:33:57.669 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|437ms
+13:33:57.686 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+13:38:57.643 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|403ms
+13:38:57.649 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+13:43:57.512 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|294ms
+13:43:57.514 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+13:48:57.591 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|371ms
+13:48:57.595 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+13:53:57.581 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|361ms
+13:53:57.586 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+13:58:58.598 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|1361ms
+13:58:58.602 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+14:31:41.538 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.net.SocketException: Connection reset
+14:31:41.584 ERROR vert.x-eventloop-thread-0 BaseServiceProxy     : request failed Connection reset
+java.net.SocketException: Connection reset
+	at java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:399)
+	at java.base/sun.nio.ch.SocketChannelImpl.implRead(SocketChannelImpl.java:431)
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:489)
+	at io.netty.buffer.PooledUnsafeDirectByteBuf.setBytes(PooledUnsafeDirectByteBuf.java:288)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1106)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:373)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:123)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+14:36:41.912 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|606ms
+14:36:41.928 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+14:41:41.693 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|386ms
+14:41:41.701 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+14:46:41.713 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|397ms
+14:46:41.717 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+14:51:41.618 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|305ms
+14:51:41.625 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+15:06:52.387 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.net.SocketException: Connection reset
+15:06:52.452 ERROR vert.x-eventloop-thread-0 BaseServiceProxy     : request failed Connection reset
+java.net.SocketException: Connection reset
+	at java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:399)
+	at java.base/sun.nio.ch.SocketChannelImpl.implRead(SocketChannelImpl.java:431)
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:489)
+	at io.netty.buffer.PooledUnsafeDirectByteBuf.setBytes(PooledUnsafeDirectByteBuf.java:288)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1106)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:373)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:123)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+15:11:52.341 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|420ms
+15:11:52.343 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+15:16:52.227 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|309ms
+15:16:52.227 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+15:21:52.233 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|314ms
+15:21:52.234 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+15:26:52.265 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|340ms
+15:26:52.267 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+15:31:52.514 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|587ms
+15:31:52.515 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+15:36:52.241 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|314ms
+15:36:52.242 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+15:41:52.237 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|307ms
+15:41:52.238 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+15:46:52.392 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|461ms
+15:46:52.393 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+15:51:52.363 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|424ms
+15:51:52.366 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+15:56:52.231 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|297ms
+15:56:52.233 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+16:09:34.809 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.net.SocketException: Connection reset
+16:11:03.696 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|512ms
+16:11:03.697 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+16:16:03.467 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|299ms
+16:16:03.470 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+16:21:03.457 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|288ms
+16:21:03.458 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+16:26:03.492 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|322ms
+16:26:03.494 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+16:29:12.720 WARN  vert.x-eventloop-thread-0 DefaultChannelPipeline : An exceptionCaught() event was fired, and it reached at the tail of the pipeline. It usually means the last handler in the pipeline did not handle the exception.
+io.netty.handler.codec.DecoderException: io.netty.handler.ssl.NotSslRecordException: not an SSL/TLS record: 474554202f20485454502f312e310d0a486f73743a206c6f63616c686f73743a353031300d0a436f6e6e656374696f6e3a206b6565702d616c6976650d0a7365632d63682d75613a2022476f6f676c65204368726f6d65223b763d22313437222c20224e6f742e412f4272616e64223b763d2238222c20224368726f6d69756d223b763d22313437220d0a7365632d63682d75612d6d6f62696c653a203f300d0a7365632d63682d75612d706c6174666f726d3a20226d61634f53220d0a557067726164652d496e7365637572652d52657175657374733a20310d0a557365722d4167656e743a204d6f7a696c6c612f352e3020284d6163696e746f73683b20496e74656c204d6163204f5320582031305f31355f3729204170706c655765624b69742f3533372e333620284b48544d4c2c206c696b65204765636b6f29204368726f6d652f3134372e302e302e30205361666172692f3533372e33360d0a4163636570743a20746578742f68746d6c2c6170706c69636174696f6e2f7868746d6c2b786d6c2c6170706c69636174696f6e2f786d6c3b713d302e392c696d6167652f617669662c696d6167652f776562702c696d6167652f61706e672c2a2f2a3b713d302e382c6170706c69636174696f6e2f7369676e65642d65786368616e67653b763d62333b713d302e370d0a5365632d46657463682d536974653a206e6f6e650d0a5365632d46657463682d4d6f64653a206e617669676174650d0a5365632d46657463682d557365723a203f310d0a5365632d46657463682d446573743a20646f63756d656e740d0a4163636570742d456e636f64696e673a20677a69702c206465666c6174652c2062722c207a7374640d0a4163636570742d4c616e67756167653a20656e2d55532c656e3b713d302e390d0a436f6f6b69653a20534249443d673430303931693833716d6c7464397465703b205f5f6e6578745f686d725f726566726573685f686173685f5f3d3237353b206465766963652e696e666f3d65794a705a434936496d566a4e446c6b5a47557a496977696257466a496a6f694d5459364e4455364e6a51364e6b5136516a51365255496966513d3d3b2054414249443d414d2d6d6468716c64673074392d313738303537353338333830393b2058595a41425f414d2e4c4f47494e3d376561663735653339653863393036333962616162336236636634303733656566643631663664623b2058595a41423d376561663735653339653863393036333962616162336236636634303733656566643631663664620d0a0d0a
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:459)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:265)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:362)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:348)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:340)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1359)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:362)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:348)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:935)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:134)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: io.netty.handler.ssl.NotSslRecordException: not an SSL/TLS record: 474554202f20485454502f312e310d0a486f73743a206c6f63616c686f73743a353031300d0a436f6e6e656374696f6e3a206b6565702d616c6976650d0a7365632d63682d75613a2022476f6f676c65204368726f6d65223b763d22313437222c20224e6f742e412f4272616e64223b763d2238222c20224368726f6d69756d223b763d22313437220d0a7365632d63682d75612d6d6f62696c653a203f300d0a7365632d63682d75612d706c6174666f726d3a20226d61634f53220d0a557067726164652d496e7365637572652d52657175657374733a20310d0a557365722d4167656e743a204d6f7a696c6c612f352e3020284d6163696e746f73683b20496e74656c204d6163204f5320582031305f31355f3729204170706c655765624b69742f3533372e333620284b48544d4c2c206c696b65204765636b6f29204368726f6d652f3134372e302e302e30205361666172692f3533372e33360d0a4163636570743a20746578742f68746d6c2c6170706c69636174696f6e2f7868746d6c2b786d6c2c6170706c69636174696f6e2f786d6c3b713d302e392c696d6167652f617669662c696d6167652f776562702c696d6167652f61706e672c2a2f2a3b713d302e382c6170706c69636174696f6e2f7369676e65642d65786368616e67653b763d62333b713d302e370d0a5365632d46657463682d536974653a206e6f6e650d0a5365632d46657463682d4d6f64653a206e617669676174650d0a5365632d46657463682d557365723a203f310d0a5365632d46657463682d446573743a20646f63756d656e740d0a4163636570742d456e636f64696e673a20677a69702c206465666c6174652c2062722c207a7374640d0a4163636570742d4c616e67756167653a20656e2d55532c656e3b713d302e390d0a436f6f6b69653a20534249443d673430303931693833716d6c7464397465703b205f5f6e6578745f686d725f726566726573685f686173685f5f3d3237353b206465766963652e696e666f3d65794a705a434936496d566a4e446c6b5a47557a496977696257466a496a6f694d5459364e4455364e6a51364e6b5136516a51365255496966513d3d3b2054414249443d414d2d6d6468716c64673074392d313738303537353338333830393b2058595a41425f414d2e4c4f47494e3d376561663735653339653863393036333962616162336236636634303733656566643631663664623b2058595a41423d376561663735653339653863393036333962616162336236636634303733656566643631663664620d0a0d0a
+	at io.netty.handler.ssl.SslHandler.decodeJdkCompatible(SslHandler.java:1106)
+	at io.netty.handler.ssl.SslHandler.decode(SslHandler.java:1162)
+	at io.netty.handler.codec.ByteToMessageDecoder.decodeRemovalReentryProtection(ByteToMessageDecoder.java:489)
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:428)
+	... 15 common frames omitted
+16:29:13.769 WARN  vert.x-eventloop-thread-0 DefaultChannelPipeline : An exceptionCaught() event was fired, and it reached at the tail of the pipeline. It usually means the last handler in the pipeline did not handle the exception.
+io.netty.handler.codec.DecoderException: io.netty.handler.ssl.NotSslRecordException: not an SSL/TLS record: 474554202f20485454502f312e310d0a486f73743a206c6f63616c686f73743a353031300d0a436f6e6e656374696f6e3a206b6565702d616c6976650d0a43616368652d436f6e74726f6c3a206d61782d6167653d300d0a7365632d63682d75613a2022476f6f676c65204368726f6d65223b763d22313437222c20224e6f742e412f4272616e64223b763d2238222c20224368726f6d69756d223b763d22313437220d0a7365632d63682d75612d6d6f62696c653a203f300d0a7365632d63682d75612d706c6174666f726d3a20226d61634f53220d0a557067726164652d496e7365637572652d52657175657374733a20310d0a557365722d4167656e743a204d6f7a696c6c612f352e3020284d6163696e746f73683b20496e74656c204d6163204f5320582031305f31355f3729204170706c655765624b69742f3533372e333620284b48544d4c2c206c696b65204765636b6f29204368726f6d652f3134372e302e302e30205361666172692f3533372e33360d0a4163636570743a20746578742f68746d6c2c6170706c69636174696f6e2f7868746d6c2b786d6c2c6170706c69636174696f6e2f786d6c3b713d302e392c696d6167652f617669662c696d6167652f776562702c696d6167652f61706e672c2a2f2a3b713d302e382c6170706c69636174696f6e2f7369676e65642d65786368616e67653b763d62333b713d302e370d0a5365632d46657463682d536974653a206e6f6e650d0a5365632d46657463682d4d6f64653a206e617669676174650d0a5365632d46657463682d557365723a203f310d0a5365632d46657463682d446573743a20646f63756d656e740d0a4163636570742d456e636f64696e673a20677a69702c206465666c6174652c2062722c207a7374640d0a4163636570742d4c616e67756167653a20656e2d55532c656e3b713d302e390d0a436f6f6b69653a20534249443d673430303931693833716d6c7464397465703b205f5f6e6578745f686d725f726566726573685f686173685f5f3d3237353b206465766963652e696e666f3d65794a705a434936496d566a4e446c6b5a47557a496977696257466a496a6f694d5459364e4455364e6a51364e6b5136516a51365255496966513d3d3b2054414249443d414d2d6d6468716c64673074392d313738303537353338333830393b2058595a41425f414d2e4c4f47494e3d376561663735653339653863393036333962616162336236636634303733656566643631663664623b2058595a41423d376561663735653339653863393036333962616162336236636634303733656566643631663664620d0a0d0a
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:459)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:265)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:362)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:348)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:340)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1359)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:362)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:348)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:935)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:134)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: io.netty.handler.ssl.NotSslRecordException: not an SSL/TLS record: 474554202f20485454502f312e310d0a486f73743a206c6f63616c686f73743a353031300d0a436f6e6e656374696f6e3a206b6565702d616c6976650d0a43616368652d436f6e74726f6c3a206d61782d6167653d300d0a7365632d63682d75613a2022476f6f676c65204368726f6d65223b763d22313437222c20224e6f742e412f4272616e64223b763d2238222c20224368726f6d69756d223b763d22313437220d0a7365632d63682d75612d6d6f62696c653a203f300d0a7365632d63682d75612d706c6174666f726d3a20226d61634f53220d0a557067726164652d496e7365637572652d52657175657374733a20310d0a557365722d4167656e743a204d6f7a696c6c612f352e3020284d6163696e746f73683b20496e74656c204d6163204f5320582031305f31355f3729204170706c655765624b69742f3533372e333620284b48544d4c2c206c696b65204765636b6f29204368726f6d652f3134372e302e302e30205361666172692f3533372e33360d0a4163636570743a20746578742f68746d6c2c6170706c69636174696f6e2f7868746d6c2b786d6c2c6170706c69636174696f6e2f786d6c3b713d302e392c696d6167652f617669662c696d6167652f776562702c696d6167652f61706e672c2a2f2a3b713d302e382c6170706c69636174696f6e2f7369676e65642d65786368616e67653b763d62333b713d302e370d0a5365632d46657463682d536974653a206e6f6e650d0a5365632d46657463682d4d6f64653a206e617669676174650d0a5365632d46657463682d557365723a203f310d0a5365632d46657463682d446573743a20646f63756d656e740d0a4163636570742d456e636f64696e673a20677a69702c206465666c6174652c2062722c207a7374640d0a4163636570742d4c616e67756167653a20656e2d55532c656e3b713d302e390d0a436f6f6b69653a20534249443d673430303931693833716d6c7464397465703b205f5f6e6578745f686d725f726566726573685f686173685f5f3d3237353b206465766963652e696e666f3d65794a705a434936496d566a4e446c6b5a47557a496977696257466a496a6f694d5459364e4455364e6a51364e6b5136516a51365255496966513d3d3b2054414249443d414d2d6d6468716c64673074392d313738303537353338333830393b2058595a41425f414d2e4c4f47494e3d376561663735653339653863393036333962616162336236636634303733656566643631663664623b2058595a41423d376561663735653339653863393036333962616162336236636634303733656566643631663664620d0a0d0a
+	at io.netty.handler.ssl.SslHandler.decodeJdkCompatible(SslHandler.java:1106)
+	at io.netty.handler.ssl.SslHandler.decode(SslHandler.java:1162)
+	at io.netty.handler.codec.ByteToMessageDecoder.decodeRemovalReentryProtection(ByteToMessageDecoder.java:489)
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:428)
+	... 15 common frames omitted
+16:29:13.772 WARN  vert.x-eventloop-thread-0 DefaultChannelPipeline : An exceptionCaught() event was fired, and it reached at the tail of the pipeline. It usually means the last handler in the pipeline did not handle the exception.
+io.netty.handler.codec.DecoderException: io.netty.handler.ssl.NotSslRecordException: not an SSL/TLS record: 474554202f20485454502f312e310d0a486f73743a206c6f63616c686f73743a353031300d0a436f6e6e656374696f6e3a206b6565702d616c6976650d0a43616368652d436f6e74726f6c3a206d61782d6167653d300d0a7365632d63682d75613a2022476f6f676c65204368726f6d65223b763d22313437222c20224e6f742e412f4272616e64223b763d2238222c20224368726f6d69756d223b763d22313437220d0a7365632d63682d75612d6d6f62696c653a203f300d0a7365632d63682d75612d706c6174666f726d3a20226d61634f53220d0a557067726164652d496e7365637572652d52657175657374733a20310d0a557365722d4167656e743a204d6f7a696c6c612f352e3020284d6163696e746f73683b20496e74656c204d6163204f5320582031305f31355f3729204170706c655765624b69742f3533372e333620284b48544d4c2c206c696b65204765636b6f29204368726f6d652f3134372e302e302e30205361666172692f3533372e33360d0a4163636570743a20746578742f68746d6c2c6170706c69636174696f6e2f7868746d6c2b786d6c2c6170706c69636174696f6e2f786d6c3b713d302e392c696d6167652f617669662c696d6167652f776562702c696d6167652f61706e672c2a2f2a3b713d302e382c6170706c69636174696f6e2f7369676e65642d65786368616e67653b763d62333b713d302e370d0a5365632d46657463682d536974653a206e6f6e650d0a5365632d46657463682d4d6f64653a206e617669676174650d0a5365632d46657463682d557365723a203f310d0a5365632d46657463682d446573743a20646f63756d656e740d0a4163636570742d456e636f64696e673a20677a69702c206465666c6174652c2062722c207a7374640d0a4163636570742d4c616e67756167653a20656e2d55532c656e3b713d302e390d0a436f6f6b69653a20534249443d673430303931693833716d6c7464397465703b205f5f6e6578745f686d725f726566726573685f686173685f5f3d3237353b206465766963652e696e666f3d65794a705a434936496d566a4e446c6b5a47557a496977696257466a496a6f694d5459364e4455364e6a51364e6b5136516a51365255496966513d3d3b2054414249443d414d2d6d6468716c64673074392d313738303537353338333830393b2058595a41425f414d2e4c4f47494e3d376561663735653339653863393036333962616162336236636634303733656566643631663664623b2058595a41423d376561663735653339653863393036333962616162336236636634303733656566643631663664620d0a0d0a
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:459)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:265)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:362)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:348)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:340)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1359)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:362)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:348)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:935)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:134)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: io.netty.handler.ssl.NotSslRecordException: not an SSL/TLS record: 474554202f20485454502f312e310d0a486f73743a206c6f63616c686f73743a353031300d0a436f6e6e656374696f6e3a206b6565702d616c6976650d0a43616368652d436f6e74726f6c3a206d61782d6167653d300d0a7365632d63682d75613a2022476f6f676c65204368726f6d65223b763d22313437222c20224e6f742e412f4272616e64223b763d2238222c20224368726f6d69756d223b763d22313437220d0a7365632d63682d75612d6d6f62696c653a203f300d0a7365632d63682d75612d706c6174666f726d3a20226d61634f53220d0a557067726164652d496e7365637572652d52657175657374733a20310d0a557365722d4167656e743a204d6f7a696c6c612f352e3020284d6163696e746f73683b20496e74656c204d6163204f5320582031305f31355f3729204170706c655765624b69742f3533372e333620284b48544d4c2c206c696b65204765636b6f29204368726f6d652f3134372e302e302e30205361666172692f3533372e33360d0a4163636570743a20746578742f68746d6c2c6170706c69636174696f6e2f7868746d6c2b786d6c2c6170706c69636174696f6e2f786d6c3b713d302e392c696d6167652f617669662c696d6167652f776562702c696d6167652f61706e672c2a2f2a3b713d302e382c6170706c69636174696f6e2f7369676e65642d65786368616e67653b763d62333b713d302e370d0a5365632d46657463682d536974653a206e6f6e650d0a5365632d46657463682d4d6f64653a206e617669676174650d0a5365632d46657463682d557365723a203f310d0a5365632d46657463682d446573743a20646f63756d656e740d0a4163636570742d456e636f64696e673a20677a69702c206465666c6174652c2062722c207a7374640d0a4163636570742d4c616e67756167653a20656e2d55532c656e3b713d302e390d0a436f6f6b69653a20534249443d673430303931693833716d6c7464397465703b205f5f6e6578745f686d725f726566726573685f686173685f5f3d3237353b206465766963652e696e666f3d65794a705a434936496d566a4e446c6b5a47557a496977696257466a496a6f694d5459364e4455364e6a51364e6b5136516a51365255496966513d3d3b2054414249443d414d2d6d6468716c64673074392d313738303537353338333830393b2058595a41425f414d2e4c4f47494e3d376561663735653339653863393036333962616162336236636634303733656566643631663664623b2058595a41423d376561663735653339653863393036333962616162336236636634303733656566643631663664620d0a0d0a
+	at io.netty.handler.ssl.SslHandler.decodeJdkCompatible(SslHandler.java:1106)
+	at io.netty.handler.ssl.SslHandler.decode(SslHandler.java:1162)
+	at io.netty.handler.codec.ByteToMessageDecoder.decodeRemovalReentryProtection(ByteToMessageDecoder.java:489)
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:428)
+	... 15 common frames omitted
+16:29:13.775 WARN  vert.x-eventloop-thread-0 DefaultChannelPipeline : An exceptionCaught() event was fired, and it reached at the tail of the pipeline. It usually means the last handler in the pipeline did not handle the exception.
+io.netty.handler.codec.DecoderException: io.netty.handler.ssl.NotSslRecordException: not an SSL/TLS record: 474554202f20485454502f312e310d0a486f73743a206c6f63616c686f73743a353031300d0a436f6e6e656374696f6e3a206b6565702d616c6976650d0a43616368652d436f6e74726f6c3a206d61782d6167653d300d0a7365632d63682d75613a2022476f6f676c65204368726f6d65223b763d22313437222c20224e6f742e412f4272616e64223b763d2238222c20224368726f6d69756d223b763d22313437220d0a7365632d63682d75612d6d6f62696c653a203f300d0a7365632d63682d75612d706c6174666f726d3a20226d61634f53220d0a557067726164652d496e7365637572652d52657175657374733a20310d0a557365722d4167656e743a204d6f7a696c6c612f352e3020284d6163696e746f73683b20496e74656c204d6163204f5320582031305f31355f3729204170706c655765624b69742f3533372e333620284b48544d4c2c206c696b65204765636b6f29204368726f6d652f3134372e302e302e30205361666172692f3533372e33360d0a4163636570743a20746578742f68746d6c2c6170706c69636174696f6e2f7868746d6c2b786d6c2c6170706c69636174696f6e2f786d6c3b713d302e392c696d6167652f617669662c696d6167652f776562702c696d6167652f61706e672c2a2f2a3b713d302e382c6170706c69636174696f6e2f7369676e65642d65786368616e67653b763d62333b713d302e370d0a5365632d46657463682d536974653a206e6f6e650d0a5365632d46657463682d4d6f64653a206e617669676174650d0a5365632d46657463682d557365723a203f310d0a5365632d46657463682d446573743a20646f63756d656e740d0a4163636570742d456e636f64696e673a20677a69702c206465666c6174652c2062722c207a7374640d0a4163636570742d4c616e67756167653a20656e2d55532c656e3b713d302e390d0a436f6f6b69653a20534249443d673430303931693833716d6c7464397465703b205f5f6e6578745f686d725f726566726573685f686173685f5f3d3237353b206465766963652e696e666f3d65794a705a434936496d566a4e446c6b5a47557a496977696257466a496a6f694d5459364e4455364e6a51364e6b5136516a51365255496966513d3d3b2054414249443d414d2d6d6468716c64673074392d313738303537353338333830393b2058595a41425f414d2e4c4f47494e3d376561663735653339653863393036333962616162336236636634303733656566643631663664623b2058595a41423d376561663735653339653863393036333962616162336236636634303733656566643631663664620d0a0d0a
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:459)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:265)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:362)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:348)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:340)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1359)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:362)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:348)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:935)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:134)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: io.netty.handler.ssl.NotSslRecordException: not an SSL/TLS record: 474554202f20485454502f312e310d0a486f73743a206c6f63616c686f73743a353031300d0a436f6e6e656374696f6e3a206b6565702d616c6976650d0a43616368652d436f6e74726f6c3a206d61782d6167653d300d0a7365632d63682d75613a2022476f6f676c65204368726f6d65223b763d22313437222c20224e6f742e412f4272616e64223b763d2238222c20224368726f6d69756d223b763d22313437220d0a7365632d63682d75612d6d6f62696c653a203f300d0a7365632d63682d75612d706c6174666f726d3a20226d61634f53220d0a557067726164652d496e7365637572652d52657175657374733a20310d0a557365722d4167656e743a204d6f7a696c6c612f352e3020284d6163696e746f73683b20496e74656c204d6163204f5320582031305f31355f3729204170706c655765624b69742f3533372e333620284b48544d4c2c206c696b65204765636b6f29204368726f6d652f3134372e302e302e30205361666172692f3533372e33360d0a4163636570743a20746578742f68746d6c2c6170706c69636174696f6e2f7868746d6c2b786d6c2c6170706c69636174696f6e2f786d6c3b713d302e392c696d6167652f617669662c696d6167652f776562702c696d6167652f61706e672c2a2f2a3b713d302e382c6170706c69636174696f6e2f7369676e65642d65786368616e67653b763d62333b713d302e370d0a5365632d46657463682d536974653a206e6f6e650d0a5365632d46657463682d4d6f64653a206e617669676174650d0a5365632d46657463682d557365723a203f310d0a5365632d46657463682d446573743a20646f63756d656e740d0a4163636570742d456e636f64696e673a20677a69702c206465666c6174652c2062722c207a7374640d0a4163636570742d4c616e67756167653a20656e2d55532c656e3b713d302e390d0a436f6f6b69653a20534249443d673430303931693833716d6c7464397465703b205f5f6e6578745f686d725f726566726573685f686173685f5f3d3237353b206465766963652e696e666f3d65794a705a434936496d566a4e446c6b5a47557a496977696257466a496a6f694d5459364e4455364e6a51364e6b5136516a51365255496966513d3d3b2054414249443d414d2d6d6468716c64673074392d313738303537353338333830393b2058595a41425f414d2e4c4f47494e3d376561663735653339653863393036333962616162336236636634303733656566643631663664623b2058595a41423d376561663735653339653863393036333962616162336236636634303733656566643631663664620d0a0d0a
+	at io.netty.handler.ssl.SslHandler.decodeJdkCompatible(SslHandler.java:1106)
+	at io.netty.handler.ssl.SslHandler.decode(SslHandler.java:1162)
+	at io.netty.handler.codec.ByteToMessageDecoder.decodeRemovalReentryProtection(ByteToMessageDecoder.java:489)
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:428)
+	... 15 common frames omitted
+16:29:18.803 WARN  vert.x-eventloop-thread-0 DefaultChannelPipeline : An exceptionCaught() event was fired, and it reached at the tail of the pipeline. It usually means the last handler in the pipeline did not handle the exception.
+io.netty.handler.codec.DecoderException: io.netty.handler.ssl.NotSslRecordException: not an SSL/TLS record: 474554202f20485454502f312e310d0a486f73743a206c6f63616c686f73743a353031300d0a436f6e6e656374696f6e3a206b6565702d616c6976650d0a43616368652d436f6e74726f6c3a206d61782d6167653d300d0a7365632d63682d75613a2022476f6f676c65204368726f6d65223b763d22313437222c20224e6f742e412f4272616e64223b763d2238222c20224368726f6d69756d223b763d22313437220d0a7365632d63682d75612d6d6f62696c653a203f300d0a7365632d63682d75612d706c6174666f726d3a20226d61634f53220d0a557067726164652d496e7365637572652d52657175657374733a20310d0a557365722d4167656e743a204d6f7a696c6c612f352e3020284d6163696e746f73683b20496e74656c204d6163204f5320582031305f31355f3729204170706c655765624b69742f3533372e333620284b48544d4c2c206c696b65204765636b6f29204368726f6d652f3134372e302e302e30205361666172692f3533372e33360d0a4163636570743a20746578742f68746d6c2c6170706c69636174696f6e2f7868746d6c2b786d6c2c6170706c69636174696f6e2f786d6c3b713d302e392c696d6167652f617669662c696d6167652f776562702c696d6167652f61706e672c2a2f2a3b713d302e382c6170706c69636174696f6e2f7369676e65642d65786368616e67653b763d62333b713d302e370d0a5365632d46657463682d536974653a206e6f6e650d0a5365632d46657463682d4d6f64653a206e617669676174650d0a5365632d46657463682d557365723a203f310d0a5365632d46657463682d446573743a20646f63756d656e740d0a4163636570742d456e636f64696e673a20677a69702c206465666c6174652c2062722c207a7374640d0a4163636570742d4c616e67756167653a20656e2d55532c656e3b713d302e390d0a436f6f6b69653a20534249443d673430303931693833716d6c7464397465703b205f5f6e6578745f686d725f726566726573685f686173685f5f3d3237353b206465766963652e696e666f3d65794a705a434936496d566a4e446c6b5a47557a496977696257466a496a6f694d5459364e4455364e6a51364e6b5136516a51365255496966513d3d3b2054414249443d414d2d6d6468716c64673074392d313738303537353338333830393b2058595a41425f414d2e4c4f47494e3d376561663735653339653863393036333962616162336236636634303733656566643631663664623b2058595a41423d376561663735653339653863393036333962616162336236636634303733656566643631663664620d0a0d0a
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:459)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:265)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:362)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:348)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:340)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1359)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:362)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:348)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:935)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:134)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: io.netty.handler.ssl.NotSslRecordException: not an SSL/TLS record: 474554202f20485454502f312e310d0a486f73743a206c6f63616c686f73743a353031300d0a436f6e6e656374696f6e3a206b6565702d616c6976650d0a43616368652d436f6e74726f6c3a206d61782d6167653d300d0a7365632d63682d75613a2022476f6f676c65204368726f6d65223b763d22313437222c20224e6f742e412f4272616e64223b763d2238222c20224368726f6d69756d223b763d22313437220d0a7365632d63682d75612d6d6f62696c653a203f300d0a7365632d63682d75612d706c6174666f726d3a20226d61634f53220d0a557067726164652d496e7365637572652d52657175657374733a20310d0a557365722d4167656e743a204d6f7a696c6c612f352e3020284d6163696e746f73683b20496e74656c204d6163204f5320582031305f31355f3729204170706c655765624b69742f3533372e333620284b48544d4c2c206c696b65204765636b6f29204368726f6d652f3134372e302e302e30205361666172692f3533372e33360d0a4163636570743a20746578742f68746d6c2c6170706c69636174696f6e2f7868746d6c2b786d6c2c6170706c69636174696f6e2f786d6c3b713d302e392c696d6167652f617669662c696d6167652f776562702c696d6167652f61706e672c2a2f2a3b713d302e382c6170706c69636174696f6e2f7369676e65642d65786368616e67653b763d62333b713d302e370d0a5365632d46657463682d536974653a206e6f6e650d0a5365632d46657463682d4d6f64653a206e617669676174650d0a5365632d46657463682d557365723a203f310d0a5365632d46657463682d446573743a20646f63756d656e740d0a4163636570742d456e636f64696e673a20677a69702c206465666c6174652c2062722c207a7374640d0a4163636570742d4c616e67756167653a20656e2d55532c656e3b713d302e390d0a436f6f6b69653a20534249443d673430303931693833716d6c7464397465703b205f5f6e6578745f686d725f726566726573685f686173685f5f3d3237353b206465766963652e696e666f3d65794a705a434936496d566a4e446c6b5a47557a496977696257466a496a6f694d5459364e4455364e6a51364e6b5136516a51365255496966513d3d3b2054414249443d414d2d6d6468716c64673074392d313738303537353338333830393b2058595a41425f414d2e4c4f47494e3d376561663735653339653863393036333962616162336236636634303733656566643631663664623b2058595a41423d376561663735653339653863393036333962616162336236636634303733656566643631663664620d0a0d0a
+	at io.netty.handler.ssl.SslHandler.decodeJdkCompatible(SslHandler.java:1106)
+	at io.netty.handler.ssl.SslHandler.decode(SslHandler.java:1162)
+	at io.netty.handler.codec.ByteToMessageDecoder.decodeRemovalReentryProtection(ByteToMessageDecoder.java:489)
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:428)
+	... 15 common frames omitted
+16:29:25.056 WARN  vert.x-eventloop-thread-0 DefaultChannelPipeline : An exceptionCaught() event was fired, and it reached at the tail of the pipeline. It usually means the last handler in the pipeline did not handle the exception.
+io.netty.handler.codec.DecoderException: io.netty.handler.ssl.NotSslRecordException: not an SSL/TLS record: 474554202f20485454502f312e310d0a486f73743a206c6f63616c686f73743a353031300d0a436f6e6e656374696f6e3a206b6565702d616c6976650d0a7365632d63682d75613a2022476f6f676c65204368726f6d65223b763d22313437222c20224e6f742e412f4272616e64223b763d2238222c20224368726f6d69756d223b763d22313437220d0a7365632d63682d75612d6d6f62696c653a203f300d0a7365632d63682d75612d706c6174666f726d3a20226d61634f53220d0a557067726164652d496e7365637572652d52657175657374733a20310d0a557365722d4167656e743a204d6f7a696c6c612f352e3020284d6163696e746f73683b20496e74656c204d6163204f5320582031305f31355f3729204170706c655765624b69742f3533372e333620284b48544d4c2c206c696b65204765636b6f29204368726f6d652f3134372e302e302e30205361666172692f3533372e33360d0a4163636570743a20746578742f68746d6c2c6170706c69636174696f6e2f7868746d6c2b786d6c2c6170706c69636174696f6e2f786d6c3b713d302e392c696d6167652f617669662c696d6167652f776562702c696d6167652f61706e672c2a2f2a3b713d302e382c6170706c69636174696f6e2f7369676e65642d65786368616e67653b763d62333b713d302e370d0a5365632d46657463682d536974653a206e6f6e650d0a5365632d46657463682d4d6f64653a206e617669676174650d0a5365632d46657463682d557365723a203f310d0a5365632d46657463682d446573743a20646f63756d656e740d0a4163636570742d456e636f64696e673a20677a69702c206465666c6174652c2062722c207a7374640d0a4163636570742d4c616e67756167653a20656e2d55532c656e3b713d302e390d0a436f6f6b69653a20534249443d673430303931693833716d6c7464397465703b205f5f6e6578745f686d725f726566726573685f686173685f5f3d3237353b206465766963652e696e666f3d65794a705a434936496d566a4e446c6b5a47557a496977696257466a496a6f694d5459364e4455364e6a51364e6b5136516a51365255496966513d3d3b2054414249443d414d2d6d6468716c64673074392d313738303537353338333830393b2058595a41425f414d2e4c4f47494e3d376561663735653339653863393036333962616162336236636634303733656566643631663664623b2058595a41423d376561663735653339653863393036333962616162336236636634303733656566643631663664620d0a0d0a
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:459)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:265)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:362)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:348)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:340)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1359)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:362)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:348)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:935)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:134)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: io.netty.handler.ssl.NotSslRecordException: not an SSL/TLS record: 474554202f20485454502f312e310d0a486f73743a206c6f63616c686f73743a353031300d0a436f6e6e656374696f6e3a206b6565702d616c6976650d0a7365632d63682d75613a2022476f6f676c65204368726f6d65223b763d22313437222c20224e6f742e412f4272616e64223b763d2238222c20224368726f6d69756d223b763d22313437220d0a7365632d63682d75612d6d6f62696c653a203f300d0a7365632d63682d75612d706c6174666f726d3a20226d61634f53220d0a557067726164652d496e7365637572652d52657175657374733a20310d0a557365722d4167656e743a204d6f7a696c6c612f352e3020284d6163696e746f73683b20496e74656c204d6163204f5320582031305f31355f3729204170706c655765624b69742f3533372e333620284b48544d4c2c206c696b65204765636b6f29204368726f6d652f3134372e302e302e30205361666172692f3533372e33360d0a4163636570743a20746578742f68746d6c2c6170706c69636174696f6e2f7868746d6c2b786d6c2c6170706c69636174696f6e2f786d6c3b713d302e392c696d6167652f617669662c696d6167652f776562702c696d6167652f61706e672c2a2f2a3b713d302e382c6170706c69636174696f6e2f7369676e65642d65786368616e67653b763d62333b713d302e370d0a5365632d46657463682d536974653a206e6f6e650d0a5365632d46657463682d4d6f64653a206e617669676174650d0a5365632d46657463682d557365723a203f310d0a5365632d46657463682d446573743a20646f63756d656e740d0a4163636570742d456e636f64696e673a20677a69702c206465666c6174652c2062722c207a7374640d0a4163636570742d4c616e67756167653a20656e2d55532c656e3b713d302e390d0a436f6f6b69653a20534249443d673430303931693833716d6c7464397465703b205f5f6e6578745f686d725f726566726573685f686173685f5f3d3237353b206465766963652e696e666f3d65794a705a434936496d566a4e446c6b5a47557a496977696257466a496a6f694d5459364e4455364e6a51364e6b5136516a51365255496966513d3d3b2054414249443d414d2d6d6468716c64673074392d313738303537353338333830393b2058595a41425f414d2e4c4f47494e3d376561663735653339653863393036333962616162336236636634303733656566643631663664623b2058595a41423d376561663735653339653863393036333962616162336236636634303733656566643631663664620d0a0d0a
+	at io.netty.handler.ssl.SslHandler.decodeJdkCompatible(SslHandler.java:1106)
+	at io.netty.handler.ssl.SslHandler.decode(SslHandler.java:1162)
+	at io.netty.handler.codec.ByteToMessageDecoder.decodeRemovalReentryProtection(ByteToMessageDecoder.java:489)
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:428)
+	... 15 common frames omitted
+16:31:03.455 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|285ms
+16:31:03.457 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+16:36:03.803 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|345ms
+16:36:03.805 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+16:47:21.776 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.net.SocketException: Connection reset
+16:51:38.329 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|474ms
+16:51:38.333 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+16:56:38.225 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|380ms
+16:56:38.231 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+17:01:38.181 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|336ms
+17:01:38.183 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+17:06:38.178 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|327ms
+17:06:38.184 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+17:38:35.228 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.net.SocketException: Connection reset
+17:42:54.093 ERROR vert.x-eventloop-thread-0 BaseServiceProxy     : request failed api.ibkr.com: nodename nor servname provided, or not known
+java.net.UnknownHostException: api.ibkr.com: nodename nor servname provided, or not known
+	at java.base/java.net.Inet4AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet4AddressImpl.lookupAllHostAddr(Inet4AddressImpl.java:45)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(InetAddress.java:1134)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(InetAddress.java:1712)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(InetAddress.java:1060)
+	at java.base/java.net.InetAddress.getAllByName0(InetAddress.java:1702)
+	at java.base/java.net.InetAddress.getAllByName(InetAddress.java:1582)
+	at java.base/java.net.InetAddress.getByName(InetAddress.java:1492)
+	at io.netty.util.internal.SocketUtils$8.run(SocketUtils.java:146)
+	at io.netty.util.internal.SocketUtils$8.run(SocketUtils.java:143)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:251)
+	at io.netty.util.internal.SocketUtils.addressByName(SocketUtils.java:143)
+	at io.netty.resolver.DefaultNameResolver.doResolve(DefaultNameResolver.java:43)
+	at io.netty.resolver.SimpleNameResolver.resolve(SimpleNameResolver.java:63)
+	at io.netty.resolver.SimpleNameResolver.resolve(SimpleNameResolver.java:55)
+	at io.netty.resolver.InetSocketAddressResolver.doResolve(InetSocketAddressResolver.java:57)
+	at io.netty.resolver.InetSocketAddressResolver.doResolve(InetSocketAddressResolver.java:32)
+	at io.netty.resolver.AbstractAddressResolver.resolve(AbstractAddressResolver.java:108)
+	at io.netty.bootstrap.Bootstrap.doResolveAndConnect0(Bootstrap.java:208)
+	at io.netty.bootstrap.Bootstrap.doResolveAndConnect(Bootstrap.java:170)
+	at io.netty.bootstrap.Bootstrap.connect(Bootstrap.java:145)
+	at io.vertx.core.net.impl.ChannelProvider.connect(ChannelProvider.java:38)
+	at io.vertx.core.http.impl.ConnectionManager$ChannelConnector.connect(ConnectionManager.java:537)
+	at io.vertx.core.http.impl.ConnectionManager$ConnQueue.createNewConnection(ConnectionManager.java:294)
+	at io.vertx.core.http.impl.ConnectionManager$ConnQueue.getConnection(ConnectionManager.java:237)
+	at io.vertx.core.http.impl.ConnectionManager.getConnectionForRequest(ConnectionManager.java:171)
+	at io.vertx.core.http.impl.HttpClientImpl.getConnectionForRequest(HttpClientImpl.java:950)
+	at io.vertx.core.http.impl.HttpClientRequestImpl.connect(HttpClientRequestImpl.java:745)
+	at io.vertx.core.http.impl.HttpClientRequestImpl.write(HttpClientRequestImpl.java:867)
+	at io.vertx.core.http.impl.HttpClientRequestImpl.end(HttpClientRequestImpl.java:358)
+	at ibgroup.web.core.clientportal.gw.services.SsoService.tickleSession(SsoService.java:255)
+	at ibgroup.web.core.clientportal.gw.services.SsoService.onTimerEvent(SsoService.java:100)
+	at io.vertx.core.impl.VertxImpl$InternalTimerHandler.handle(VertxImpl.java:870)
+	at io.vertx.core.impl.VertxImpl$InternalTimerHandler.handle(VertxImpl.java:829)
+	at io.vertx.core.impl.ContextImpl.lambda$wrapTask$2(ContextImpl.java:344)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:403)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:463)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+17:47:54.009 ERROR vert.x-eventloop-thread-0 BaseServiceProxy     : request failed api.ibkr.com: nodename nor servname provided, or not known
+java.net.UnknownHostException: api.ibkr.com: nodename nor servname provided, or not known
+	at java.base/java.net.Inet4AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet4AddressImpl.lookupAllHostAddr(Inet4AddressImpl.java:45)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(InetAddress.java:1134)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(InetAddress.java:1712)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(InetAddress.java:1060)
+	at java.base/java.net.InetAddress.getAllByName0(InetAddress.java:1702)
+	at java.base/java.net.InetAddress.getAllByName(InetAddress.java:1582)
+	at java.base/java.net.InetAddress.getByName(InetAddress.java:1492)
+	at io.netty.util.internal.SocketUtils$8.run(SocketUtils.java:146)
+	at io.netty.util.internal.SocketUtils$8.run(SocketUtils.java:143)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:251)
+	at io.netty.util.internal.SocketUtils.addressByName(SocketUtils.java:143)
+	at io.netty.resolver.DefaultNameResolver.doResolve(DefaultNameResolver.java:43)
+	at io.netty.resolver.SimpleNameResolver.resolve(SimpleNameResolver.java:63)
+	at io.netty.resolver.SimpleNameResolver.resolve(SimpleNameResolver.java:55)
+	at io.netty.resolver.InetSocketAddressResolver.doResolve(InetSocketAddressResolver.java:57)
+	at io.netty.resolver.InetSocketAddressResolver.doResolve(InetSocketAddressResolver.java:32)
+	at io.netty.resolver.AbstractAddressResolver.resolve(AbstractAddressResolver.java:108)
+	at io.netty.bootstrap.Bootstrap.doResolveAndConnect0(Bootstrap.java:208)
+	at io.netty.bootstrap.Bootstrap.doResolveAndConnect(Bootstrap.java:170)
+	at io.netty.bootstrap.Bootstrap.connect(Bootstrap.java:145)
+	at io.vertx.core.net.impl.ChannelProvider.connect(ChannelProvider.java:38)
+	at io.vertx.core.http.impl.ConnectionManager$ChannelConnector.connect(ConnectionManager.java:537)
+	at io.vertx.core.http.impl.ConnectionManager$ConnQueue.createNewConnection(ConnectionManager.java:294)
+	at io.vertx.core.http.impl.ConnectionManager$ConnQueue.getConnection(ConnectionManager.java:237)
+	at io.vertx.core.http.impl.ConnectionManager.getConnectionForRequest(ConnectionManager.java:171)
+	at io.vertx.core.http.impl.HttpClientImpl.getConnectionForRequest(HttpClientImpl.java:950)
+	at io.vertx.core.http.impl.HttpClientRequestImpl.connect(HttpClientRequestImpl.java:745)
+	at io.vertx.core.http.impl.HttpClientRequestImpl.write(HttpClientRequestImpl.java:867)
+	at io.vertx.core.http.impl.HttpClientRequestImpl.end(HttpClientRequestImpl.java:358)
+	at ibgroup.web.core.clientportal.gw.services.SsoService.tickleSession(SsoService.java:255)
+	at ibgroup.web.core.clientportal.gw.services.SsoService.onTimerEvent(SsoService.java:100)
+	at io.vertx.core.impl.VertxImpl$InternalTimerHandler.handle(VertxImpl.java:870)
+	at io.vertx.core.impl.VertxImpl$InternalTimerHandler.handle(VertxImpl.java:829)
+	at io.vertx.core.impl.ContextImpl.lambda$wrapTask$2(ContextImpl.java:344)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:403)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:463)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+17:52:54.475 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|503ms
+17:52:54.477 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+18:00:02.398 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.io.IOException: Operation timed out
+18:00:02.407 ERROR vert.x-eventloop-thread-0 BaseServiceProxy     : request failed Operation timed out
+java.io.IOException: Operation timed out
+	at java.base/sun.nio.ch.SocketDispatcher.read0(Native Method)
+	at java.base/sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:48)
+	at java.base/sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:341)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:295)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:270)
+	at java.base/sun.nio.ch.SocketChannelImpl.implRead(SocketChannelImpl.java:422)
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:489)
+	at io.netty.buffer.PooledUnsafeDirectByteBuf.setBytes(PooledUnsafeDirectByteBuf.java:288)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1106)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:373)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:123)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+18:02:54.316 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|349ms
+18:02:54.318 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+18:21:51.710 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.net.SocketException: Connection reset
+18:55:02.601 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|359ms
+18:55:02.603 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+19:00:29.221 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.io.IOException: Operation timed out
+19:00:29.231 ERROR vert.x-eventloop-thread-0 BaseServiceProxy     : request failed Operation timed out
+java.io.IOException: Operation timed out
+	at java.base/sun.nio.ch.SocketDispatcher.read0(Native Method)
+	at java.base/sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:48)
+	at java.base/sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:341)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:295)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:270)
+	at java.base/sun.nio.ch.SocketChannelImpl.implRead(SocketChannelImpl.java:422)
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:489)
+	at io.netty.buffer.PooledUnsafeDirectByteBuf.setBytes(PooledUnsafeDirectByteBuf.java:288)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1106)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:373)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:123)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+19:05:11.629 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|436ms
+19:05:11.630 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+19:10:11.632 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|437ms
+19:10:11.635 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+19:15:29.172 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.io.IOException: Operation timed out
+19:15:29.178 ERROR vert.x-eventloop-thread-0 BaseServiceProxy     : request failed Operation timed out
+java.io.IOException: Operation timed out
+	at java.base/sun.nio.ch.SocketDispatcher.read0(Native Method)
+	at java.base/sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:48)
+	at java.base/sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:341)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:295)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:270)
+	at java.base/sun.nio.ch.SocketChannelImpl.implRead(SocketChannelImpl.java:422)
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:489)
+	at io.netty.buffer.PooledUnsafeDirectByteBuf.setBytes(PooledUnsafeDirectByteBuf.java:288)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1106)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:373)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:123)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+19:20:11.235 ERROR vert.x-eventloop-thread-0 BaseServiceProxy     : request failed api.ibkr.com: nodename nor servname provided, or not known
+java.net.UnknownHostException: api.ibkr.com: nodename nor servname provided, or not known
+	at java.base/java.net.Inet4AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.Inet4AddressImpl.lookupAllHostAddr(Inet4AddressImpl.java:45)
+	at java.base/java.net.InetAddress$PlatformResolver.lookupByName(InetAddress.java:1134)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(InetAddress.java:1712)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(InetAddress.java:1060)
+	at java.base/java.net.InetAddress.getAllByName0(InetAddress.java:1702)
+	at java.base/java.net.InetAddress.getAllByName(InetAddress.java:1582)
+	at java.base/java.net.InetAddress.getByName(InetAddress.java:1492)
+	at io.netty.util.internal.SocketUtils$8.run(SocketUtils.java:146)
+	at io.netty.util.internal.SocketUtils$8.run(SocketUtils.java:143)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:251)
+	at io.netty.util.internal.SocketUtils.addressByName(SocketUtils.java:143)
+	at io.netty.resolver.DefaultNameResolver.doResolve(DefaultNameResolver.java:43)
+	at io.netty.resolver.SimpleNameResolver.resolve(SimpleNameResolver.java:63)
+	at io.netty.resolver.SimpleNameResolver.resolve(SimpleNameResolver.java:55)
+	at io.netty.resolver.InetSocketAddressResolver.doResolve(InetSocketAddressResolver.java:57)
+	at io.netty.resolver.InetSocketAddressResolver.doResolve(InetSocketAddressResolver.java:32)
+	at io.netty.resolver.AbstractAddressResolver.resolve(AbstractAddressResolver.java:108)
+	at io.netty.bootstrap.Bootstrap.doResolveAndConnect0(Bootstrap.java:208)
+	at io.netty.bootstrap.Bootstrap.doResolveAndConnect(Bootstrap.java:170)
+	at io.netty.bootstrap.Bootstrap.connect(Bootstrap.java:145)
+	at io.vertx.core.net.impl.ChannelProvider.connect(ChannelProvider.java:38)
+	at io.vertx.core.http.impl.ConnectionManager$ChannelConnector.connect(ConnectionManager.java:537)
+	at io.vertx.core.http.impl.ConnectionManager$ConnQueue.createNewConnection(ConnectionManager.java:294)
+	at io.vertx.core.http.impl.ConnectionManager$ConnQueue.getConnection(ConnectionManager.java:237)
+	at io.vertx.core.http.impl.ConnectionManager.getConnectionForRequest(ConnectionManager.java:171)
+	at io.vertx.core.http.impl.HttpClientImpl.getConnectionForRequest(HttpClientImpl.java:950)
+	at io.vertx.core.http.impl.HttpClientRequestImpl.connect(HttpClientRequestImpl.java:745)
+	at io.vertx.core.http.impl.HttpClientRequestImpl.write(HttpClientRequestImpl.java:867)
+	at io.vertx.core.http.impl.HttpClientRequestImpl.end(HttpClientRequestImpl.java:358)
+	at ibgroup.web.core.clientportal.gw.services.SsoService.tickleSession(SsoService.java:255)
+	at ibgroup.web.core.clientportal.gw.services.SsoService.onTimerEvent(SsoService.java:100)
+	at io.vertx.core.impl.VertxImpl$InternalTimerHandler.handle(VertxImpl.java:870)
+	at io.vertx.core.impl.VertxImpl$InternalTimerHandler.handle(VertxImpl.java:829)
+	at io.vertx.core.impl.ContextImpl.lambda$wrapTask$2(ContextImpl.java:344)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:403)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:463)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+19:42:44.164 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|592ms
+19:42:44.166 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+20:14:34.515 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.net.SocketException: Connection reset
+20:15:10.729 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|576ms
+20:15:10.730 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+20:20:28.246 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.io.IOException: Can't assign requested address
+20:20:28.261 ERROR vert.x-eventloop-thread-0 BaseServiceProxy     : request failed Can't assign requested address
+java.io.IOException: Can't assign requested address
+	at java.base/sun.nio.ch.SocketDispatcher.read0(Native Method)
+	at java.base/sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:48)
+	at java.base/sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:341)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:295)
+	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:270)
+	at java.base/sun.nio.ch.SocketChannelImpl.implRead(SocketChannelImpl.java:422)
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:489)
+	at io.netty.buffer.PooledUnsafeDirectByteBuf.setBytes(PooledUnsafeDirectByteBuf.java:288)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1106)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:373)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:123)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:645)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysPlain(NioEventLoop.java:545)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:499)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:459)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+21:19:42.780 INFO  vert.x-eventloop-thread-0 BaseServiceProxy     : -> GET /sso/ping,200|2983ms
+21:19:42.784 INFO  vert.x-eventloop-thread-0 SsoService           : sso ping {"result": "true"}
+22:57:16.378 ERROR vert.x-eventloop-thread-0 ConnectionBase       : java.net.SocketException: Connection reset
