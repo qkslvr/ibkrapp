@@ -135,6 +135,22 @@ export interface FlexTransfer {
   currency: string;
 }
 
+export interface FlexEquitySummary {
+  reportDate: string;
+  total: number;
+  cash: number;
+  stock: number;
+}
+
+export function parseEquitySummary(xml: string): FlexEquitySummary[] {
+  return extractTags(xml, "EquitySummaryByReportDateInBase").map((a) => ({
+    reportDate: a.reportDate ?? "",
+    total: Number(a.total ?? a.totalLong ?? 0),
+    cash: Number(a.cash ?? 0),
+    stock: Number(a.stock ?? a.equityWithLoanValue ?? 0),
+  }));
+}
+
 export function parseTransfers(xml: string): FlexTransfer[] {
   return extractTags(xml, "Transfer").map((a) => ({
     date: a.date ?? a.reportDate ?? "",

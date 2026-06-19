@@ -105,8 +105,7 @@ export default function TransactionsPage() {
       <div className="flex items-start gap-2 rounded-lg border border-border/50 bg-secondary/30 px-4 py-3 text-sm text-muted-foreground">
         <Info className="mt-0.5 h-4 w-4 shrink-0" />
         <p>
-          Trade history is sourced from IBKR Flex Activity Query. Dividend transactions are
-          sourced from Yahoo Finance based on your current holdings.
+          All transactions are sourced from IBKR Flex Activity Query.
         </p>
       </div>
 

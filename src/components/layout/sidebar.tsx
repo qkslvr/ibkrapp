@@ -11,6 +11,7 @@ import {
   Eye,
   Settings,
   TrendingUp,
+  Building2,
 } from "lucide-react";
 
 const navigation = [
@@ -18,6 +19,7 @@ const navigation = [
   { name: "Performance", href: "/performance", icon: LineChart },
   { name: "Income", href: "/income", icon: Wallet },
   { name: "Transactions", href: "/transactions", icon: History },
+  { name: "Fund NAV", href: "/nav", icon: Building2 },
   { name: "Watchlist", href: "/watchlist", icon: Eye },
   { name: "Settings", href: "/settings", icon: Settings },
 ];

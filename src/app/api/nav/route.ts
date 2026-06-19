@@ -1,0 +1,154 @@
+import { NextResponse } from "next/server";
+import { readCache, writeCache } from "@/lib/cache";
+import { NAVSummary, NAVDeposit, NAVMonthlySnapshot } from "@/types";
+import {
+  fetchFlexStatement,
+  parseCashTransactions,
+  parseEquitySummary,
+} from "@/lib/ibkr/flex";
+
+const FLEX_ACTIVITY_QUERY_ID = process.env.IBKR_FLEX_ACTIVITY_QUERY_ID || "";
+const CACHE_KEY = "nav_summary";
+const BASE_NAV = 100; // starting NAV per unit
+
+function parseDateStr(raw: string): string {
+  const d = raw.split(";")[0].split(" ")[0];
+  return d.length === 8 && !d.includes("-")
+    ? `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`
+    : d;
+}
+
+export async function GET() {
+  try {
+    const flexXml = FLEX_ACTIVITY_QUERY_ID
+      ? await fetchFlexStatement(FLEX_ACTIVITY_QUERY_ID).catch(() => null)
+      : null;
+
+    if (!flexXml) {
+      const cached = readCache<NAVSummary>(CACHE_KEY);
+      if (cached) return NextResponse.json(cached);
+      return NextResponse.json(null);
+    }
+
+    // Build daily portfolio value map from equity summary
+    const equityRows = parseEquitySummary(flexXml);
+    const dailyValue: Record<string, number> = {};
+    for (const row of equityRows) {
+      const date = parseDateStr(row.reportDate);
+      if (date) dailyValue[date] = row.total;
+    }
+
+    // Get deposit events, sorted ascending by date
+    const cashTxns = parseCashTransactions(flexXml);
+    const rawDeposits = cashTxns
+      .filter((t) => t.type === "Deposits/Withdrawals" && t.amount > 0)
+      .map((t) => ({ date: parseDateStr(t.dateTime), amount: t.amount }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    if (rawDeposits.length === 0) {
+      return NextResponse.json(null);
+    }
+
+    // Helper: find closest available portfolio value on or before a date
+    function portfolioValueAt(date: string): number {
+      const sorted = Object.keys(dailyValue).sort();
+      // find latest date <= target
+      let val = 0;
+      for (const d of sorted) {
+        if (d <= date) val = dailyValue[d];
+        else break;
+      }
+      return val;
+    }
+
+    // Calculate units issued per deposit at the NAV on that date
+    let totalUnits = 0;
+    const deposits: NAVDeposit[] = [];
+
+    for (const dep of rawDeposits) {
+      let navAtDeposit: number;
+      if (totalUnits === 0) {
+        // First deposit — set base NAV
+        navAtDeposit = BASE_NAV;
+      } else {
+        const portfolioValue = portfolioValueAt(dep.date);
+        navAtDeposit = portfolioValue > 0 ? portfolioValue / totalUnits : BASE_NAV;
+      }
+      const unitsIssued = dep.amount / navAtDeposit;
+      totalUnits += unitsIssued;
+      deposits.push({ date: dep.date, amount: dep.amount, navAtDeposit, unitsIssued });
+    }
+
+    // Build monthly snapshots using end-of-month portfolio values
+    const monthly: NAVMonthlySnapshot[] = [];
+    const monthSet = new Set<string>();
+
+    // Collect all months we have equity data for
+    for (const date of Object.keys(dailyValue)) {
+      monthSet.add(date.slice(0, 7));
+    }
+
+    // For each month, use the last available date in that month
+    const sortedMonths = [...monthSet].sort();
+    let runningUnits = 0;
+
+    // Rebuild running units month by month
+    const depositsByMonth: Record<string, NAVDeposit[]> = {};
+    for (const dep of deposits) {
+      const m = dep.date.slice(0, 7);
+      if (!depositsByMonth[m]) depositsByMonth[m] = [];
+      depositsByMonth[m].push(dep);
+    }
+
+    for (const month of sortedMonths) {
+      // Add any units issued this month before calculating NAV
+      for (const dep of depositsByMonth[month] ?? []) {
+        runningUnits += dep.unitsIssued;
+      }
+      if (runningUnits === 0) continue;
+
+      // Find the last equity date in this month
+      const datesInMonth = Object.keys(dailyValue)
+        .filter((d) => d.startsWith(month))
+        .sort();
+      if (datesInMonth.length === 0) continue;
+
+      const lastDate = datesInMonth[datesInMonth.length - 1];
+      const portfolioValue = dailyValue[lastDate];
+      const nav = portfolioValue / runningUnits;
+
+      monthly.push({
+        month,
+        portfolioValue,
+        totalUnits: runningUnits,
+        nav,
+        returnPct: ((nav - BASE_NAV) / BASE_NAV) * 100,
+      });
+    }
+
+    // Current state
+    const latestDates = Object.keys(dailyValue).sort();
+    const latestValue =
+      latestDates.length > 0 ? dailyValue[latestDates[latestDates.length - 1]] : 0;
+    const currentNAV = totalUnits > 0 ? latestValue / totalUnits : BASE_NAV;
+    const totalCapitalInvested = rawDeposits.reduce((s, d) => s + d.amount, 0);
+
+    const summary: NAVSummary = {
+      currentNAV,
+      totalUnits,
+      totalCapitalInvested,
+      currentPortfolioValue: latestValue,
+      totalReturnPct: ((currentNAV - BASE_NAV) / BASE_NAV) * 100,
+      deposits,
+      monthly,
+    };
+
+    writeCache(CACHE_KEY, summary);
+    return NextResponse.json(summary);
+  } catch (err) {
+    console.error("[nav]", err);
+    const cached = readCache<NAVSummary>(CACHE_KEY);
+    if (cached) return NextResponse.json(cached);
+    return NextResponse.json(null);
+  }
+}

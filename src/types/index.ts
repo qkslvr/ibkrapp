@@ -72,6 +72,32 @@ export interface Transaction {
   fees: number;
 }
 
+// NAV Types
+export interface NAVDeposit {
+  date: string;
+  amount: number;
+  navAtDeposit: number;
+  unitsIssued: number;
+}
+
+export interface NAVMonthlySnapshot {
+  month: string; // "2026-02"
+  portfolioValue: number;
+  totalUnits: number;
+  nav: number;
+  returnPct: number; // vs $100 base
+}
+
+export interface NAVSummary {
+  currentNAV: number;
+  totalUnits: number;
+  totalCapitalInvested: number;
+  currentPortfolioValue: number;
+  totalReturnPct: number;
+  deposits: NAVDeposit[];
+  monthly: NAVMonthlySnapshot[];
+}
+
 // Chart Types
 export interface PerformanceDataPoint {
   date: string;
