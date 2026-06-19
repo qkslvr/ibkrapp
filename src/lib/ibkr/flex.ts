@@ -123,3 +123,27 @@ export function parseCashTransactions(xml: string): FlexCashTransaction[] {
     description: a.description ?? "",
   }));
 }
+
+export interface FlexTransfer {
+  date: string;
+  symbol: string;
+  description: string;
+  quantity: number;
+  transferPrice: number;
+  cashTransfer: number;
+  direction: string; // "IN" | "OUT"
+  currency: string;
+}
+
+export function parseTransfers(xml: string): FlexTransfer[] {
+  return extractTags(xml, "Transfer").map((a) => ({
+    date: a.date ?? a.reportDate ?? "",
+    symbol: a.symbol ?? "",
+    description: a.description ?? "",
+    quantity: Number(a.quantity ?? 0),
+    transferPrice: Number(a.transferPrice ?? a.price ?? 0),
+    cashTransfer: Number(a.cashTransfer ?? 0),
+    direction: (a.direction ?? a.transferDirection ?? "").toUpperCase(),
+    currency: a.currency ?? "USD",
+  }));
+}

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { readCache, writeCache } from "@/lib/cache";
 import { Transaction } from "@/types";
-import { fetchFlexStatement, parseTrades, parseCashTransactions } from "@/lib/ibkr/flex";
+import { fetchFlexStatement, parseTrades, parseCashTransactions, parseTransfers } from "@/lib/ibkr/flex";
 
 const FLEX_ACTIVITY_QUERY_ID = process.env.IBKR_FLEX_ACTIVITY_QUERY_ID || "";
 
@@ -53,11 +53,11 @@ function parseFlexDividends(xml: string): Transaction[] {
     });
 }
 
-function parseFlexTransfers(xml: string): Transaction[] {
+function parseFlexDeposits(xml: string): Transaction[] {
   return parseCashTransactions(xml)
     .filter((t) => t.type === "Deposits/Withdrawals" && t.amount !== 0)
     .map((t, i) => ({
-      id: `transfer-${t.dateTime}-${i}`,
+      id: `deposit-${t.dateTime}-${i}`,
       date: parseDateStr(t.dateTime),
       type: "TRANSFER" as const,
       symbol: t.description || "CASH",
@@ -66,6 +66,24 @@ function parseFlexTransfers(xml: string): Transaction[] {
       total: t.amount,
       fees: 0,
     }));
+}
+
+function parseFlexTransfers(xml: string): Transaction[] {
+  return parseTransfers(xml)
+    .filter((t) => t.quantity !== 0 || t.cashTransfer !== 0)
+    .map((t, i) => {
+      const total = t.cashTransfer !== 0 ? t.cashTransfer : t.transferPrice * Math.abs(t.quantity);
+      return {
+        id: `transfer-${t.date}-${t.symbol || "cash"}-${i}`,
+        date: parseDateStr(t.date),
+        type: "TRANSFER" as const,
+        symbol: t.symbol || t.description || "TRANSFER",
+        shares: Math.abs(t.quantity),
+        price: t.transferPrice,
+        total,
+        fees: 0,
+      };
+    });
 }
 
 export async function GET(request: Request) {
@@ -82,6 +100,7 @@ export async function GET(request: Request) {
       ? [
           ...parseFlexTrades(flexXml),
           ...parseFlexDividends(flexXml),
+          ...parseFlexDeposits(flexXml),
           ...parseFlexTransfers(flexXml),
         ]
       : [];
