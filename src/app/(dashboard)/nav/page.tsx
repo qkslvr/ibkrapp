@@ -123,7 +123,7 @@ export default function NAVPage() {
               />
               <Tooltip
                 contentStyle={{ background: "oklch(0.18 0.01 270)", border: "1px solid oklch(1 0 0 / 0.1)", borderRadius: 8 }}
-                formatter={(v: number) => ["$" + v.toFixed(4), "NAV/unit"]}
+                formatter={(v: unknown) => ["$" + (v as number).toFixed(4), "NAV/unit"] as [string, string]}
               />
               <ReferenceLine y={100} stroke="oklch(1 0 0 / 0.2)" strokeDasharray="4 4" label={{ value: "Base $100", position: "insideTopRight", fontSize: 10, fill: "oklch(1 0 0 / 0.4)" }} />
               <Line
