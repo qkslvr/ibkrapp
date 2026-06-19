@@ -72,7 +72,7 @@ function parseAttrs(tag: string): Record<string, string> {
 
 function extractTags(xml: string, tagName: string): Record<string, string>[] {
   const results: Record<string, string>[] = [];
-  const re = new RegExp(`<${tagName}\\s([^/]*?)/>`, "gs");
+  const re = new RegExp(`<${tagName}\\s(.*?)/>`, "gs");
   let m;
   while ((m = re.exec(xml)) !== null) results.push(parseAttrs(m[1]));
   return results;
