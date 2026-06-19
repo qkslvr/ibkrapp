@@ -3,7 +3,7 @@ import axios from "axios";
 import https from "https";
 import { readCache, writeCache } from "@/lib/cache";
 import { Transaction } from "@/types";
-import { fetchFlexStatement, parseTrades } from "@/lib/ibkr/flex";
+import { fetchFlexStatement, parseTrades, parseCashTransactions } from "@/lib/ibkr/flex";
 
 const GATEWAY = process.env.IBKR_GATEWAY_URL || "https://localhost:5010/v1/api";
 const ACCOUNT_ID = process.env.IBKR_ACCOUNT_ID || "";
@@ -102,6 +102,29 @@ function parseFlexTrades(xml: string): Transaction[] {
       });
 }
 
+function parseFlexTransfers(xml: string): Transaction[] {
+  const cashTxns = parseCashTransactions(xml);
+  return cashTxns
+    .filter((t) => t.type === "Deposits/Withdrawals" && t.amount !== 0)
+    .map((t, i) => {
+      const raw = t.dateTime.split(";")[0].split(" ")[0];
+      const dateStr =
+        raw.length === 8 && !raw.includes("-")
+          ? `${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}`
+          : raw;
+      return {
+        id: `transfer-${dateStr}-${i}`,
+        date: dateStr,
+        type: "TRANSFER" as const,
+        symbol: t.description || "CASH",
+        shares: 0,
+        price: 0,
+        total: t.amount,
+        fees: 0,
+      };
+    });
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const days = Number(searchParams.get("days") ?? 365);
@@ -113,6 +136,7 @@ export async function GET(request: Request) {
       ? await fetchFlexStatement(FLEX_ACTIVITY_QUERY_ID).catch(() => null)
       : null;
     const flexTrades = flexXml ? parseFlexTrades(flexXml) : [];
+    const flexTransfers = flexXml ? parseFlexTransfers(flexXml) : [];
 
     // Get positions from IBKR gateway, fall back to OpenPositions in Flex XML
     let positions: { symbol: string; position: number }[] = [];
@@ -131,7 +155,7 @@ export async function GET(request: Request) {
     );
     const dividendTransactions = dividendArrays.flat();
 
-    const all = [...flexTrades, ...dividendTransactions];
+    const all = [...flexTrades, ...flexTransfers, ...dividendTransactions];
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - days);
     const filtered = all.filter((t) => new Date(t.date) >= cutoff);
