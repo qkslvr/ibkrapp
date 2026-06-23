@@ -42,20 +42,42 @@ async function getStatement(refCode: string): Promise<string> {
   throw new Error("Flex statement timed out");
 }
 
+// In-memory cooldown: don't retry a failed query within 10 minutes
+const failCooldown = new Map<string, number>();
+const COOLDOWN_MS = 10 * 60 * 1000;
+
 export async function fetchFlexStatement(queryId: string): Promise<string> {
   const cacheKey = `flex_xml_${queryId}`;
+
+  // Return cached XML immediately if still fresh (< 30 min old)
+  const cached = readCache<string>(cacheKey);
+  if (cached) {
+    // Kick off background refresh without blocking
+    const lastFail = failCooldown.get(queryId) ?? 0;
+    if (Date.now() - lastFail > COOLDOWN_MS) {
+      sendRequest(queryId)
+        .then((ref) => getStatement(ref))
+        .then((xml) => { writeCache(cacheKey, xml); failCooldown.delete(queryId); })
+        .catch(() => { failCooldown.set(queryId, Date.now()); });
+    }
+    return cached;
+  }
+
+  // No cache — check cooldown before hitting the API
+  const lastFail = failCooldown.get(queryId) ?? 0;
+  if (Date.now() - lastFail < COOLDOWN_MS) {
+    throw new Error(`Flex query ${queryId} in cooldown after recent failure`);
+  }
+
   try {
     const ref = await sendRequest(queryId);
     const xml = await getStatement(ref);
-    // Cache the raw XML so we survive future Flex outages
     writeCache(cacheKey, xml);
+    failCooldown.delete(queryId);
     return xml;
   } catch (err) {
-    const cached = readCache<string>(cacheKey);
-    if (cached) {
-      console.warn("[flex] Flex API failed, using cached XML:", (err as Error).message);
-      return cached;
-    }
+    failCooldown.set(queryId, Date.now());
+    console.warn("[flex] Flex API failed:", (err as Error).message);
     throw err;
   }
 }
