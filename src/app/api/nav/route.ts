@@ -8,6 +8,7 @@ import {
 } from "@/lib/ibkr/flex";
 
 const FLEX_ACTIVITY_QUERY_ID = process.env.IBKR_FLEX_ACTIVITY_QUERY_ID || "";
+const FLEX_NAV_QUERY_ID = process.env.IBKR_FLEX_NAV_QUERY_ID || "";
 const CACHE_KEY = "nav_summary";
 const BASE_NAV = 100; // starting NAV per unit
 
@@ -20,26 +21,35 @@ function parseDateStr(raw: string): string {
 
 export async function GET() {
   try {
-    const flexXml = FLEX_ACTIVITY_QUERY_ID
-      ? await fetchFlexStatement(FLEX_ACTIVITY_QUERY_ID).catch(() => null)
-      : null;
+    // Fetch both queries in parallel — NAV query for equity summary, activity query for deposits
+    const [navXml, activityXml] = await Promise.all([
+      FLEX_NAV_QUERY_ID
+        ? fetchFlexStatement(FLEX_NAV_QUERY_ID).catch(() => null)
+        : null,
+      FLEX_ACTIVITY_QUERY_ID
+        ? fetchFlexStatement(FLEX_ACTIVITY_QUERY_ID).catch(() => null)
+        : null,
+    ]);
 
-    if (!flexXml) {
+    // Fall back to activity XML for equity summary if NAV query unavailable
+    const equityXml = navXml ?? activityXml;
+
+    if (!equityXml && !activityXml) {
       const cached = readCache<NAVSummary>(CACHE_KEY);
       if (cached) return NextResponse.json(cached);
       return NextResponse.json(null);
     }
 
     // Build daily portfolio value map from equity summary
-    const equityRows = parseEquitySummary(flexXml);
+    const equityRows = equityXml ? parseEquitySummary(equityXml) : [];
     const dailyValue: Record<string, number> = {};
     for (const row of equityRows) {
       const date = parseDateStr(row.reportDate);
       if (date) dailyValue[date] = row.total;
     }
 
-    // Get deposit events, sorted ascending by date
-    const cashTxns = parseCashTransactions(flexXml);
+    // Get deposit events from activity query, sorted ascending by date
+    const cashTxns = parseCashTransactions(activityXml ?? equityXml ?? "");
     const rawDeposits = cashTxns
       .filter((t) => t.type === "Deposits/Withdrawals" && t.amount > 0)
       .map((t) => ({ date: parseDateStr(t.dateTime), amount: t.amount }))
