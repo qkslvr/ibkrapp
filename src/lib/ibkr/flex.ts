@@ -143,11 +143,17 @@ export interface FlexEquitySummary {
 }
 
 export function parseEquitySummary(xml: string): FlexEquitySummary[] {
-  return extractTags(xml, "EquitySummaryByReportDateInBase").map((a) => ({
+  // Try NAVInBase first (NAV in Base section), fall back to EquitySummaryByReportDateInBase
+  const rows =
+    extractTags(xml, "NAVInBase").length > 0
+      ? extractTags(xml, "NAVInBase")
+      : extractTags(xml, "EquitySummaryByReportDateInBase");
+
+  return rows.map((a) => ({
     reportDate: a.reportDate ?? "",
     total: Number(a.total ?? a.totalLong ?? 0),
     cash: Number(a.cash ?? 0),
-    stock: Number(a.stock ?? a.equityWithLoanValue ?? 0),
+    stock: Number(a.stock ?? a.totalLong ?? 0),
   }));
 }
 
