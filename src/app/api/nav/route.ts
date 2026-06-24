@@ -98,20 +98,24 @@ export async function GET() {
       monthSet.add(date.slice(0, 7));
     }
 
-    // For each month, use the last available date in that month
     const sortedMonths = [...monthSet].sort();
-    let runningUnits = 0;
+    const firstEquityMonth = sortedMonths[0] ?? "";
 
-    // Rebuild running units month by month
+    // Pre-seed units from all deposits that occurred before our equity data starts
+    let runningUnits = deposits
+      .filter((d) => d.date.slice(0, 7) < firstEquityMonth)
+      .reduce((s, d) => s + d.unitsIssued, 0);
+
+    // Group remaining deposits by the month they fall in
     const depositsByMonth: Record<string, NAVDeposit[]> = {};
-    for (const dep of deposits) {
+    for (const dep of deposits.filter((d) => d.date.slice(0, 7) >= firstEquityMonth)) {
       const m = dep.date.slice(0, 7);
       if (!depositsByMonth[m]) depositsByMonth[m] = [];
       depositsByMonth[m].push(dep);
     }
 
     for (const month of sortedMonths) {
-      // Add any units issued this month before calculating NAV
+      // Add any units issued during this month
       for (const dep of depositsByMonth[month] ?? []) {
         runningUnits += dep.unitsIssued;
       }
