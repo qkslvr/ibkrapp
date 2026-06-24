@@ -31,13 +31,14 @@ async function getStatement(refCode: string): Promise<string> {
       params: { t: TOKEN, q: refCode, v: 3 },
       responseType: "text",
     });
-    const xml: string = res.data;
-    if (xml.includes("<FlexQueryResponse")) return xml;
-    const status = xml.match(/<Status>(.*?)<\/Status>/)?.[1];
-    if (status === "Success") return xml;
-    // Still generating — wait and retry
-    if (xml.includes("Statement generation in progress")) continue;
-    throw new Error(`Flex GetStatement error: ${xml.slice(0, 200)}`);
+    const data: string = res.data;
+    // CSV response (query configured for CSV output)
+    if (!data.trimStart().startsWith("<")) return data;
+    if (data.includes("<FlexQueryResponse")) return data;
+    const status = data.match(/<Status>(.*?)<\/Status>/)?.[1];
+    if (status === "Success") return data;
+    if (data.includes("Statement generation in progress")) continue;
+    throw new Error(`Flex GetStatement error: ${data.slice(0, 200)}`);
   }
   throw new Error("Flex statement timed out");
 }
@@ -164,12 +165,30 @@ export interface FlexEquitySummary {
   stock: number;
 }
 
-export function parseEquitySummary(xml: string): FlexEquitySummary[] {
-  // Try NAVInBase first (NAV in Base section), fall back to EquitySummaryByReportDateInBase
+export function parseEquitySummary(data: string): FlexEquitySummary[] {
+  // CSV format: "ReportDate","Total","TotalLong","TotalShort"
+  if (!data.trimStart().startsWith("<")) {
+    const lines = data.trim().split("\n").filter(Boolean);
+    if (lines.length < 2) return [];
+    const header = lines[0].replace(/"/g, "").split(",").map((h) => h.trim().toLowerCase());
+    const dateIdx = header.indexOf("reportdate");
+    const totalIdx = header.indexOf("total");
+    return lines.slice(1).map((line) => {
+      const cols = line.replace(/"/g, "").split(",");
+      const raw = cols[dateIdx]?.trim() ?? "";
+      const reportDate =
+        raw.length === 8 && !raw.includes("-")
+          ? `${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}`
+          : raw;
+      return { reportDate, total: Number(cols[totalIdx] ?? 0), cash: 0, stock: 0 };
+    });
+  }
+
+  // XML format — try NAVInBase then EquitySummaryByReportDateInBase
   const rows =
-    extractTags(xml, "NAVInBase").length > 0
-      ? extractTags(xml, "NAVInBase")
-      : extractTags(xml, "EquitySummaryByReportDateInBase");
+    extractTags(data, "NAVInBase").length > 0
+      ? extractTags(data, "NAVInBase")
+      : extractTags(data, "EquitySummaryByReportDateInBase");
 
   return rows.map((a) => ({
     reportDate: a.reportDate ?? "",
