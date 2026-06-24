@@ -59,13 +59,14 @@ export async function GET() {
       return NextResponse.json(null);
     }
 
-    // Helper: find closest available portfolio value on or before a date
-    function portfolioValueAt(date: string): number {
-      const sorted = Object.keys(dailyValue).sort();
-      // find latest date <= target
+    const sortedDates = Object.keys(dailyValue).sort();
+
+    // Find portfolio value on the last trading day BEFORE a given date
+    // (deposit day value already includes the new cash — use prior day)
+    function portfolioValueBefore(date: string): number {
       let val = 0;
-      for (const d of sorted) {
-        if (d <= date) val = dailyValue[d];
+      for (const d of sortedDates) {
+        if (d < date) val = dailyValue[d];
         else break;
       }
       return val;
@@ -81,7 +82,7 @@ export async function GET() {
         // First deposit — set base NAV
         navAtDeposit = BASE_NAV;
       } else {
-        const portfolioValue = portfolioValueAt(dep.date);
+        const portfolioValue = portfolioValueBefore(dep.date);
         navAtDeposit = portfolioValue > 0 ? portfolioValue / totalUnits : BASE_NAV;
       }
       const unitsIssued = dep.amount / navAtDeposit;
