@@ -9,6 +9,7 @@ import {
 
 const FLEX_ACTIVITY_QUERY_ID = process.env.IBKR_FLEX_ACTIVITY_QUERY_ID || "";
 const FLEX_NAV_QUERY_ID = process.env.IBKR_FLEX_NAV_QUERY_ID || "";
+const NAV_START_DATE = process.env.IBKR_NAV_START_DATE || ""; // exclude deposits before this date
 const CACHE_KEY = "nav_summary";
 const BASE_NAV = 100; // starting NAV per unit
 
@@ -53,6 +54,7 @@ export async function GET() {
     const rawDeposits = cashTxns
       .filter((t) => t.type === "Deposits/Withdrawals" && t.amount > 0)
       .map((t) => ({ date: parseDateStr(t.dateTime), amount: t.amount }))
+      .filter((t) => !NAV_START_DATE || t.date >= NAV_START_DATE)
       .sort((a, b) => a.date.localeCompare(b.date));
 
     if (rawDeposits.length === 0) {

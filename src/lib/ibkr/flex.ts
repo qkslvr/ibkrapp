@@ -50,8 +50,8 @@ const COOLDOWN_MS = 10 * 60 * 1000;
 export async function fetchFlexStatement(queryId: string): Promise<string> {
   const cacheKey = `flex_xml_${queryId}`;
 
-  // Return cached XML immediately if still fresh (< 30 min old)
-  const cached = readCache<string>(cacheKey);
+  // Return cached XML if still fresh (< 4 hours)
+  const cached = readCache<string>(cacheKey, 4 * 60 * 60 * 1000);
   if (cached) {
     // Kick off background refresh without blocking
     const lastFail = failCooldown.get(queryId) ?? 0;

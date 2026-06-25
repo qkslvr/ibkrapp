@@ -9,10 +9,14 @@ function ensureCacheDir() {
   }
 }
 
-export function readCache<T>(key: string): T | null {
+export function readCache<T>(key: string, maxAgeMs?: number): T | null {
   try {
     const file = path.join(CACHE_DIR, `${key}.json`);
     if (!fs.existsSync(file)) return null;
+    if (maxAgeMs !== undefined) {
+      const { mtimeMs } = fs.statSync(file);
+      if (Date.now() - mtimeMs > maxAgeMs) return null;
+    }
     const raw = fs.readFileSync(file, "utf-8");
     return JSON.parse(raw) as T;
   } catch {
