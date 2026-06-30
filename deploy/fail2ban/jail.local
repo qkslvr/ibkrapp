@@ -1,0 +1,13 @@
+# -> /etc/fail2ban/jail.local
+# Auto-bans IPs brute-forcing SSH. (SSH is already key-only, so this is
+# defense-in-depth + log-noise reduction.) ignoreip keeps the operator's
+# IP and loopback from ever being banned — update the IP if yours changes.
+[DEFAULT]
+backend = systemd
+bantime = 1h
+findtime = 10m
+maxretry = 5
+ignoreip = 127.0.0.1/8 ::1 91.72.149.66
+
+[sshd]
+enabled = true
