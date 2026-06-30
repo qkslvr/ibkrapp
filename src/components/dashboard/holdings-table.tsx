@@ -138,19 +138,19 @@ export function HoldingsTable({ positions }: HoldingsTableProps) {
                   </Link>
                 </TableCell>
                 <TableCell className="text-right font-mono">
-                  {position.shares.toLocaleString()}
+                  {position.shares.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </TableCell>
                 <TableCell className="text-right font-mono">
-                  ${position.avgCost.toFixed(2)}
+                  ${position.avgCost.toFixed(0)}
                 </TableCell>
                 <TableCell className="text-right font-mono">
-                  ${position.currentPrice.toFixed(2)}
+                  ${position.currentPrice.toFixed(0)}
                 </TableCell>
                 <TableCell className="text-right font-mono">
-                  ${position.costBasis.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                  ${position.costBasis.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </TableCell>
                 <TableCell className="text-right font-mono font-medium">
-                  ${position.marketValue.toLocaleString()}
+                  ${position.marketValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </TableCell>
                 <TableCell className="text-right">
                   <ChangeIndicator
@@ -158,6 +158,7 @@ export function HoldingsTable({ positions }: HoldingsTableProps) {
                     showIcon={false}
                     showPercentage={false}
                     size="xs"
+                    fractionDigits={0}
                   />
                 </TableCell>
                 <TableCell className="text-right">
@@ -167,10 +168,11 @@ export function HoldingsTable({ positions }: HoldingsTableProps) {
                     showIcon={false}
                     showValue={false}
                     size="xs"
+                    fractionDigits={0}
                   />
                 </TableCell>
                 <TableCell className="text-right font-mono text-sm">
-                  {position.weight.toFixed(1)}%
+                  {position.weight.toFixed(0)}%
                 </TableCell>
                 <TableCell>
                   <Badge variant="secondary" className="text-xs">
@@ -189,10 +191,10 @@ export function HoldingsTable({ positions }: HoldingsTableProps) {
               <TableCell />
               <TableCell />
               <TableCell className="text-right font-mono font-semibold">
-                ${totals.costBasis.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                ${totals.costBasis.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </TableCell>
               <TableCell className="text-right font-mono font-semibold">
-                ${totals.marketValue.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                ${totals.marketValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </TableCell>
               <TableCell className="text-right">
                 <ChangeIndicator
@@ -200,6 +202,7 @@ export function HoldingsTable({ positions }: HoldingsTableProps) {
                   showIcon={false}
                   showPercentage={false}
                   size="xs"
+                  fractionDigits={0}
                 />
               </TableCell>
               <TableCell className="text-right">
@@ -209,6 +212,7 @@ export function HoldingsTable({ positions }: HoldingsTableProps) {
                   showIcon={false}
                   showValue={false}
                   size="xs"
+                  fractionDigits={0}
                 />
               </TableCell>
               <TableCell />

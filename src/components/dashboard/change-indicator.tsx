@@ -12,6 +12,7 @@ interface ChangeIndicatorProps {
   prefix?: string;
   className?: string;
   size?: "xs" | "sm" | "md";
+  fractionDigits?: number;
 }
 
 export function ChangeIndicator({
@@ -23,6 +24,7 @@ export function ChangeIndicator({
   prefix = "$",
   className,
   size = "sm",
+  fractionDigits = 2,
 }: ChangeIndicatorProps) {
   const isPositive = value > 0;
   const isNegative = value < 0;
@@ -63,8 +65,8 @@ export function ChangeIndicator({
           {isPositive && "+"}
           {prefix}
           {Math.abs(value).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
+            minimumFractionDigits: fractionDigits,
+            maximumFractionDigits: fractionDigits,
           })}
         </span>
       )}
@@ -72,7 +74,7 @@ export function ChangeIndicator({
       {showPercentage && percentage !== undefined && (
         <span className="font-mono opacity-80">
           ({isPositive && "+"}
-          {percentage.toFixed(2)}%)
+          {percentage.toFixed(fractionDigits)}%)
         </span>
       )}
     </div>
