@@ -167,6 +167,48 @@ export interface AnalystRating {
   targetHigh: number;
 }
 
+// Stock Screener (Finviz)
+// Numeric fields are `null` when Finviz reports no value. Percentage fields
+// (growth, margins, performance) are stored as plain numbers, e.g. 22.04 = 22.04%.
+export interface ScreenerStock {
+  ticker: string;
+  company: string;
+  sector: string;
+  industry: string;
+  marketCap: number | null; // dollars
+  pe: number | null;
+  forwardPE: number | null;
+  peg: number | null;
+  ps: number | null;
+  pb: number | null;
+  dividendYield: number | null; // %
+  eps: number | null;
+  epsGrowthThisYear: number | null; // %
+  epsGrowthNextYear: number | null; // %
+  epsGrowthPast5Y: number | null; // %
+  salesGrowthPast5Y: number | null; // %
+  epsGrowthQoQ: number | null; // % — quarter-over-quarter EPS growth
+  salesGrowthQoQ: number | null; // % — quarter-over-quarter revenue/sales growth
+  roa: number | null; // %
+  roe: number | null; // %
+  grossMargin: number | null; // %
+  operatingMargin: number | null; // %
+  profitMargin: number | null; // %
+  perfQuarter: number | null; // %
+  perfYear: number | null; // %
+  perfYTD: number | null; // %
+  analystRecom: number | null; // 1 = Strong Buy … 5 = Strong Sell
+  price: number | null;
+  change: number | null; // %
+  volume: number | null;
+  earningsDate: string | null;
+}
+
+export interface TickerSearchResult {
+  ticker: string;
+  company: string;
+}
+
 // API Response Types
 export interface IBKRAccountSummary {
   accountId: string;

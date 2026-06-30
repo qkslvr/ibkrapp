@@ -12,6 +12,7 @@ import {
   Settings,
   TrendingUp,
   Building2,
+  Filter,
 } from "lucide-react";
 
 const navigation = [
@@ -21,6 +22,7 @@ const navigation = [
   { name: "Transactions", href: "/transactions", icon: History },
   { name: "Fund NAV", href: "/nav", icon: Building2 },
   { name: "Watchlist", href: "/watchlist", icon: Eye },
+  { name: "Screener", href: "/screener", icon: Filter },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
