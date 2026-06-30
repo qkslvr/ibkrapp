@@ -11,7 +11,10 @@ export function useNAV() {
       if (!res.ok) throw new Error("Failed to fetch NAV");
       return res.json();
     },
-    staleTime: 5 * 60_000,
-    refetchInterval: 15 * 60_000,
+    // Only refresh on an actual page load — no background polling or focus refetches.
+    staleTime: Infinity,
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 }

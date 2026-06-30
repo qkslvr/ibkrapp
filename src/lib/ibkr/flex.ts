@@ -43,44 +43,47 @@ async function getStatement(refCode: string): Promise<string> {
   throw new Error("Flex statement timed out");
 }
 
-// In-memory cooldown: don't retry a failed query within 10 minutes
-const failCooldown = new Map<string, number>();
+// Serve cached XML without contacting Flex if it was refreshed within this window.
+// This is the success-side throttle: rapid page loads reuse the last result instead
+// of regenerating the statement on every visit.
+const FRESH_MS = 5 * 60 * 1000;
+// After a failed attempt, don't retry the query for this long — serve stale cache
+// instead. Prevents repeated failures from piling up into IBKR's "1025 / too many
+// failed attempts" lockout.
 const COOLDOWN_MS = 10 * 60 * 1000;
+const failCooldown = new Map<string, number>();
 
+// Only contacts Flex on a real, stale page load. Never hits Flex in the background,
+// and always falls back to whatever is cached (at any age) when Flex is unavailable.
 export async function fetchFlexStatement(queryId: string): Promise<string> {
   const cacheKey = `flex_xml_${queryId}`;
 
-  // Return cached XML if still fresh (< 4 hours)
-  const cached = readCache<string>(cacheKey, 4 * 60 * 60 * 1000);
-  if (cached) {
-    // Kick off background refresh without blocking
-    const lastFail = failCooldown.get(queryId) ?? 0;
-    if (Date.now() - lastFail > COOLDOWN_MS) {
-      sendRequest(queryId)
-        .then((ref) => getStatement(ref))
-        .then((xml) => { writeCache(cacheKey, xml); failCooldown.delete(queryId); })
-        .catch(() => { failCooldown.set(queryId, Date.now()); });
-    }
-    return cached;
-  }
+  // Recently refreshed → serve cache, don't touch Flex at all.
+  const fresh = readCache<string>(cacheKey, FRESH_MS);
+  if (fresh) return fresh;
 
-  // No cache — check cooldown before hitting the API
+  // Stale or missing. Only contact Flex if we're not in a post-failure cooldown.
   const lastFail = failCooldown.get(queryId) ?? 0;
-  if (Date.now() - lastFail < COOLDOWN_MS) {
-    throw new Error(`Flex query ${queryId} in cooldown after recent failure`);
+  const inCooldown = Date.now() - lastFail < COOLDOWN_MS;
+
+  if (!inCooldown) {
+    try {
+      const ref = await sendRequest(queryId);
+      const xml = await getStatement(ref);
+      writeCache(cacheKey, xml);
+      failCooldown.delete(queryId);
+      return xml;
+    } catch (err) {
+      failCooldown.set(queryId, Date.now());
+      console.warn("[flex] Flex API failed:", (err as Error).message);
+      // fall through to stale cache below
+    }
   }
 
-  try {
-    const ref = await sendRequest(queryId);
-    const xml = await getStatement(ref);
-    writeCache(cacheKey, xml);
-    failCooldown.delete(queryId);
-    return xml;
-  } catch (err) {
-    failCooldown.set(queryId, Date.now());
-    console.warn("[flex] Flex API failed:", (err as Error).message);
-    throw err;
-  }
+  // Flex unavailable (in cooldown or just failed) → serve old data at any age.
+  const stale = readCache<string>(cacheKey);
+  if (stale) return stale;
+  throw new Error(`Flex query ${queryId} unavailable and no cached data`);
 }
 
 // ── XML parsers ──────────────────────────────────────────────────────────────

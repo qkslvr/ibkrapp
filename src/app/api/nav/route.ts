@@ -160,6 +160,13 @@ export async function GET() {
       monthly,
     };
 
+    // A zero portfolio value means the equity summary couldn't be read this time —
+    // don't overwrite a previously-good summary with the degraded one.
+    if (summary.currentPortfolioValue === 0) {
+      const cached = readCache<NAVSummary>(CACHE_KEY);
+      if (cached && cached.currentPortfolioValue > 0) return NextResponse.json(cached);
+    }
+
     writeCache(CACHE_KEY, summary);
     return NextResponse.json(summary);
   } catch (err) {

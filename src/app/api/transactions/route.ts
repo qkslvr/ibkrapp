@@ -96,14 +96,18 @@ export async function GET(request: Request) {
       ? await fetchFlexStatement(FLEX_ACTIVITY_QUERY_ID).catch(() => null)
       : null;
 
-    const all = flexXml
-      ? [
-          ...parseFlexTrades(flexXml),
-          ...parseFlexDividends(flexXml),
-          ...parseFlexDeposits(flexXml),
-          ...parseFlexTransfers(flexXml),
-        ]
-      : [];
+    // Flex unavailable with no usable XML — serve the last good result, never clobber it.
+    if (!flexXml) {
+      const cached = readCache<Transaction[]>(CACHE_KEY);
+      return NextResponse.json(cached ?? []);
+    }
+
+    const all = [
+      ...parseFlexTrades(flexXml),
+      ...parseFlexDividends(flexXml),
+      ...parseFlexDeposits(flexXml),
+      ...parseFlexTransfers(flexXml),
+    ];
 
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - days);
@@ -117,6 +121,13 @@ export async function GET(request: Request) {
     });
 
     deduped.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    // An empty parse almost always means a failed extract, not "no transactions" —
+    // keep the last good cache rather than overwriting it with nothing.
+    if (deduped.length === 0) {
+      const cached = readCache<Transaction[]>(CACHE_KEY);
+      if (cached && cached.length > 0) return NextResponse.json(cached);
+    }
 
     writeCache(CACHE_KEY, deduped);
     return NextResponse.json(deduped);
