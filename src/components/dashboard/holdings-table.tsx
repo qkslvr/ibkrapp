@@ -12,10 +12,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { ChangeIndicator } from "./change-indicator";
 import { Position } from "@/types";
-import { cn } from "@/lib/utils";
+import { cn, formatMarketCap } from "@/lib/utils";
 import { Search, ArrowUpDown } from "lucide-react";
 
 interface HoldingsTableProps {
@@ -55,8 +54,8 @@ export function HoldingsTable({ positions }: HoldingsTableProps) {
         p.name.toLowerCase().includes(search.toLowerCase())
     )
     .sort((a, b) => {
-      const aVal = a[sortKey];
-      const bVal = b[sortKey];
+      const aVal = a[sortKey] ?? 0;
+      const bVal = b[sortKey] ?? 0;
       if (typeof aVal === "number" && typeof bVal === "number") {
         return sortOrder === "asc" ? aVal - bVal : bVal - aVal;
       }
@@ -113,7 +112,7 @@ export function HoldingsTable({ positions }: HoldingsTableProps) {
               <SortableHeader label="Total Return" sortKeyName="unrealizedPL" className="text-right" />
               <SortableHeader label="Total Return%" sortKeyName="unrealizedPLPercent" className="text-right" />
               <SortableHeader label="Weight" sortKeyName="weight" className="text-right" />
-              <TableHead>Sector</TableHead>
+              <SortableHeader label="Market Cap" sortKeyName="marketCap" className="text-right" />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -178,10 +177,8 @@ export function HoldingsTable({ positions }: HoldingsTableProps) {
                 <TableCell className="text-right font-mono text-sm">
                   {position.weight.toFixed(0)}%
                 </TableCell>
-                <TableCell>
-                  <Badge variant="secondary" className="text-xs">
-                    {position.sector}
-                  </Badge>
+                <TableCell className="text-right font-mono text-sm">
+                  {formatMarketCap(position.marketCap ?? 0)}
                 </TableCell>
               </TableRow>
             ))}

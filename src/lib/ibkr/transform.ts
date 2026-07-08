@@ -85,6 +85,7 @@ export function transformPosition(
     dayChangePercent,
     weight,
     sector: profile?.finnhubIndustry ?? "Unknown",
+    marketCap: profile?.marketCapitalization != null ? profile.marketCapitalization * 1_000_000 : null,
     logo: profile?.logo ?? undefined,
   };
 }

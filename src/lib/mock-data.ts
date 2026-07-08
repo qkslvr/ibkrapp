@@ -38,6 +38,7 @@ export const mockPositions: Position[] = [
     dayChangePercent: -0.60,
     weight: 18.28,
     sector: "Semiconductors",
+    marketCap: 780_000_000_000,
     logo: "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/AVGO.png",
   },
   {
@@ -54,6 +55,7 @@ export const mockPositions: Position[] = [
     dayChangePercent: -0.62,
     weight: 18.16,
     sector: "Semiconductors",
+    marketCap: 260_000_000_000,
     logo: "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/AMD.png",
   },
   {
@@ -70,6 +72,7 @@ export const mockPositions: Position[] = [
     dayChangePercent: 0.63,
     weight: 18.05,
     sector: "Semiconductors",
+    marketCap: 970_000_000_000,
     logo: "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/TSM.png",
   },
   {
@@ -86,6 +89,7 @@ export const mockPositions: Position[] = [
     dayChangePercent: 2.12,
     weight: 17.75,
     sector: "Semiconductors",
+    marketCap: 125_000_000_000,
     logo: "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/KLAC.png",
   },
   {
@@ -102,6 +106,7 @@ export const mockPositions: Position[] = [
     dayChangePercent: -0.97,
     weight: 14.64,
     sector: "Technology",
+    marketCap: 92_000_000_000,
     logo: "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/CDNS.png",
   },
   {
@@ -118,6 +123,7 @@ export const mockPositions: Position[] = [
     dayChangePercent: 4.83,
     weight: 13.55,
     sector: "Semiconductors",
+    marketCap: 88_000_000_000,
     logo: "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/MU.png",
   },
 ];

@@ -13,6 +13,7 @@ export interface Position {
   dayChangePercent: number;
   weight: number;
   sector: string;
+  marketCap: number | null;
   logo?: string;
 }
 
