@@ -103,6 +103,7 @@ export function HoldingsTable({ positions }: HoldingsTableProps) {
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
+              <TableHead className="w-10 text-right">#</TableHead>
               <SortableHeader label="Symbol" sortKeyName="symbol" />
               <SortableHeader label="Shares" sortKeyName="shares" className="text-right" />
               <SortableHeader label="Avg Price" sortKeyName="avgCost" className="text-right" />
@@ -116,11 +117,14 @@ export function HoldingsTable({ positions }: HoldingsTableProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredPositions.map((position) => (
+            {filteredPositions.map((position, index) => (
               <TableRow
                 key={position.symbol}
                 className="cursor-pointer transition-colors hover:bg-accent/50"
               >
+                <TableCell className="text-right font-mono text-xs text-muted-foreground">
+                  {index + 1}
+                </TableCell>
                 <TableCell>
                   <Link
                     href={`/stock/${position.symbol}`}
@@ -184,6 +188,7 @@ export function HoldingsTable({ positions }: HoldingsTableProps) {
           </TableBody>
           <TableFooter>
             <TableRow className="border-t border-border/50 bg-secondary/30 hover:bg-secondary/40 font-semibold">
+              <TableCell />
               <TableCell className="text-muted-foreground text-xs uppercase tracking-wide">
                 Total
               </TableCell>

@@ -5,6 +5,8 @@ class IBKRClient {
   private client: AxiosInstance;
   private accountId: string;
   private accountIdResolved: boolean = false;
+  private lastReauthAttempt: number = 0;
+  private readonly REAUTH_COOLDOWN_MS = 20_000;
 
   constructor() {
     this.client = axios.create({
@@ -38,11 +40,28 @@ class IBKRClient {
     return this.accountId;
   }
 
-  // Check authentication status
+  // Check authentication status. IBKR's SSO/2FA can succeed while the
+  // separate brokerage (iserver) session never establishes behind it —
+  // the gateway then just sits authenticated:false forever. Self-heal by
+  // triggering reauthenticate when that happens, throttled so we don't
+  // hammer IBKR on every 5s poll.
   async checkAuth(): Promise<boolean> {
     try {
-      const response = await this.client.get("/iserver/auth/status");
-      return response.data.authenticated === true;
+      const status = await this.client.get("/iserver/auth/status");
+      if (status.data.authenticated === true) return true;
+
+      const now = Date.now();
+      if (now - this.lastReauthAttempt < this.REAUTH_COOLDOWN_MS) return false;
+
+      const sso = await this.client.get("/sso/validate");
+      if (sso.data?.RESULT === true) {
+        this.lastReauthAttempt = now;
+        console.log("[IBKR] SSO valid but brokerage session not established — triggering reauthenticate");
+        await this.client.post("/iserver/reauthenticate", "", {
+          headers: { "Content-Length": "0" },
+        });
+      }
+      return false;
     } catch {
       return false;
     }
