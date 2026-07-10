@@ -6,6 +6,8 @@ import {
   parseCashTransactions,
   parseEquitySummary,
 } from "@/lib/ibkr/flex";
+import { getPortfolioHistory, recordSnapshot } from "@/lib/portfolio-history";
+import { getCurrentPortfolioValue } from "@/lib/ibkr/current-value";
 
 const FLEX_ACTIVITY_QUERY_ID = process.env.IBKR_FLEX_ACTIVITY_QUERY_ID || "";
 const FLEX_NAV_QUERY_ID = process.env.IBKR_FLEX_NAV_QUERY_ID || "";
@@ -47,6 +49,16 @@ export async function GET() {
     for (const row of equityRows) {
       const date = parseDateStr(row.reportDate);
       if (date) dailyValue[date] = row.total;
+    }
+
+    // Flex account doesn't have an EquitySummaryByReportDateInBase section —
+    // fall back to our own daily snapshot history (same store the front-page
+    // performance chart uses), anchored at the deposit date. Record today's
+    // value too, in case this route is hit before the dashboard chart ever is.
+    if (Object.keys(dailyValue).length === 0) {
+      const currentValue = await getCurrentPortfolioValue();
+      const history = currentValue > 0 ? recordSnapshot(currentValue) : getPortfolioHistory();
+      for (const p of history) dailyValue[p.date] = p.value;
     }
 
     // Get deposit events from activity query, sorted ascending by date

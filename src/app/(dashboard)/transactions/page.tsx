@@ -155,6 +155,7 @@ export default function TransactionsPage() {
               <DropdownMenuCheckboxItem
                 key={type}
                 checked={typeFilter.includes(type)}
+                onSelect={(e) => e.preventDefault()}
                 onCheckedChange={(checked) => {
                   setTypeFilter(
                     checked
