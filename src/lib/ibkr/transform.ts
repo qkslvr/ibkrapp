@@ -4,8 +4,8 @@ import {
   Transaction,
   IBKRAccountSummary,
   IBKRPosition,
+  ScreenerStock,
 } from "@/types";
-import { FinnhubQuote, FinnhubProfile } from "@/lib/finnhub/client";
 
 // Extract ticker symbol from IBKR contract description
 // IBKR descriptions look like "AAPL" or "AAPL Stock" or "Apple Inc (AAPL)"
@@ -47,29 +47,35 @@ export function transformAccountSummary(
 
 export function transformPosition(
   raw: IBKRPosition,
-  quote: FinnhubQuote | null,
-  profile: FinnhubProfile | null,
+  quote: ScreenerStock | null,
   totalPortfolioValue: number
 ): Position {
   const symbol = extractSymbol(raw.contractDesc);
   const isOption = raw.assetClass === "OPT";
 
   // For options, use IBKR's mktValue directly (includes multiplier & sign)
-  // For stocks, use Finnhub quote if available
-  const currentPrice = isOption ? raw.mktPrice : (quote?.c ?? raw.mktPrice);
+  // For stocks, use the live Finviz price if available
+  const currentPrice = isOption ? raw.mktPrice : (quote?.price ?? raw.mktPrice);
   const marketValue = isOption ? raw.mktValue : currentPrice * raw.position;
   const costBasis = raw.avgCost * raw.position;
   const unrealizedPL = marketValue - costBasis;
   const absCostBasis = Math.abs(costBasis);
   const unrealizedPLPercent = absCostBasis > 0 ? (unrealizedPL / absCostBasis) * 100 : 0;
-  const dayChange = (!isOption && quote) ? (quote.c - quote.pc) * raw.position : 0;
-  const dayChangePercent = (!isOption && quote && quote.pc > 0) ? ((quote.c - quote.pc) / quote.pc) * 100 : 0;
+
+  // Finviz reports day change as a %; back out the prior close to get a $ change
+  const dayChangePercent = (!isOption && quote?.change != null) ? quote.change : 0;
+  const prevClose =
+    !isOption && quote?.price != null && quote.change != null && quote.change !== -100
+      ? quote.price / (1 + quote.change / 100)
+      : null;
+  const dayChange = prevClose != null ? (quote!.price! - prevClose) * raw.position : 0;
+
   const weight = totalPortfolioValue > 0 ? (Math.abs(marketValue) / totalPortfolioValue) * 100 : 0;
 
   // For options, show contract description as name instead of company name
   const displayName = isOption
     ? raw.contractDesc.split("[")[0].trim()
-    : (profile?.name ?? symbol);
+    : (quote?.company || symbol);
 
   return {
     symbol,
@@ -84,26 +90,20 @@ export function transformPosition(
     dayChange,
     dayChangePercent,
     weight,
-    sector: profile?.finnhubIndustry ?? "Unknown",
-    marketCap: profile?.marketCapitalization != null ? profile.marketCapitalization * 1_000_000 : null,
-    logo: profile?.logo ?? undefined,
+    sector: quote?.sector || "Unknown",
+    marketCap: quote?.marketCap ?? null,
+    logo: undefined,
   };
 }
 
 export function transformPositions(
   rawPositions: IBKRPosition[],
-  quotes: Map<string, FinnhubQuote | null>,
-  profiles: Map<string, FinnhubProfile | null>,
+  quotes: Map<string, ScreenerStock>,
   totalPortfolioValue: number
 ): Position[] {
   return rawPositions.map((raw) => {
     const symbol = extractSymbol(raw.contractDesc);
-    return transformPosition(
-      raw,
-      quotes.get(symbol) ?? null,
-      profiles.get(symbol) ?? null,
-      totalPortfolioValue
-    );
+    return transformPosition(raw, quotes.get(symbol) ?? null, totalPortfolioValue);
   });
 }
 

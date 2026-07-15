@@ -23,6 +23,7 @@ const INDEX_FILTER: Record<ScreenerIndex, string> = {
 
 const SCREEN_TTL = 30 * 60_000; // 30 min
 const UNIVERSE_TTL = 24 * 60 * 60_000; // 24 h
+const QUOTES_TTL = 60_000; // 1 min — live enough, avoids hammering Finviz on every poll
 
 function buildUrl(params: Record<string, string>): string {
   const url = new URL(BASE);
@@ -187,6 +188,31 @@ export async function screenIndex(index: ScreenerIndex): Promise<ScreenerStock[]
   const stocks = rowsToStocks(rows);
   if (stocks.length > 0) writeCache(cacheKey, stocks);
   return stocks;
+}
+
+/** Live quote + fundamentals (price, market cap, sector, ...) for a specific
+ *  set of tickers, e.g. a portfolio's holdings. Cached briefly per ticker
+ *  set; falls back to the last-known values for that set if Finviz is
+ *  unreachable. */
+export async function getQuotesForTickers(
+  tickers: string[]
+): Promise<Map<string, ScreenerStock>> {
+  if (tickers.length === 0) return new Map();
+  const key = [...new Set(tickers)].sort().join(",");
+  const cacheKey = `finviz-quotes-${key}`;
+
+  const fresh = readCache<ScreenerStock[]>(cacheKey, QUOTES_TTL);
+  if (fresh) return new Map(fresh.map((s) => [s.ticker, s]));
+
+  const url = buildUrl({ t: key, c: COLUMN_INDICES.join(",") });
+  const rows = await fetchCsv(url);
+  if (!rows) {
+    const stale = readCache<ScreenerStock[]>(cacheKey) ?? [];
+    return new Map(stale.map((s) => [s.ticker, s]));
+  }
+  const stocks = rowsToStocks(rows);
+  if (stocks.length > 0) writeCache(cacheKey, stocks);
+  return new Map(stocks.map((s) => [s.ticker, s]));
 }
 
 /** Full Finviz ticker universe (ticker + company), cached for a day. */
