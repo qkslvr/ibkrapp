@@ -40,7 +40,6 @@ export default function StockDetailPage() {
   const dividend = fundamentalsData?.dividend;
 
   const isPositive = (quote?.change ?? 0) >= 0;
-  const totalRatings = analyst ? analyst.buy + analyst.hold + analyst.sell : 0;
 
   return (
     <div className="space-y-6">
@@ -76,7 +75,7 @@ export default function StockDetailPage() {
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold">{symbol}</h1>
               <BadgeComponent variant="secondary">
-                {position?.sector ?? quote?.name ? "—" : "—"}
+                {position?.sector ?? "—"}
               </BadgeComponent>
             </div>
             <p className="text-muted-foreground">
@@ -111,7 +110,7 @@ export default function StockDetailPage() {
                 </span>
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
-                Real-time · Finnhub
+                Real-time · Finviz
               </p>
             </>
           ) : (
@@ -189,7 +188,7 @@ export default function StockDetailPage() {
               </h3>
               {quoteLoading ? (
                 <div className="space-y-3">
-                  {Array.from({ length: 6 }).map((_, i) => (
+                  {Array.from({ length: 4 }).map((_, i) => (
                     <div key={i} className="h-5 animate-pulse rounded bg-secondary" />
                   ))}
                 </div>
@@ -198,8 +197,6 @@ export default function StockDetailPage() {
                   {[
                     { label: "Open", value: `$${quote.open.toFixed(2)}` },
                     { label: "Previous Close", value: `$${quote.prevClose.toFixed(2)}` },
-                    { label: "Day High", value: `$${quote.high.toFixed(2)}` },
-                    { label: "Day Low", value: `$${quote.low.toFixed(2)}` },
                     { label: "52W High", value: quote.high52w ? `$${quote.high52w.toFixed(2)}` : "—" },
                     { label: "52W Low", value: quote.low52w ? `$${quote.low52w.toFixed(2)}` : "—" },
                   ].map((item) => (
@@ -393,81 +390,56 @@ export default function StockDetailPage() {
 
             {analystLoading ? (
               <div className="h-24 animate-pulse rounded bg-secondary" />
-            ) : analyst ? (
+            ) : analyst && (analyst.recom != null || analyst.targetPrice != null) ? (
               <div className="grid gap-6 md:grid-cols-2">
-                {/* Rating Distribution */}
+                {/* Recommendation Gauge */}
                 <div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-center">
-                      <p className="text-3xl font-bold text-[oklch(0.72_0.19_145)]">
-                        {analyst.buy}
-                      </p>
-                      <p className="text-xs text-muted-foreground">Buy</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-3xl font-bold">{analyst.hold}</p>
-                      <p className="text-xs text-muted-foreground">Hold</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-3xl font-bold text-[oklch(0.65_0.22_25)]">
-                        {analyst.sell}
-                      </p>
-                      <p className="text-xs text-muted-foreground">Sell</p>
-                    </div>
+                  <div className="flex items-baseline gap-3">
+                    <p className="text-3xl font-bold">
+                      {analyst.recom != null ? analyst.recom.toFixed(2) : "—"}
+                    </p>
+                    <p className="text-sm text-muted-foreground">{analyst.recomLabel}</p>
                   </div>
 
-                  {totalRatings > 0 && (
+                  {analyst.recom != null && (
                     <>
-                      <div className="mt-4 flex h-3 overflow-hidden rounded-full">
+                      <div className="relative mt-4 h-3 overflow-hidden rounded-full bg-gradient-to-r from-[oklch(0.72_0.19_145)] via-muted-foreground to-[oklch(0.65_0.22_25)]">
                         <div
-                          className="bg-[oklch(0.72_0.19_145)]"
-                          style={{ width: `${(analyst.buy / totalRatings) * 100}%` }}
-                        />
-                        <div
-                          className="bg-muted-foreground"
-                          style={{ width: `${(analyst.hold / totalRatings) * 100}%` }}
-                        />
-                        <div
-                          className="bg-[oklch(0.65_0.22_25)]"
-                          style={{ width: `${(analyst.sell / totalRatings) * 100}%` }}
+                          className="absolute top-0 h-3 w-1 -translate-x-1/2 bg-foreground"
+                          style={{
+                            left: `${((Math.min(Math.max(analyst.recom, 1), 5) - 1) / 4) * 100}%`,
+                          }}
                         />
                       </div>
-                      <p className="mt-2 text-xs text-muted-foreground">
-                        Based on {totalRatings} analysts
-                      </p>
+                      <div className="mt-2 flex justify-between text-xs text-muted-foreground">
+                        <span>Strong Buy</span>
+                        <span>Strong Sell</span>
+                      </div>
                     </>
                   )}
                 </div>
 
-                {/* Price Targets */}
+                {/* Consensus Target Price */}
                 <div>
-                  <h4 className="mb-3 text-sm font-medium">Price Targets</h4>
-                  <div className="space-y-2">
-                    {[
-                      { label: "Low", value: analyst.targetLow },
-                      { label: "Average", value: analyst.targetMean },
-                      { label: "High", value: analyst.targetHigh },
-                    ].map((target) => (
-                      <div key={target.label} className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">
-                          {target.label}
-                        </span>
-                        <span className="font-mono text-sm">
-                          {target.value > 0 ? `$${target.value.toFixed(2)}` : "—"}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                  <h4 className="mb-3 text-sm font-medium">Consensus Target Price</h4>
+                  <p className="font-mono text-2xl font-semibold">
+                    {analyst.targetPrice != null ? `$${analyst.targetPrice.toFixed(2)}` : "—"}
+                  </p>
 
-                  {analyst.targetMean > 0 && quote && (
+                  {analyst.targetPrice != null && quote && (
                     <div className="mt-4 rounded-lg bg-secondary/50 p-3">
-                      <p className="text-xs text-muted-foreground">
-                        Upside to Average Target
-                      </p>
-                      <p className="font-mono text-lg font-semibold text-[oklch(0.72_0.19_145)]">
-                        +
+                      <p className="text-xs text-muted-foreground">Upside to Target</p>
+                      <p
+                        className={cn(
+                          "font-mono text-lg font-semibold",
+                          analyst.targetPrice >= quote.price
+                            ? "text-[oklch(0.72_0.19_145)]"
+                            : "text-[oklch(0.65_0.22_25)]"
+                        )}
+                      >
+                        {analyst.targetPrice >= quote.price ? "+" : ""}
                         {(
-                          ((analyst.targetMean - quote.price) / quote.price) *
+                          ((analyst.targetPrice - quote.price) / quote.price) *
                           100
                         ).toFixed(1)}
                         %

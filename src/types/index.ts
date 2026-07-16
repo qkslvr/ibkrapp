@@ -119,8 +119,6 @@ export interface StockQuote {
   price: number;
   change: number;
   changePercent: number;
-  high: number;
-  low: number;
   open: number;
   prevClose: number;
   volume: number;
@@ -159,13 +157,12 @@ export interface StockDividend {
   growthRate5Y: number;
 }
 
+// Finviz only exposes a single consensus recommendation score and target
+// price (no buy/hold/sell counts or a target range).
 export interface AnalystRating {
-  buy: number;
-  hold: number;
-  sell: number;
-  targetLow: number;
-  targetMean: number;
-  targetHigh: number;
+  recom: number | null; // 1 (Strong Buy) .. 5 (Strong Sell)
+  recomLabel: string;
+  targetPrice: number | null;
 }
 
 // Stock Screener (Finviz)

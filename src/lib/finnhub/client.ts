@@ -17,17 +17,6 @@ async function finnhubFetch<T>(path: string, params: Record<string, string> = {}
   }
 }
 
-export interface FinnhubQuote {
-  c: number;  // current price
-  d: number;  // change
-  dp: number; // change percent
-  h: number;  // high
-  l: number;  // low
-  o: number;  // open
-  pc: number; // previous close
-  t: number;  // timestamp
-}
-
 export interface FinnhubProfile {
   name: string;
   ticker: string;
@@ -39,52 +28,6 @@ export interface FinnhubProfile {
   shareOutstanding: number;
   weburl: string;
   currency: string;
-}
-
-export interface FinnhubBasicFinancials {
-  metric: {
-    "52WeekHigh": number;
-    "52WeekLow": number;
-    peBasicExclExtraTTM: number;
-    peNormalizedAnnual: number;
-    psTTM: number;
-    pbAnnual: number;
-    evEbitdaAnnual: number;
-    epsBasicExclExtraAnnual: number;
-    epsGrowthTTMYoy: number;
-    revenueGrowthTTMYoy: number;
-    netProfitMarginTTM: number;
-    roeTTM: number;
-    roaTTM: number;
-    totalDebt_totalEquityAnnual: number;
-    currentRatioAnnual: number;
-    freeCashFlowAnnual: number;
-    revenuePerShareAnnual: number;
-    "10DayAverageTradingVolume": number;
-    "3MonthAverageTradingVolume": number;
-    dividendYieldIndicatedAnnual: number;
-    dividendsPerShareAnnual: number;
-    payoutRatioAnnual: number;
-  };
-}
-
-export interface FinnhubRecommendation {
-  buy: number;
-  hold: number;
-  sell: number;
-  strongBuy: number;
-  strongSell: number;
-  period: string;
-  symbol: string;
-}
-
-export interface FinnhubPriceTarget {
-  targetHigh: number;
-  targetLow: number;
-  targetMean: number;
-  targetMedian: number;
-  lastUpdated: string;
-  symbol: string;
 }
 
 export interface FinnhubNewsItem {
@@ -109,38 +52,8 @@ export interface FinnhubCandle {
   v: number[];  // volume
 }
 
-export interface FinnhubDividend {
-  amount: number;
-  date: string;
-  declarationDate: string;
-  exDate: string;
-  frequency: string;
-  payDate: string;
-  recordDate: string;
-  symbol: string;
-}
-
-export async function getQuote(symbol: string): Promise<FinnhubQuote | null> {
-  return finnhubFetch<FinnhubQuote>("/quote", { symbol });
-}
-
 export async function getCompanyProfile(symbol: string): Promise<FinnhubProfile | null> {
   return finnhubFetch<FinnhubProfile>("/stock/profile2", { symbol });
-}
-
-export async function getBasicFinancials(symbol: string): Promise<FinnhubBasicFinancials | null> {
-  return finnhubFetch<FinnhubBasicFinancials>("/stock/metric", {
-    symbol,
-    metric: "all",
-  });
-}
-
-export async function getRecommendations(symbol: string): Promise<FinnhubRecommendation[] | null> {
-  return finnhubFetch<FinnhubRecommendation[]>("/stock/recommendation", { symbol });
-}
-
-export async function getPriceTarget(symbol: string): Promise<FinnhubPriceTarget | null> {
-  return finnhubFetch<FinnhubPriceTarget>("/stock/price-target", { symbol });
 }
 
 export async function getNews(symbol: string): Promise<FinnhubNewsItem[] | null> {
@@ -166,12 +79,4 @@ export async function getCandleData(
     to: String(to),
     resolution,
   });
-}
-
-export async function getDividends(
-  symbol: string,
-  from: string,
-  to: string
-): Promise<FinnhubDividend[] | null> {
-  return finnhubFetch<FinnhubDividend[]>("/stock/dividend", { symbol, from, to });
 }

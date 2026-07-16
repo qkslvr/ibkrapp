@@ -1,6 +1,15 @@
 import { NextResponse } from "next/server";
-import { getRecommendations, getPriceTarget } from "@/lib/finnhub/client";
+import { getStockDetail } from "@/lib/finviz/client";
 import { AnalystRating } from "@/types";
+
+function recomLabel(score: number | null): string {
+  if (score == null) return "—";
+  if (score <= 1.5) return "Strong Buy";
+  if (score <= 2.5) return "Buy";
+  if (score <= 3.5) return "Hold";
+  if (score <= 4.5) return "Sell";
+  return "Strong Sell";
+}
 
 export async function GET(
   _request: Request,
@@ -9,25 +18,15 @@ export async function GET(
   const { symbol } = await params;
   const upper = symbol.toUpperCase();
 
-  const [recommendations, target] = await Promise.all([
-    getRecommendations(upper),
-    getPriceTarget(upper),
-  ]);
-
-  if (!recommendations?.length && !target) {
+  const detail = await getStockDetail(upper);
+  if (!detail || (detail.analystRecom == null && detail.targetPrice == null)) {
     return NextResponse.json(null);
   }
 
-  // Use the most recent recommendation period
-  const latest = recommendations?.[0];
-
   const result: AnalystRating = {
-    buy: (latest?.buy ?? 0) + (latest?.strongBuy ?? 0),
-    hold: latest?.hold ?? 0,
-    sell: (latest?.sell ?? 0) + (latest?.strongSell ?? 0),
-    targetLow: target?.targetLow ?? 0,
-    targetMean: target?.targetMean ?? 0,
-    targetHigh: target?.targetHigh ?? 0,
+    recom: detail.analystRecom,
+    recomLabel: recomLabel(detail.analystRecom),
+    targetPrice: detail.targetPrice,
   };
 
   return NextResponse.json(result);

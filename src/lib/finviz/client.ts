@@ -190,6 +190,124 @@ export async function screenIndex(index: ScreenerIndex): Promise<ScreenerStock[]
   return stocks;
 }
 
+// Full column set for a single-ticker detail lookup (the stock detail page).
+// Requesting everything is simpler than curating a subset and costs nothing
+// extra since it's a one-row export.
+const DETAIL_COLUMNS = Array.from({ length: 70 }, (_, i) => i + 1);
+const DETAIL_TTL = 30_000; // matches the stock detail page's quote refetch cadence
+
+export interface FinvizStockDetail {
+  ticker: string;
+  name: string;
+  sector: string;
+  industry: string;
+  price: number;
+  change: number; // % change from previous close
+  open: number | null;
+  prevClose: number | null;
+  high52w: number | null;
+  low52w: number | null;
+  volume: number | null;
+  avgVolume: number | null;
+  marketCap: number | null; // dollars
+  peRatio: number | null;
+  forwardPE: number | null;
+  psRatio: number | null;
+  pbRatio: number | null;
+  pegRatio: number | null;
+  eps: number | null;
+  epsGrowth: number | null; // EPS Growth This Year, %
+  revenueGrowth: number | null; // Sales Growth QoQ, %
+  profitMargin: number | null;
+  roe: number | null;
+  roa: number | null;
+  debtEquity: number | null;
+  currentRatio: number | null;
+  dividendYield: number | null;
+  payoutRatio: number | null;
+  analystRecom: number | null; // 1 (Strong Buy) .. 5 (Strong Sell)
+  targetPrice: number | null;
+  earningsDate: string | null;
+}
+
+// Finviz reports 52W/50D high-low, change-from-open, and SMA distance columns
+// as a % distance from the current price rather than a price level — back
+// out the level: pct = (price - level) / level * 100  =>  level = price / (1 + pct/100)
+function pctToLevel(price: number, pct: number | null): number | null {
+  if (pct == null) return null;
+  const denom = 1 + pct / 100;
+  return denom !== 0 ? price / denom : null;
+}
+
+/** Rich single-ticker quote + fundamentals for the stock detail page. Cached
+ *  briefly per ticker; falls back to the last-known value if Finviz is
+ *  unreachable. */
+export async function getStockDetail(symbol: string): Promise<FinvizStockDetail | null> {
+  const ticker = symbol.trim().toUpperCase();
+  if (!ticker) return null;
+  const cacheKey = `finviz-detail-${ticker}`;
+
+  const fresh = readCache<FinvizStockDetail>(cacheKey, DETAIL_TTL);
+  if (fresh) return fresh;
+
+  const url = buildUrl({ t: ticker, c: DETAIL_COLUMNS.join(",") });
+  const rows = await fetchCsv(url);
+  if (!rows || rows.length < 2) {
+    return readCache<FinvizStockDetail>(cacheKey);
+  }
+
+  const header = rows[0];
+  const values = rows[1];
+  const get = (name: string) => values[header.indexOf(name)];
+
+  const price = num(get("Price"));
+  if (price == null) return readCache<FinvizStockDetail>(cacheKey);
+
+  const changePct = num(get("Change"));
+  const changeFromOpenPct = num(get("Change from Open"));
+  const high52wPct = num(get("52-Week High"));
+  const low52wPct = num(get("52-Week Low"));
+  const avgVolumeRaw = num(get("Average Volume"));
+  const marketCapRaw = num(get("Market Cap"));
+
+  const detail: FinvizStockDetail = {
+    ticker,
+    name: str(get("Company")) || ticker,
+    sector: str(get("Sector")) || "Unknown",
+    industry: str(get("Industry")) || "Unknown",
+    price,
+    change: changePct ?? 0,
+    open: pctToLevel(price, changeFromOpenPct),
+    prevClose: pctToLevel(price, changePct),
+    high52w: pctToLevel(price, high52wPct),
+    low52w: pctToLevel(price, low52wPct),
+    volume: num(get("Volume")),
+    avgVolume: avgVolumeRaw != null ? avgVolumeRaw * 1000 : null,
+    marketCap: marketCapRaw != null ? marketCapRaw * 1e6 : null,
+    peRatio: num(get("P/E")),
+    forwardPE: num(get("Forward P/E")),
+    psRatio: num(get("P/S")),
+    pbRatio: num(get("P/B")),
+    pegRatio: num(get("PEG")),
+    eps: num(get("EPS (ttm)")),
+    epsGrowth: num(get("EPS Growth This Year")),
+    revenueGrowth: num(get("Sales Growth Quarter Over Quarter")),
+    profitMargin: num(get("Profit Margin")),
+    roe: num(get("Return on Equity")),
+    roa: num(get("Return on Assets")),
+    debtEquity: num(get("Total Debt/Equity")),
+    currentRatio: num(get("Current Ratio")),
+    dividendYield: num(get("Dividend Yield")),
+    payoutRatio: num(get("Payout Ratio")),
+    analystRecom: num(get("Analyst Recom")),
+    targetPrice: num(get("Target Price")),
+    earningsDate: str(get("Earnings Date")) || null,
+  };
+
+  writeCache(cacheKey, detail);
+  return detail;
+}
+
 /** Live quote + fundamentals (price, market cap, sector, ...) for a specific
  *  set of tickers, e.g. a portfolio's holdings. Cached briefly per ticker
  *  set; falls back to the last-known values for that set if Finviz is

@@ -112,8 +112,8 @@ function WatchlistRow({
   const sector = profile?.finnhubIndustry;
 
   const hasRange = !!quote && quote.low52w > 0 && quote.high52w > 0;
-  // Finnhub's 52W high/low can lag the latest price. If the current price is
-  // outside the reported range, it IS the new extreme — clamp accordingly.
+  // The reported 52W high/low can lag the latest price. If the current price
+  // is outside the reported range, it IS the new extreme — clamp accordingly.
   const low52w = hasRange ? Math.min(quote!.low52w, quote!.price) : null;
   const high52w = hasRange ? Math.max(quote!.high52w, quote!.price) : null;
   // How far the current price sits above the 52W low / below the 52W high.
