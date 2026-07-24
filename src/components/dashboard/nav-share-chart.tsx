@@ -184,10 +184,17 @@ export function NavShareChart() {
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     const p = payload[0].payload as { date: string; value: number };
+                    const sub = subByDate.get(p.date);
                     return (
                       <div className="rounded-lg border border-border/50 bg-popover px-3 py-2 shadow-lg">
                         <p className="text-xs text-muted-foreground">{formatDate(p.date)}</p>
                         <p className="font-mono font-medium">{money(p.value, isNav ? 4 : 2)}</p>
+                        {sub && (
+                          <p className="mt-1 text-xs font-medium text-[oklch(0.72_0.19_145)]">
+                            +{money(sub.amount)} subscribed
+                            {sub.ccy !== "USD" ? ` (${sub.ccy})` : ""}
+                          </p>
+                        )}
                       </div>
                     );
                   }

@@ -223,6 +223,17 @@ export default function NAVPage() {
   const subDates = new Set(nav.deposits.map((d) => d.date));
   const subMarkers = chartData.filter((p) => subDates.has(p.date));
 
+  // Per-day subscription totals, for the chart hover tooltip.
+  const subInfo = new Map<string, { usd: number; origCcy: string; origAmt: number }>();
+  for (const d of nav.deposits) {
+    const p = subInfo.get(d.date);
+    subInfo.set(d.date, {
+      usd: (p?.usd ?? 0) + d.amount,
+      origCcy: p && p.origCcy !== d.originalCurrency ? "USD" : d.originalCurrency,
+      origAmt: (p?.origAmt ?? 0) + d.originalAmount,
+    });
+  }
+
   const visibleRows = sortLedger(
     typeFilter === "all" ? ledger : ledger.filter((r) => r.kind === typeFilter),
     sortKey,
@@ -315,8 +326,23 @@ export default function NAVPage() {
                 tickFormatter={(v) => "$" + (v as number).toLocaleString("en-US", { notation: "compact", maximumFractionDigits: 1 })}
               />
               <Tooltip
-                contentStyle={{ background: "oklch(0.18 0.01 270)", border: "1px solid oklch(1 0 0 / 0.1)", borderRadius: 8 }}
-                formatter={(v: unknown) => ["$" + (v as number).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }), "Balance"] as [string, string]}
+                content={({ active, payload }) => {
+                  if (!active || !payload?.length) return null;
+                  const p = payload[0].payload as { label: string; date: string; balance: number };
+                  const sub = subInfo.get(p.date);
+                  return (
+                    <div className="rounded-lg border border-border/50 bg-popover px-3 py-2 text-xs shadow-lg">
+                      <p className="text-muted-foreground">{p.label}</p>
+                      <p className="font-mono font-medium">{fmtCurrency(p.balance)}</p>
+                      {sub && (
+                        <p className="mt-1 font-medium text-[oklch(0.72_0.19_145)]">
+                          +{fmtCurrency(sub.usd)} subscribed
+                          {sub.origCcy !== "USD" ? ` (${sub.origCcy} ${fmt(sub.origAmt)})` : ""}
+                        </p>
+                      )}
+                    </div>
+                  );
+                }}
               />
               <Line
                 type="monotone"

@@ -30,19 +30,22 @@ export function MetricCard({
   return (
     <Card
       className={cn(
-        "relative overflow-hidden p-4 transition-all hover:bg-accent/50",
-        "border-border/50 bg-card/50 backdrop-blur-sm",
+        "group relative overflow-hidden p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-border",
+        "border-border/60 bg-card/60 backdrop-blur-sm",
         className
       )}
     >
-      {/* Subtle gradient overlay */}
+      {/* Subtle gradient wash keyed to the metric's direction */}
       <div
         className={cn(
-          "absolute inset-0 opacity-[0.03]",
-          isPositive && "bg-gradient-to-br from-green-500 to-transparent",
-          isNegative && "bg-gradient-to-br from-red-500 to-transparent"
+          "pointer-events-none absolute inset-0 opacity-[0.06] transition-opacity group-hover:opacity-[0.1]",
+          isPositive && "bg-gradient-to-br from-[oklch(0.72_0.19_145)] to-transparent",
+          isNegative && "bg-gradient-to-br from-[oklch(0.65_0.22_25)] to-transparent",
+          isNeutral && "bg-gradient-to-br from-[oklch(0.72_0.15_255)] to-transparent"
         )}
       />
+      {/* Top hairline accent */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       <div className="relative">
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
