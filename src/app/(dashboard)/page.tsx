@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { MetricCard } from "@/components/dashboard/metric-card";
-import { PerformanceChart } from "@/components/dashboard/performance-chart";
+import { NavShareChart } from "@/components/dashboard/nav-share-chart";
 import { HoldingsTable } from "@/components/dashboard/holdings-table";
 import { SectorChart } from "@/components/dashboard/sector-chart";
 import { TopMovers } from "@/components/dashboard/top-movers";
@@ -136,7 +136,7 @@ export default function DashboardPage() {
       {/* Performance Chart & Sector Allocation */}
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <PerformanceChart />
+          <NavShareChart />
         </div>
         <div className="space-y-6">
           <SectorChart data={sectorAllocation} />

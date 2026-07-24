@@ -21,6 +21,66 @@ function dayLabel(iso: string) {
   return new Date(y, m - 1, d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
+// jsPDF type is imported dynamically; use a minimal structural type here.
+type Doc = {
+  setDrawColor: (r: number, g: number, b: number) => void;
+  setFillColor: (r: number, g: number, b: number) => void;
+  setTextColor: (r: number, g: number, b: number) => void;
+  setFontSize: (n: number) => void;
+  setLineWidth: (n: number) => void;
+  line: (x1: number, y1: number, x2: number, y2: number) => void;
+  rect: (x: number, y: number, w: number, h: number, style?: string) => void;
+  text: (t: string, x: number, y: number, opts?: unknown) => void;
+};
+
+// Simple NAV line chart drawn with primitives (no chart lib in the PDF).
+function drawNavChart(
+  doc: Doc,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  points: { date: string; nav: number }[],
+) {
+  // frame
+  doc.setDrawColor(210, 210, 210);
+  doc.setLineWidth(0.5);
+  doc.rect(x, y, w, h);
+  if (points.length === 0) return;
+
+  const navs = points.map((p) => p.nav);
+  let min = Math.min(...navs, 100);
+  let max = Math.max(...navs, 100);
+  if (min === max) { min -= 1; max += 1; }
+  const pad = (max - min) * 0.1;
+  min -= pad;
+  max += pad;
+
+  const px = (i: number) => x + (points.length === 1 ? w / 2 : (i / (points.length - 1)) * w);
+  const py = (v: number) => y + h - ((v - min) / (max - min)) * h;
+
+  // base-$100 reference line (dashed-ish)
+  if (100 >= min && 100 <= max) {
+    doc.setDrawColor(180, 180, 180);
+    doc.setLineWidth(0.3);
+    const yb = py(100);
+    for (let gx = x; gx < x + w; gx += 6) doc.line(gx, yb, Math.min(gx + 3, x + w), yb);
+  }
+
+  // NAV polyline
+  doc.setDrawColor(30, 120, 200);
+  doc.setLineWidth(1.2);
+  for (let i = 1; i < points.length; i++) {
+    doc.line(px(i - 1), py(navs[i - 1]), px(i), py(navs[i]));
+  }
+
+  // min/max labels
+  doc.setFontSize(7);
+  doc.setTextColor(140, 140, 140);
+  doc.text("$" + max.toFixed(2), x + 2, y + 8);
+  doc.text("$" + min.toFixed(2), x + 2, y + h - 3);
+}
+
 /**
  * Build and download a one-month NAV report PDF: the fund's month-end summary,
  * the capital subscriptions booked that month (with their FX conversion and
@@ -62,7 +122,7 @@ export async function downloadMonthlyReport(nav: NAVSummary, month: string): Pro
     ["Month-end portfolio value", snapshot ? money(snapshot.portfolioValue) : "—"],
     ["Units outstanding", snapshot ? num(snapshot.totalUnits) : "—"],
     ["NAV / unit (month end)", snapshot ? money(snapshot.nav) : money(endNav)],
-    ["NAV movement over month", `${money(startNav)} → ${money(endNav)}  (${pct(navChangePct)})`],
+    ["NAV movement over month", `${money(startNav)} -> ${money(endNav)}  (${pct(navChangePct)})`],
     ["Return vs base ($100)", snapshot ? pct(snapshot.returnPct) : pct(endNav - 100)],
   ];
   autoTable(doc, {
@@ -74,8 +134,23 @@ export async function downloadMonthlyReport(nav: NAVSummary, month: string): Pro
     margin: { left: marginX, right: marginX },
   });
 
-  // Capital subscriptions booked this month
+  // NAV movement line chart for the month
   let y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 24;
+  doc.setFontSize(12);
+  doc.setTextColor(20, 20, 20);
+  doc.text("NAV per Unit — Movement", marginX, y);
+  drawNavChart(
+    doc as unknown as Doc,
+    marginX,
+    y + 8,
+    pageW - marginX * 2,
+    110,
+    monthDaily.map((d) => ({ date: d.date, nav: d.nav })),
+  );
+  y += 8 + 110;
+
+  // Capital subscriptions booked this month
+  y += 24;
   doc.setFontSize(12);
   doc.setTextColor(20, 20, 20);
   doc.text("Capital Subscriptions", marginX, y);
@@ -107,21 +182,22 @@ export async function downloadMonthlyReport(nav: NAVSummary, month: string): Pro
   doc.text("Daily Portfolio Balance & NAV", marginX, y);
   autoTable(doc, {
     startY: y + 8,
-    head: [["Date", "Portfolio Balance", "Units Outstanding", "NAV / Unit", "Return vs Base"]],
+    head: [["Date", "Portfolio Balance", "Units Outstanding", "NAV / Unit", "Daily Δ", "Return vs Base"]],
     body: monthDaily.map((d) => [
       dayLabel(d.date),
       money(d.portfolioValue),
       num(d.totalUnits),
       money(d.nav),
+      pct(d.navChangePct ?? 0),
       pct(d.returnPct),
     ]),
     headStyles: { fillColor: [40, 40, 45], textColor: [245, 245, 245], fontSize: 9 },
     styles: { fontSize: 8.5, cellPadding: 3 },
-    columnStyles: { 1: { halign: "right" }, 2: { halign: "right" }, 3: { halign: "right" }, 4: { halign: "right" } },
+    columnStyles: { 1: { halign: "right" }, 2: { halign: "right" }, 3: { halign: "right" }, 4: { halign: "right" }, 5: { halign: "right" } },
     margin: { left: marginX, right: marginX },
     didParseCell: (data) => {
-      // colour the return column
-      if (data.section === "body" && data.column.index === 4) {
+      // colour the daily-change and return columns
+      if (data.section === "body" && (data.column.index === 4 || data.column.index === 5)) {
         const val = String(data.cell.raw);
         data.cell.styles.textColor = val.startsWith("-") ? [200, 50, 50] : [30, 150, 70];
       }

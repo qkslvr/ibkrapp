@@ -98,7 +98,8 @@ export interface NAVDailyPoint {
   portfolioValue: number;
   totalUnits: number;
   nav: number;
-  returnPct: number; // vs $100 base
+  returnPct: number;       // vs $100 base (cumulative)
+  navChangePct: number;    // day-over-day NAV/unit change vs the prior day
 }
 
 export interface NAVSummary {
@@ -106,6 +107,7 @@ export interface NAVSummary {
   totalUnits: number;
   totalCapitalInvested: number;
   currentPortfolioValue: number;
+  currentCash: number;
   totalReturnPct: number;
   deposits: NAVDeposit[];
   monthly: NAVMonthlySnapshot[];

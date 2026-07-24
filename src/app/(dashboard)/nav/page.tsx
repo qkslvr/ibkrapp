@@ -83,6 +83,7 @@ type SortKey =
   | "unitsIssued"
   | "unitsOutstanding"
   | "navPerUnit"
+  | "navChangePct"
   | "returnPct";
 
 interface LedgerRow {
@@ -94,6 +95,7 @@ interface LedgerRow {
   unitsIssued: number | null;
   unitsOutstanding: number;
   navPerUnit: number | null;
+  navChangePct: number | null; // day-over-day NAV move (balance rows only)
   returnPct: number;
   originalCurrency?: string;
   originalAmount?: number;
@@ -117,6 +119,7 @@ function buildLedger(nav: NAVSummary | null | undefined): LedgerRow[] {
       unitsIssued: null,
       unitsOutstanding: d.totalUnits,
       navPerUnit: d.nav,
+      navChangePct: d.navChangePct ?? 0,
       returnPct: d.returnPct,
     });
   }
@@ -134,6 +137,7 @@ function buildLedger(nav: NAVSummary | null | undefined): LedgerRow[] {
       unitsIssued: dep.unitsIssued,
       unitsOutstanding: cum,
       navPerUnit: null,
+      navChangePct: null,
       returnPct: ((dep.navAtDeposit - 100) / 100) * 100,
       originalCurrency: dep.originalCurrency,
       originalAmount: dep.originalAmount,
@@ -149,8 +153,12 @@ function sortLedger(rows: LedgerRow[], key: SortKey, dir: "asc" | "desc"): Ledge
   return [...rows].sort((a, b) => {
     if (key === "date") {
       const c = a.date.localeCompare(b.date);
-      // On ties, keep Balance before Subscription for a stable read.
-      return (c || (a.kind < b.kind ? -1 : a.kind > b.kind ? 1 : 0)) * mul;
+      if (c !== 0) return c * mul;
+      // Same date: always show the Subscription first, then the resulting
+      // Balance — reading top-down then mirrors how NAV is actually derived
+      // (units issued, then the post-deposit balance). Independent of sort dir.
+      const rank = (k: LedgerKind) => (k === "Subscription" ? 0 : 1);
+      return rank(a.kind) - rank(b.kind);
     }
     const av = a[key] as number | null;
     const bv = b[key] as number | null;
@@ -305,7 +313,7 @@ export default function NAVPage() {
               <Line
                 type="monotone"
                 dataKey="balance"
-                stroke="oklch(0.7_0.15_250)"
+                stroke="oklch(0.7 0.15 250)"
                 strokeWidth={2}
                 dot={false}
                 activeDot={{ r: 4 }}
@@ -339,7 +347,7 @@ export default function NAVPage() {
               <Line
                 type="monotone"
                 dataKey="nav"
-                stroke="oklch(0.72_0.19_145)"
+                stroke="oklch(0.72 0.19 145)"
                 strokeWidth={2}
                 dot={false}
                 activeDot={{ r: 4 }}
@@ -384,6 +392,7 @@ export default function NAVPage() {
                 <SortHeader label="Units Issued" k="unitsIssued" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
                 <SortHeader label="Units Outstanding" k="unitsOutstanding" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
                 <SortHeader label="NAV / Unit" k="navPerUnit" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                <SortHeader label="Daily Δ" k="navChangePct" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
                 <SortHeader label="Return vs Base" k="returnPct" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
               </TableRow>
             </TableHeader>
@@ -426,6 +435,9 @@ export default function NAVPage() {
                   <TableCell className="text-right font-mono font-medium">
                     {r.navPerUnit != null ? fmtCurrency(r.navPerUnit) : dash}
                   </TableCell>
+                  <TableCell className={cn("text-right font-mono text-sm", r.navChangePct == null ? "" : r.navChangePct >= 0 ? "text-[oklch(0.72_0.19_145)]" : "text-[oklch(0.65_0.22_25)]")}>
+                    {r.navChangePct == null ? dash : `${r.navChangePct >= 0 ? "+" : ""}${fmt(r.navChangePct)}%`}
+                  </TableCell>
                   <TableCell className={cn("text-right font-mono text-sm", r.returnPct >= 0 ? "text-[oklch(0.72_0.19_145)]" : "text-[oklch(0.65_0.22_25)]")}>
                     {r.returnPct >= 0 ? "+" : ""}{fmt(r.returnPct)}%
                   </TableCell>
@@ -433,7 +445,7 @@ export default function NAVPage() {
               ))}
               {visibleRows.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center text-sm text-muted-foreground py-8">
+                  <TableCell colSpan={9} className="text-center text-sm text-muted-foreground py-8">
                     No rows for this filter.
                   </TableCell>
                 </TableRow>

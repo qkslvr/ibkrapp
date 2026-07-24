@@ -55,9 +55,13 @@ export async function GET() {
     // Build daily portfolio value map from equity summary
     const equityRows = equityXml ? parseEquitySummary(equityXml) : [];
     const dailyValue: Record<string, number> = {};
+    const dailyCash: Record<string, number> = {};
     for (const row of equityRows) {
       const date = parseDateStr(row.reportDate);
-      if (date) dailyValue[date] = row.total;
+      if (date) {
+        dailyValue[date] = row.total;
+        dailyCash[date] = row.cash;
+      }
     }
 
     // If the Flex NAV query gave us a real daily series, persist it to the
@@ -199,6 +203,7 @@ export async function GET() {
     // outstanding as of that day). On a deposit day both the balance and the
     // unit count step up together, so NAV stays continuous.
     const daily: NAVDailyPoint[] = [];
+    let prevNav = 0;
     for (const date of sortedDates) {
       const unitsAsOf = deposits
         .filter((d) => d.date <= date)
@@ -206,13 +211,16 @@ export async function GET() {
       if (unitsAsOf === 0) continue;
       const portfolioValue = dailyValue[date];
       const nav = portfolioValue / unitsAsOf;
+      const navChangePct = prevNav > 0 ? ((nav - prevNav) / prevNav) * 100 : 0;
       daily.push({
         date,
         portfolioValue,
         totalUnits: unitsAsOf,
         nav,
         returnPct: ((nav - BASE_NAV) / BASE_NAV) * 100,
+        navChangePct,
       });
+      prevNav = nav;
     }
 
     // Current state
@@ -221,12 +229,15 @@ export async function GET() {
       latestDates.length > 0 ? dailyValue[latestDates[latestDates.length - 1]] : 0;
     const currentNAV = totalUnits > 0 ? latestValue / totalUnits : BASE_NAV;
     const totalCapitalInvested = rawDeposits.reduce((s, d) => s + d.amount, 0);
+    const currentCash =
+      latestDates.length > 0 ? dailyCash[latestDates[latestDates.length - 1]] ?? 0 : 0;
 
     const summary: NAVSummary = {
       currentNAV,
       totalUnits,
       totalCapitalInvested,
       currentPortfolioValue: latestValue,
+      currentCash,
       totalReturnPct: ((currentNAV - BASE_NAV) / BASE_NAV) * 100,
       deposits,
       monthly,
