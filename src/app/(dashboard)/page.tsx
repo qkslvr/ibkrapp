@@ -128,9 +128,9 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Hero Metrics */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           title="Total Portfolio Value"
           value={displaySummary.totalValue.toLocaleString(undefined, {

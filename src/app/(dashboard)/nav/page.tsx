@@ -262,15 +262,15 @@ export default function NAVPage() {
   const dash = <span className="text-muted-foreground/40">—</span>;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold">Fund NAV</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Fund NAV</h1>
         <p className="text-muted-foreground">Net Asset Value tracking and investor report</p>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-border/50 bg-card/50 p-4">
+      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="border-border/50 bg-card/60 p-5">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <DollarSign className="h-4 w-4" />
             Current NAV / Unit
@@ -281,7 +281,7 @@ export default function NAVPage() {
           </p>
         </Card>
 
-        <Card className="border-border/50 bg-card/50 p-4">
+        <Card className="border-border/50 bg-card/60 p-5">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Users className="h-4 w-4" />
             Total Units Outstanding
@@ -289,7 +289,7 @@ export default function NAVPage() {
           <p className="mt-2 font-mono text-2xl font-semibold">{fmt(nav.totalUnits, 4)}</p>
         </Card>
 
-        <Card className="border-border/50 bg-card/50 p-4">
+        <Card className="border-border/50 bg-card/60 p-5">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <BarChart3 className="h-4 w-4" />
             Portfolio Value
@@ -297,7 +297,7 @@ export default function NAVPage() {
           <p className="mt-2 font-mono text-2xl font-semibold">{fmtCurrency(nav.currentPortfolioValue)}</p>
         </Card>
 
-        <Card className="border-border/50 bg-card/50 p-4">
+        <Card className="border-border/50 bg-card/60 p-5">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             {isPositive ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
             Total Capital Invested
@@ -317,7 +317,21 @@ export default function NAVPage() {
           </h2>
           <ResponsiveContainer width="100%" height={260}>
             <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 0.05)" />
+              <defs>
+                <linearGradient id="balRamp" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="oklch(0.72 0.16 258)" />
+                  <stop offset="60%" stopColor="oklch(0.68 0.19 305)" />
+                  <stop offset="100%" stopColor="oklch(0.82 0.15 78)" />
+                </linearGradient>
+                <filter id="balGlow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3" result="b" />
+                  <feMerge>
+                    <feMergeNode in="b" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 0.05)" vertical={false} />
               <XAxis dataKey="label" tick={{ fontSize: 11 }} stroke="oklch(1 0 0 / 0.2)" minTickGap={24} />
               <YAxis
                 domain={["auto", "auto"]}
@@ -347,10 +361,11 @@ export default function NAVPage() {
               <Line
                 type="monotone"
                 dataKey="balance"
-                stroke="oklch(0.7 0.15 250)"
-                strokeWidth={2}
+                stroke="url(#balRamp)"
+                strokeWidth={2.5}
                 dot={false}
-                activeDot={{ r: 4 }}
+                activeDot={{ r: 4, strokeWidth: 0, fill: "oklch(0.82 0.15 78)" }}
+                style={{ filter: "url(#balGlow)" }}
               />
               {subMarkers.map((m) => (
                 <ReferenceDot
@@ -377,7 +392,20 @@ export default function NAVPage() {
           </h2>
           <ResponsiveContainer width="100%" height={260}>
             <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 0.05)" />
+              <defs>
+                <linearGradient id="navUnitRamp" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="oklch(0.76 0.15 178)" />
+                  <stop offset="100%" stopColor="oklch(0.74 0.19 150)" />
+                </linearGradient>
+                <filter id="navUnitGlow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3" result="b" />
+                  <feMerge>
+                    <feMergeNode in="b" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 0.05)" vertical={false} />
               <XAxis dataKey="label" tick={{ fontSize: 11 }} stroke="oklch(1 0 0 / 0.2)" />
               <YAxis
                 domain={["auto", "auto"]}
@@ -386,17 +414,18 @@ export default function NAVPage() {
                 tickFormatter={(v) => "$" + v.toFixed(0)}
               />
               <Tooltip
-                contentStyle={{ background: "oklch(0.18 0.01 270)", border: "1px solid oklch(1 0 0 / 0.1)", borderRadius: 8 }}
+                contentStyle={{ background: "oklch(0.258 0.016 268)", border: "1px solid oklch(1 0 0 / 0.1)", borderRadius: 10 }}
                 formatter={(v: unknown) => ["$" + (v as number).toFixed(4), "NAV/unit"] as [string, string]}
               />
-              <ReferenceLine y={100} stroke="oklch(1 0 0 / 0.2)" strokeDasharray="4 4" label={{ value: "Base $100", position: "insideTopRight", fontSize: 10, fill: "oklch(1 0 0 / 0.4)" }} />
+              <ReferenceLine y={100} stroke="oklch(0.82 0.15 78 / 0.4)" strokeDasharray="4 4" label={{ value: "Base $100", position: "insideTopRight", fontSize: 10, fill: "oklch(0.82 0.15 78 / 0.7)" }} />
               <Line
                 type="monotone"
                 dataKey="nav"
-                stroke="oklch(0.72 0.19 145)"
-                strokeWidth={2}
+                stroke="url(#navUnitRamp)"
+                strokeWidth={2.5}
                 dot={false}
-                activeDot={{ r: 4 }}
+                activeDot={{ r: 4, strokeWidth: 0, fill: "oklch(0.82 0.15 78)" }}
+                style={{ filter: "url(#navUnitGlow)" }}
               />
               {subMarkers.map((m) => (
                 <ReferenceDot

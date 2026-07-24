@@ -159,9 +159,22 @@ export function NavShareChart() {
             <AreaChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
               <defs>
                 <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={stroke} stopOpacity={0.3} />
+                  <stop offset="0%" stopColor={stroke} stopOpacity={0.28} />
                   <stop offset="100%" stopColor={stroke} stopOpacity={0} />
                 </linearGradient>
+                {/* Accent stroke ramp — indigo → violet → warm amber */}
+                <linearGradient id="navStrokeRamp" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="oklch(0.72 0.16 258)" />
+                  <stop offset="55%" stopColor="oklch(0.68 0.19 305)" />
+                  <stop offset="100%" stopColor="oklch(0.82 0.15 78)" />
+                </linearGradient>
+                <filter id="navGlow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3.2" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
               </defs>
               <XAxis
                 dataKey="date"
@@ -201,13 +214,21 @@ export function NavShareChart() {
                   return null;
                 }}
               />
-              {isNav && <ReferenceLine y={100} stroke="oklch(0.4 0 0)" strokeDasharray="3 3" />}
+              {isNav && (
+                <ReferenceLine
+                  y={100}
+                  stroke="oklch(0.82 0.15 78 / 0.45)"
+                  strokeDasharray="4 4"
+                />
+              )}
               <Area
                 type="monotone"
                 dataKey="value"
-                stroke={stroke}
-                strokeWidth={2}
+                stroke="url(#navStrokeRamp)"
+                strokeWidth={2.5}
                 fill={`url(#${gradientId})`}
+                style={{ filter: "url(#navGlow)" }}
+                activeDot={{ r: 4, strokeWidth: 0, fill: "oklch(0.82 0.15 78)" }}
               />
               {subMarkers.map((m) => (
                 <ReferenceDot

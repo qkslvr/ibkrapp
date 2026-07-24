@@ -70,7 +70,7 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-2 border-b border-border/50 bg-background/80 px-4 backdrop-blur-md sm:px-6">
+    <header className="glass sticky top-0 z-30 flex h-16 items-center justify-between gap-2 border-b border-white/10 px-4 shadow-[0_1px_0_0_oklch(1_0_0_/_0.04)_inset,0_8px_24px_-16px_oklch(0_0_0_/_0.6)] sm:px-6">
       {/* Menu (mobile) + Search */}
       <div className="flex min-w-0 flex-1 items-center gap-2">
         <MobileSidebar />

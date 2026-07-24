@@ -83,46 +83,50 @@
 }
 
 .dark {
-  /* Refined slate palette — lifted off pure black, faint blue undertone, with
-     clearly layered surfaces (bg < sidebar highlights < card < popover). */
-  --background: oklch(0.205 0.014 264);
-  --foreground: oklch(0.98 0.004 264);
-  --card: oklch(0.238 0.015 264);
-  --card-foreground: oklch(0.98 0.004 264);
-  --popover: oklch(0.252 0.016 264);
-  --popover-foreground: oklch(0.98 0.004 264);
-  --primary: oklch(0.72 0.15 255);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.285 0.015 264);
-  --secondary-foreground: oklch(0.98 0.004 264);
-  --muted: oklch(0.285 0.015 264);
-  --muted-foreground: oklch(0.72 0.012 264);
-  --accent: oklch(0.31 0.018 264);
-  --accent-foreground: oklch(0.98 0.004 264);
+  /* Cool slate surfaces + warm off-white ink. The base keeps a faint indigo
+     undertone; text is a soft warm white (not glaring pure white) so long
+     sessions stay easy on the eyes. Surfaces are clearly layered:
+     bg < sidebar < card < popover. */
+  --background: oklch(0.208 0.014 268);
+  --foreground: oklch(0.955 0.006 80);
+  --card: oklch(0.242 0.015 268);
+  --card-foreground: oklch(0.955 0.006 80);
+  --popover: oklch(0.258 0.016 268);
+  --popover-foreground: oklch(0.955 0.006 80);
+  --primary: oklch(0.72 0.15 258);
+  --primary-foreground: oklch(0.98 0.01 260);
+  --secondary: oklch(0.29 0.015 268);
+  --secondary-foreground: oklch(0.955 0.006 80);
+  --muted: oklch(0.29 0.015 268);
+  --muted-foreground: oklch(0.73 0.014 78);
+  --accent: oklch(0.315 0.018 268);
+  --accent-foreground: oklch(0.955 0.006 80);
   --destructive: oklch(0.65 0.2 25);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.72 0.15 255);
-  --chart-1: oklch(0.72 0.15 255);
-  --chart-2: oklch(0.75 0.18 160);
-  --chart-3: oklch(0.8 0.15 80);
-  --chart-4: oklch(0.65 0.2 300);
-  --chart-5: oklch(0.7 0.2 30);
-  --sidebar: oklch(0.185 0.014 264);
-  --sidebar-foreground: oklch(0.98 0.004 264);
-  --sidebar-primary: oklch(0.72 0.15 255);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.285 0.016 264);
-  --sidebar-accent-foreground: oklch(0.98 0.004 264);
+  --ring: oklch(0.72 0.15 258);
+  /* Data-viz accents — a vivid, harmonious ramp (blue, teal, amber, violet, rose). */
+  --chart-1: oklch(0.72 0.16 258);
+  --chart-2: oklch(0.76 0.15 178);
+  --chart-3: oklch(0.82 0.15 78);
+  --chart-4: oklch(0.68 0.19 305);
+  --chart-5: oklch(0.68 0.2 18);
+  --sidebar: oklch(0.188 0.014 268);
+  --sidebar-foreground: oklch(0.955 0.006 80);
+  --sidebar-primary: oklch(0.72 0.15 258);
+  --sidebar-primary-foreground: oklch(0.98 0.01 260);
+  --sidebar-accent: oklch(0.29 0.016 268);
+  --sidebar-accent-foreground: oklch(0.955 0.006 80);
   --sidebar-border: oklch(1 0 0 / 9%);
-  --sidebar-ring: oklch(0.72 0.15 255);
+  --sidebar-ring: oklch(0.72 0.15 258);
 
   /* Finance-specific colors */
-  --gain: oklch(0.72 0.19 145);
-  --gain-muted: oklch(0.72 0.19 145 / 15%);
-  --loss: oklch(0.65 0.22 25);
-  --loss-muted: oklch(0.65 0.22 25 / 15%);
+  --gain: oklch(0.74 0.19 150);
+  --gain-muted: oklch(0.74 0.19 150 / 15%);
+  --loss: oklch(0.66 0.21 22);
+  --loss-muted: oklch(0.66 0.21 22 / 15%);
   --neutral: oklch(0.65 0 0);
+  --accent-warm: oklch(0.82 0.15 78);
 }
 
 @layer base {
@@ -131,11 +135,13 @@
   }
   body {
     @apply bg-background text-foreground;
-    /* Subtle depth: a soft cool glow up top and a faint vignette, fixed so it
-       doesn't scroll — gives the flat dark surface some dimensionality. */
+    /* Layered ambient light: a cool indigo glow top-left, a violet wash
+       top-right, and a faint warm ember low-left — fixed so it reads as
+       ambient depth rather than scrolling content. */
     background-image:
-      radial-gradient(1100px 520px at 15% -8%, oklch(0.72 0.15 255 / 0.10), transparent 62%),
-      radial-gradient(900px 500px at 100% 0%, oklch(0.75 0.14 300 / 0.06), transparent 60%);
+      radial-gradient(1100px 520px at 12% -8%, oklch(0.72 0.15 258 / 0.12), transparent 60%),
+      radial-gradient(900px 520px at 100% -2%, oklch(0.7 0.16 305 / 0.07), transparent 58%),
+      radial-gradient(1000px 700px at 50% 118%, oklch(0.78 0.13 70 / 0.05), transparent 60%);
     background-attachment: fixed;
     background-repeat: no-repeat;
   }
@@ -146,8 +152,21 @@
      layered rather than flat blocks. */
   .dark [data-slot="card"] {
     box-shadow:
-      0 1px 0 0 oklch(1 0 0 / 0.04) inset,
+      0 1px 0 0 oklch(1 0 0 / 0.05) inset,
       0 1px 2px oklch(0 0 0 / 0.4),
-      0 8px 24px -12px oklch(0 0 0 / 0.5);
+      0 10px 30px -14px oklch(0 0 0 / 0.55);
+  }
+
+  /* Frosted glass — for the sticky header and floating surfaces. */
+  .glass {
+    background: color-mix(in oklch, var(--background) 62%, transparent);
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+  }
+
+  /* Fine dotted texture, very subtle — used behind hero surfaces for detail. */
+  .dot-grid {
+    background-image: radial-gradient(oklch(1 0 0 / 0.05) 1px, transparent 1px);
+    background-size: 22px 22px;
   }
 }
