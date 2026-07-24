@@ -19,15 +19,23 @@ import { Search, ArrowUpDown } from "lucide-react";
 
 interface HoldingsTableProps {
   positions: Position[];
+  // When provided, weights are shown as a share of the WHOLE portfolio
+  // (securities + cash), not just the securities sleeve.
+  totalPortfolioValue?: number;
 }
 
 type SortKey = keyof Position;
 type SortOrder = "asc" | "desc";
 
-export function HoldingsTable({ positions }: HoldingsTableProps) {
+export function HoldingsTable({ positions, totalPortfolioValue }: HoldingsTableProps) {
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("marketValue");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+
+  const weightOf = (p: Position) =>
+    totalPortfolioValue && totalPortfolioValue > 0
+      ? (Math.abs(p.marketValue) / totalPortfolioValue) * 100
+      : p.weight;
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -41,10 +49,11 @@ export function HoldingsTable({ positions }: HoldingsTableProps) {
   const totals = {
     costBasis: positions.reduce((s, p) => s + p.costBasis, 0),
     marketValue: positions.reduce((s, p) => s + p.marketValue, 0),
+    dayChange: positions.reduce((s, p) => s + p.dayChange, 0),
     unrealizedPL: positions.reduce((s, p) => s + p.unrealizedPL, 0),
     unrealizedPLPercent: positions.reduce((s, p) => s + p.unrealizedPL, 0) /
       positions.reduce((s, p) => s + p.costBasis, 0) * 100,
-    weight: positions.reduce((s, p) => s + p.weight, 0),
+    weight: positions.reduce((s, p) => s + weightOf(p), 0),
   };
 
   const filteredPositions = positions
@@ -109,6 +118,7 @@ export function HoldingsTable({ positions }: HoldingsTableProps) {
               <SortableHeader label="Current Price" sortKeyName="currentPrice" className="text-right" />
               <SortableHeader label="Invested" sortKeyName="costBasis" className="text-right" />
               <SortableHeader label="Current Value" sortKeyName="marketValue" className="text-right" />
+              <SortableHeader label="Today" sortKeyName="dayChange" className="text-right" />
               <SortableHeader label="Total Return" sortKeyName="unrealizedPL" className="text-right" />
               <SortableHeader label="Total Return%" sortKeyName="unrealizedPLPercent" className="text-right" />
               <SortableHeader label="Weight" sortKeyName="weight" className="text-right" />
@@ -157,6 +167,15 @@ export function HoldingsTable({ positions }: HoldingsTableProps) {
                 </TableCell>
                 <TableCell className="text-right">
                   <ChangeIndicator
+                    value={position.dayChange}
+                    percentage={position.dayChangePercent}
+                    showIcon={false}
+                    size="xs"
+                    fractionDigits={0}
+                  />
+                </TableCell>
+                <TableCell className="text-right">
+                  <ChangeIndicator
                     value={position.unrealizedPL}
                     showIcon={false}
                     showPercentage={false}
@@ -175,7 +194,7 @@ export function HoldingsTable({ positions }: HoldingsTableProps) {
                   />
                 </TableCell>
                 <TableCell className="text-right font-mono text-sm">
-                  {position.weight.toFixed(0)}%
+                  {weightOf(position).toFixed(1)}%
                 </TableCell>
                 <TableCell className="text-right font-mono text-sm">
                   {formatMarketCap(position.marketCap ?? 0)}
@@ -197,6 +216,15 @@ export function HoldingsTable({ positions }: HoldingsTableProps) {
               </TableCell>
               <TableCell className="text-right font-mono font-semibold">
                 ${totals.marketValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+              </TableCell>
+              <TableCell className="text-right">
+                <ChangeIndicator
+                  value={totals.dayChange}
+                  showIcon={false}
+                  showPercentage={false}
+                  size="xs"
+                  fractionDigits={0}
+                />
               </TableCell>
               <TableCell className="text-right">
                 <ChangeIndicator

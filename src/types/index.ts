@@ -14,6 +14,8 @@ export interface Position {
   weight: number;
   sector: string;
   marketCap: number | null;
+  beta: number | null;
+  dividendYield: number | null; // %, from Finviz
   logo?: string;
 }
 
@@ -112,6 +114,12 @@ export interface NAVSummary {
   deposits: NAVDeposit[];
   monthly: NAVMonthlySnapshot[];
   daily: NAVDailyPoint[];
+  dividendYtd: number; // dividends received YTD (USD), from Flex
+  risk: {
+    volatility: number;   // annualised, %
+    sharpeRatio: number;
+    maxDrawdown: number;  // %, negative
+  };
 }
 
 // Chart Types
@@ -211,6 +219,7 @@ export interface ScreenerStock {
   perfYear: number | null; // %
   perfYTD: number | null; // %
   analystRecom: number | null; // 1 = Strong Buy … 5 = Strong Sell
+  beta: number | null;
   price: number | null;
   change: number | null; // %
   volume: number | null;

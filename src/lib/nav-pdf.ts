@@ -182,7 +182,7 @@ export async function downloadMonthlyReport(nav: NAVSummary, month: string): Pro
   doc.text("Daily Portfolio Balance & NAV", marginX, y);
   autoTable(doc, {
     startY: y + 8,
-    head: [["Date", "Portfolio Balance", "Units Outstanding", "NAV / Unit", "Daily Δ", "Return vs Base"]],
+    head: [["Date", "Portfolio Balance", "Units Outstanding", "NAV / Unit", "Daily Chg", "Return vs Base"]],
     body: monthDaily.map((d) => [
       dayLabel(d.date),
       money(d.portfolioValue),

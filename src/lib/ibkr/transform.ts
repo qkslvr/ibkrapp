@@ -92,6 +92,8 @@ export function transformPosition(
     weight,
     sector: quote?.sector || "Unknown",
     marketCap: quote?.marketCap ?? null,
+    beta: isOption ? null : quote?.beta ?? null,
+    dividendYield: isOption ? null : quote?.dividendYield ?? null,
     logo: undefined,
   };
 }

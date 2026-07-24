@@ -9,6 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   ReferenceLine,
+  ReferenceDot,
 } from "recharts";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -35,8 +36,11 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
+type Metric = "nav" | "value";
+
 export function NavShareChart() {
   const [range, setRange] = useState<(typeof RANGES)[number]>(RANGES[3]);
+  const [metric, setMetric] = useState<Metric>("nav");
   const { data: nav, isLoading } = useNAV();
 
   const daily = nav?.daily ?? [];
@@ -46,9 +50,28 @@ export function NavShareChart() {
 
   const chartData = daily
     .filter((d) => range.label === "ALL" || d.date >= cutoffStr)
-    .map((d) => ({ date: d.date, nav: +d.nav.toFixed(4) }));
+    .map((d) => ({
+      date: d.date,
+      value: metric === "nav" ? +d.nav.toFixed(4) : +d.portfolioValue.toFixed(2),
+    }));
 
+  // Subscription markers — dots on the days capital came in (the visible jumps).
+  const subByDate = new Map<string, { amount: number; ccy: string }>();
+  for (const d of nav?.deposits ?? []) {
+    const prev = subByDate.get(d.date);
+    subByDate.set(d.date, {
+      amount: (prev?.amount ?? 0) + d.amount,
+      ccy: prev && prev.ccy !== d.originalCurrency ? "USD" : d.originalCurrency,
+    });
+  }
+  const subMarkers = chartData
+    .filter((p) => subByDate.has(p.date))
+    .map((p) => ({ date: p.date, value: p.value, ...subByDate.get(p.date)! }));
+
+  const isNav = metric === "nav";
   const currentNav = nav?.currentNAV ?? 100;
+  const portfolioValue = nav?.currentPortfolioValue ?? 0;
+  const cash = nav?.currentCash ?? 0;
   const returnPct = nav?.totalReturnPct ?? 0;
   const isPositive = returnPct >= 0;
   const stroke = isPositive ? "oklch(0.72 0.19 145)" : "oklch(0.65 0.22 25)";
@@ -56,17 +79,39 @@ export function NavShareChart() {
 
   const formatDate = (date: string) =>
     new Date(date).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const formatY = (v: number) =>
+    isNav ? "$" + v.toFixed(0) : "$" + (v / 1000).toFixed(0) + "k";
 
   return (
     <Card className="border-border/50 bg-card/50 p-6">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h3 className="text-sm font-medium text-muted-foreground">NAV per Share</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              {isNav ? "NAV per Share" : "Portfolio Value"}
+            </h3>
+            <div className="flex gap-0.5 rounded-md bg-secondary/50 p-0.5">
+              {(["nav", "value"] as const).map((m) => (
+                <button
+                  key={m}
+                  onClick={() => setMetric(m)}
+                  className={cn(
+                    "rounded px-2 py-0.5 text-[11px] transition-colors",
+                    metric === m ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {m === "nav" ? "NAV/Share" : "Value"}
+                </button>
+              ))}
+            </div>
+          </div>
           {isLoading ? (
             <div className="mt-1 h-9 w-40 animate-pulse rounded bg-secondary/50" />
           ) : (
             <div className="mt-1 flex items-baseline gap-2">
-              <p className="text-3xl font-semibold tracking-tight">{money(currentNav)}</p>
+              <p className="text-3xl font-semibold tracking-tight">
+                {isNav ? money(currentNav) : money(portfolioValue)}
+              </p>
               <span
                 className={cn(
                   "text-sm font-medium",
@@ -94,11 +139,12 @@ export function NavShareChart() {
         </div>
       </div>
 
-      {/* Portfolio USD value · Total Invested · Cash balance */}
-      <div className="mt-4 grid grid-cols-3 gap-4 border-y border-border/50 py-3">
-        <Stat label="Portfolio Value" value={money(nav?.currentPortfolioValue ?? 0)} />
+      {/* Reconciling breakdown: Securities + Cash = Portfolio Value; Invested = cost */}
+      <div className="mt-4 grid grid-cols-2 gap-4 border-y border-border/50 py-3 sm:grid-cols-4">
+        <Stat label="Portfolio Value" value={money(portfolioValue)} />
+        <Stat label="Securities" value={money(Math.max(portfolioValue - cash, 0))} />
+        <Stat label="Cash Balance" value={money(cash)} />
         <Stat label="Total Invested" value={money(nav?.totalCapitalInvested ?? 0)} />
-        <Stat label="Cash Balance" value={money(nav?.currentCash ?? 0)} />
       </div>
 
       <div className="mt-4 h-64">
@@ -130,32 +176,44 @@ export function NavShareChart() {
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: "oklch(0.65 0 0)", fontSize: 11 }}
-                tickFormatter={(v) => "$" + (v as number).toFixed(0)}
-                width={44}
+                tickFormatter={(v) => formatY(v as number)}
+                width={48}
                 domain={["auto", "auto"]}
               />
               <Tooltip
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
-                    const p = payload[0].payload as { date: string; nav: number };
+                    const p = payload[0].payload as { date: string; value: number };
                     return (
                       <div className="rounded-lg border border-border/50 bg-popover px-3 py-2 shadow-lg">
                         <p className="text-xs text-muted-foreground">{formatDate(p.date)}</p>
-                        <p className="font-mono font-medium">{money(p.nav, 4)}</p>
+                        <p className="font-mono font-medium">{money(p.value, isNav ? 4 : 2)}</p>
                       </div>
                     );
                   }
                   return null;
                 }}
               />
-              <ReferenceLine y={100} stroke="oklch(0.4 0 0)" strokeDasharray="3 3" />
+              {isNav && <ReferenceLine y={100} stroke="oklch(0.4 0 0)" strokeDasharray="3 3" />}
               <Area
                 type="monotone"
-                dataKey="nav"
+                dataKey="value"
                 stroke={stroke}
                 strokeWidth={2}
                 fill={`url(#${gradientId})`}
               />
+              {subMarkers.map((m) => (
+                <ReferenceDot
+                  key={m.date}
+                  x={m.date}
+                  y={m.value}
+                  r={4}
+                  fill="oklch(0.7 0.15 250)"
+                  stroke="oklch(0.18 0.01 270)"
+                  strokeWidth={1.5}
+                  ifOverflow="extendDomain"
+                />
+              ))}
             </AreaChart>
           </ResponsiveContainer>
         )}

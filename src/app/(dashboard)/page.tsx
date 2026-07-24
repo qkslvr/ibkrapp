@@ -12,12 +12,9 @@ import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { usePortfolioSummary } from "@/hooks/usePortfolioSummary";
 import { usePositions } from "@/hooks/usePositions";
 import { useTransactions } from "@/hooks/useTransactions";
-import {
-  mockDividendInfo,
-  mockRiskMetrics,
-  mockSectorAllocation,
-} from "@/lib/mock-data";
-import { SectorAllocation, TopMover } from "@/types";
+import { useNAV } from "@/hooks/useNAV";
+import { mockSectorAllocation } from "@/lib/mock-data";
+import { DividendInfo, RiskMetrics, SectorAllocation, TopMover } from "@/types";
 
 const SECTOR_COLORS: Record<string, string> = {
   Technology: "#6366f1",
@@ -38,6 +35,7 @@ export default function DashboardPage() {
   const { data: summary, isLoading: summaryLoading } = usePortfolioSummary();
   const { data: positions, isLoading: positionsLoading } = usePositions();
   const { data: transactions } = useTransactions(30);
+  const { data: nav } = useNAV();
 
   const sectorAllocation = useMemo<SectorAllocation[]>(() => {
     if (!positions?.length) return mockSectorAllocation;
@@ -84,16 +82,49 @@ export default function DashboardPage() {
     };
   }, [positions]);
 
-  const displaySummary = summary ?? {
-    totalValue: 0,
-    totalReturn: 0,
-    totalReturnPercent: 0,
-    dayChange: 0,
-    dayChangePercent: 0,
-    cashBalance: 0,
-    totalCost: 0,
-    buyingPower: 0,
-    marginUsed: 0,
+  // Hero metrics. The fund's NAV summary is authoritative for value / invested /
+  // return / cash (the IBKR account summary's cost basis is unreliable here).
+  const lastDaily = nav?.daily?.[nav.daily.length - 1];
+  const heroPV = nav?.currentPortfolioValue ?? summary?.totalValue ?? 0;
+  const heroInvested = nav?.totalCapitalInvested ?? summary?.totalCost ?? 0;
+  const heroReturn = nav ? heroPV - heroInvested : summary?.totalReturn ?? 0;
+  const heroReturnPct = nav
+    ? heroInvested > 0 ? (heroReturn / heroInvested) * 100 : 0
+    : summary?.totalReturnPercent ?? 0;
+  const heroCash = nav?.currentCash ?? summary?.cashBalance ?? 0;
+  const heroDayPct = lastDaily?.navChangePct ?? summary?.dayChangePercent ?? 0;
+  const heroDay = nav ? (heroDayPct / 100) * heroPV : summary?.dayChange ?? 0;
+
+  const displaySummary = {
+    totalValue: heroPV,
+    totalReturn: heroReturn,
+    totalReturnPercent: heroReturnPct,
+    dayChange: heroDay,
+    dayChangePercent: heroDayPct,
+    cashBalance: heroCash,
+  };
+
+  // Real dividend & risk, from Finviz per-holding data + the fund NAV series.
+  const withBeta = (positions ?? []).filter((p) => p.beta != null);
+  const betaBase = withBeta.reduce((s, p) => s + Math.abs(p.marketValue), 0);
+  const portfolioBeta =
+    betaBase > 0
+      ? withBeta.reduce((s, p) => s + (p.beta as number) * (Math.abs(p.marketValue) / betaBase), 0)
+      : 0;
+  const projectedAnnualDiv = (positions ?? []).reduce(
+    (s, p) => s + Math.abs(p.marketValue) * ((p.dividendYield ?? 0) / 100),
+    0,
+  );
+  const dividendInfo: DividendInfo = {
+    ytdIncome: nav?.dividendYtd ?? 0,
+    projectedAnnual: projectedAnnualDiv,
+    portfolioYield: heroPV > 0 ? (projectedAnnualDiv / heroPV) * 100 : 0,
+  };
+  const riskMetrics: RiskMetrics = {
+    beta: +portfolioBeta.toFixed(2),
+    volatility: nav?.risk.volatility ?? 0,
+    sharpeRatio: nav?.risk.sharpeRatio ?? 0,
+    maxDrawdown: nav?.risk.maxDrawdown ?? 0,
   };
 
   return (
@@ -153,7 +184,7 @@ export default function DashboardPage() {
       <div>
         <h2 className="mb-4 text-lg font-semibold">Holdings</h2>
         {!positionsLoading && positions && (
-          <HoldingsTable positions={positions} />
+          <HoldingsTable positions={positions} totalPortfolioValue={heroPV} />
         )}
         {positionsLoading && (
           <div className="h-32 rounded-lg bg-card/50 border border-border/50 animate-pulse" />
@@ -162,8 +193,8 @@ export default function DashboardPage() {
 
       {/* Bottom Widgets */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <DividendsWidget data={mockDividendInfo} />
-        <RiskMetricsWidget data={mockRiskMetrics} />
+        <DividendsWidget data={dividendInfo} />
+        <RiskMetricsWidget data={riskMetrics} />
         <RecentActivity transactions={transactions ?? []} />
       </div>
 

@@ -18,6 +18,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   ReferenceLine,
+  ReferenceDot,
 } from "recharts";
 import { useNAV } from "@/hooks/useNAV";
 import { format, parseISO } from "date-fns";
@@ -203,6 +204,7 @@ export default function NAVPage() {
 
   const balanceData = daily.map((d) => ({
     label: format(parseISO(d.date), "MMM d"),
+    date: d.date,
     balance: +d.portfolioValue.toFixed(2),
     nav: +d.nav.toFixed(4),
   }));
@@ -211,9 +213,15 @@ export default function NAVPage() {
     ? balanceData
     : nav.monthly.map((m) => ({
         label: format(parseISO(m.month + "-01"), "MMM yy"),
+        date: m.month + "-01",
         nav: +m.nav.toFixed(4),
         balance: m.portfolioValue,
       }));
+
+  // Subscription markers keyed by the chart's x-axis label (the days capital
+  // arrived — the visible step-ups in the balance line).
+  const subDates = new Set(nav.deposits.map((d) => d.date));
+  const subMarkers = chartData.filter((p) => subDates.has(p.date));
 
   const visibleRows = sortLedger(
     typeFilter === "all" ? ledger : ledger.filter((r) => r.kind === typeFilter),
@@ -318,6 +326,18 @@ export default function NAVPage() {
                 dot={false}
                 activeDot={{ r: 4 }}
               />
+              {subMarkers.map((m) => (
+                <ReferenceDot
+                  key={m.date}
+                  x={m.label}
+                  y={m.balance}
+                  r={4}
+                  fill="oklch(0.72 0.19 145)"
+                  stroke="oklch(0.18 0.01 270)"
+                  strokeWidth={1.5}
+                  ifOverflow="extendDomain"
+                />
+              ))}
             </LineChart>
           </ResponsiveContainer>
         </Card>
@@ -352,6 +372,18 @@ export default function NAVPage() {
                 dot={false}
                 activeDot={{ r: 4 }}
               />
+              {subMarkers.map((m) => (
+                <ReferenceDot
+                  key={m.date}
+                  x={m.label}
+                  y={m.nav}
+                  r={4}
+                  fill="oklch(0.7 0.15 250)"
+                  stroke="oklch(0.18 0.01 270)"
+                  strokeWidth={1.5}
+                  ifOverflow="extendDomain"
+                />
+              ))}
             </LineChart>
           </ResponsiveContainer>
         </Card>

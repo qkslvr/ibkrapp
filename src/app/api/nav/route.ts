@@ -121,18 +121,30 @@ export async function GET() {
       return val;
     }
 
-    // Calculate units issued per deposit at the NAV on that date
+    // Calculate units issued per deposit at the NAV on that date.
+    // NAV for a subscription is the fund's *opening* NAV that day = (prior-day
+    // portfolio value) ÷ (units outstanding at the start of the day). Multiple
+    // subscriptions on the same day therefore all price at that same NAV — we
+    // must NOT divide the stale prior-day value by a unit count that already
+    // grew from earlier same-day deposits (that wrongly craters the later
+    // same-day NAV).
     let totalUnits = 0;
+    let unitsBeforeDate = 0; // units outstanding at the start of `currentDate`
+    let currentDate = "";
     const deposits: NAVDeposit[] = [];
 
     for (const dep of rawDeposits) {
+      if (dep.date !== currentDate) {
+        unitsBeforeDate = totalUnits; // freeze the opening unit count for this day
+        currentDate = dep.date;
+      }
       let navAtDeposit: number;
-      if (totalUnits === 0 || dep.date <= NAV_BATCH_UNTIL_DATE) {
+      if (unitsBeforeDate === 0 || dep.date <= NAV_BATCH_UNTIL_DATE) {
         // Founding batch (or very first deposit) — everyone buys in at base NAV.
         navAtDeposit = BASE_NAV;
       } else {
         const portfolioValue = portfolioValueBefore(dep.date);
-        navAtDeposit = portfolioValue > 0 ? portfolioValue / totalUnits : BASE_NAV;
+        navAtDeposit = portfolioValue > 0 ? portfolioValue / unitsBeforeDate : BASE_NAV;
       }
       const unitsIssued = dep.amount / navAtDeposit;
       totalUnits += unitsIssued;
@@ -223,6 +235,39 @@ export async function GET() {
       prevNav = nav;
     }
 
+    // Risk metrics from the fund's own daily NAV/unit series (the authoritative
+    // return stream — already net of flows, since NAV/unit is flow-neutral).
+    const dailyReturns = daily.slice(1).map((d) => d.navChangePct / 100);
+    let volatility = 0;
+    let sharpeRatio = 0;
+    if (dailyReturns.length >= 2) {
+      const mean = dailyReturns.reduce((s, r) => s + r, 0) / dailyReturns.length;
+      const variance =
+        dailyReturns.reduce((s, r) => s + (r - mean) ** 2, 0) / (dailyReturns.length - 1);
+      const std = Math.sqrt(variance);
+      volatility = +(std * Math.sqrt(252) * 100).toFixed(2);
+      // Risk-free ~0 for this horizon; annualise the Sharpe.
+      sharpeRatio = std > 0 ? +((mean / std) * Math.sqrt(252)).toFixed(2) : 0;
+    }
+    // Max drawdown over the NAV/unit path (peak-to-trough, %).
+    let peak = -Infinity;
+    let maxDrawdown = 0;
+    for (const d of daily) {
+      if (d.nav > peak) peak = d.nav;
+      if (peak > 0) {
+        const dd = ((d.nav - peak) / peak) * 100;
+        if (dd < maxDrawdown) maxDrawdown = dd;
+      }
+    }
+    maxDrawdown = +maxDrawdown.toFixed(2);
+
+    // Dividend income received year-to-date (from the Flex cash transactions),
+    // converted to USD like everything else.
+    const thisYear = new Date().getFullYear().toString();
+    const dividendYtd = cashTxns
+      .filter((t) => t.type === "Dividends" && t.amount > 0 && parseDateStr(t.dateTime).startsWith(thisYear))
+      .reduce((s, t) => s + toUSD(t.amount, t.currency, t.fxRateToBase), 0);
+
     // Current state
     const latestDates = Object.keys(dailyValue).sort();
     const latestValue =
@@ -242,6 +287,8 @@ export async function GET() {
       deposits,
       monthly,
       daily,
+      dividendYtd,
+      risk: { volatility, sharpeRatio, maxDrawdown },
     };
 
     // A zero portfolio value means the equity summary couldn't be read this time —
