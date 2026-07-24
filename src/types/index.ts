@@ -76,13 +76,25 @@ export interface Transaction {
 // NAV Types
 export interface NAVDeposit {
   date: string;
-  amount: number;
+  amount: number;            // USD value credited to the fund (used for units/NAV)
+  originalAmount: number;    // face amount as deposited (equals amount when USD)
+  originalCurrency: string;  // "USD", "AED", ...
+  fxRateToUSD: number;       // originalAmount * fxRateToUSD === amount
   navAtDeposit: number;
   unitsIssued: number;
 }
 
 export interface NAVMonthlySnapshot {
   month: string; // "2026-02"
+  portfolioValue: number;
+  totalUnits: number;
+  nav: number;
+  returnPct: number; // vs $100 base
+}
+
+// One row per calendar day: portfolio balance and the NAV/unit it implies.
+export interface NAVDailyPoint {
+  date: string; // "YYYY-MM-DD"
   portfolioValue: number;
   totalUnits: number;
   nav: number;
@@ -97,6 +109,7 @@ export interface NAVSummary {
   totalReturnPct: number;
   deposits: NAVDeposit[];
   monthly: NAVMonthlySnapshot[];
+  daily: NAVDailyPoint[];
 }
 
 // Chart Types

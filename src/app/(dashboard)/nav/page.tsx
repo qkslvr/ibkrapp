@@ -53,11 +53,24 @@ export default function NAVPage() {
 
   const isPositive = nav.totalReturnPct >= 0;
 
-  const chartData = nav.monthly.map((m) => ({
-    label: format(parseISO(m.month + "-01"), "MMM yy"),
-    nav: +m.nav.toFixed(4),
-    portfolioValue: m.portfolioValue,
+  // Prefer the real daily series (portfolio balance + NAV per day). Fall back to
+  // the monthly snapshots if a daily series isn't available yet.
+  const daily = nav.daily ?? [];
+  const hasDaily = daily.length > 1;
+
+  const balanceData = daily.map((d) => ({
+    label: format(parseISO(d.date), "MMM d"),
+    balance: +d.portfolioValue.toFixed(2),
+    nav: +d.nav.toFixed(4),
   }));
+
+  const chartData = hasDaily
+    ? balanceData
+    : nav.monthly.map((m) => ({
+        label: format(parseISO(m.month + "-01"), "MMM yy"),
+        nav: +m.nav.toFixed(4),
+        balance: m.portfolioValue,
+      }));
 
   return (
     <div className="space-y-6">
@@ -107,10 +120,45 @@ export default function NAVPage() {
         </Card>
       </div>
 
+      {/* Portfolio Balance Chart */}
+      {chartData.length > 1 && (
+        <Card className="border-border/50 bg-card/50 p-6">
+          <h2 className="mb-4 text-sm font-medium text-muted-foreground">
+            Portfolio Balance{hasDaily ? " — Daily" : " — Monthly"}
+          </h2>
+          <ResponsiveContainer width="100%" height={260}>
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 0.05)" />
+              <XAxis dataKey="label" tick={{ fontSize: 11 }} stroke="oklch(1 0 0 / 0.2)" minTickGap={24} />
+              <YAxis
+                domain={["auto", "auto"]}
+                tick={{ fontSize: 11 }}
+                stroke="oklch(1 0 0 / 0.2)"
+                tickFormatter={(v) => "$" + (v as number).toLocaleString("en-US", { notation: "compact", maximumFractionDigits: 1 })}
+              />
+              <Tooltip
+                contentStyle={{ background: "oklch(0.18 0.01 270)", border: "1px solid oklch(1 0 0 / 0.1)", borderRadius: 8 }}
+                formatter={(v: unknown) => ["$" + (v as number).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }), "Balance"] as [string, string]}
+              />
+              <Line
+                type="monotone"
+                dataKey="balance"
+                stroke="oklch(0.7_0.15_250)"
+                strokeWidth={2}
+                dot={false}
+                activeDot={{ r: 4 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </Card>
+      )}
+
       {/* NAV Chart */}
       {chartData.length > 1 && (
         <Card className="border-border/50 bg-card/50 p-6">
-          <h2 className="mb-4 text-sm font-medium text-muted-foreground">NAV per Unit — Monthly</h2>
+          <h2 className="mb-4 text-sm font-medium text-muted-foreground">
+            NAV per Unit{hasDaily ? " — Daily" : " — Monthly"}
+          </h2>
           <ResponsiveContainer width="100%" height={260}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 0.05)" />
@@ -143,7 +191,7 @@ export default function NAVPage() {
       <Card className="border-border/50 bg-card/50">
         <div className="border-b border-border/50 px-6 py-4">
           <h2 className="text-sm font-medium">Capital Subscriptions &amp; Units Issued</h2>
-          <p className="text-xs text-muted-foreground mt-0.5">Each deposit is converted to units at the NAV on the date of subscription</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Each deposit is converted to units at the NAV on the date of subscription. Non-USD deposits are counted at the USD credited after conversion.</p>
         </div>
         <Table>
           <TableHeader>
@@ -165,7 +213,14 @@ export default function NAVPage() {
                   <TableCell className="text-muted-foreground">
                     {format(parseISO(dep.date), "MMM d, yyyy")}
                   </TableCell>
-                  <TableCell className="text-right font-mono">{fmtCurrency(dep.amount)}</TableCell>
+                  <TableCell className="text-right font-mono">
+                    {fmtCurrency(dep.amount)}
+                    {dep.originalCurrency && dep.originalCurrency !== "USD" && (
+                      <span className="block text-xs text-muted-foreground">
+                        {dep.originalCurrency} {fmt(dep.originalAmount)}
+                      </span>
+                    )}
+                  </TableCell>
                   <TableCell className="text-right font-mono">{fmtCurrency(dep.navAtDeposit)}</TableCell>
                   <TableCell className="text-right font-mono">{fmt(dep.unitsIssued, 4)}</TableCell>
                   <TableCell className="text-right font-mono">{fmtCurrency(currentValue)}</TableCell>
@@ -178,6 +233,46 @@ export default function NAVPage() {
           </TableBody>
         </Table>
       </Card>
+
+      {/* Daily Balance & NAV Table */}
+      {hasDaily && (
+        <Card className="border-border/50 bg-card/50">
+          <div className="border-b border-border/50 px-6 py-4">
+            <h2 className="text-sm font-medium">Daily Portfolio Balance &amp; NAV</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              NAV / unit = portfolio balance ÷ units outstanding that day
+            </p>
+          </div>
+          <div className="max-h-[420px] overflow-y-auto">
+            <Table>
+              <TableHeader className="sticky top-0 bg-card/95 backdrop-blur">
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead className="text-right">Portfolio Balance</TableHead>
+                  <TableHead className="text-right">Units Outstanding</TableHead>
+                  <TableHead className="text-right">NAV / Unit</TableHead>
+                  <TableHead className="text-right">Return vs Base</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {[...daily].reverse().map((d) => (
+                  <TableRow key={d.date}>
+                    <TableCell className="text-muted-foreground">
+                      {format(parseISO(d.date), "MMM d, yyyy")}
+                    </TableCell>
+                    <TableCell className="text-right font-mono">{fmtCurrency(d.portfolioValue)}</TableCell>
+                    <TableCell className="text-right font-mono">{fmt(d.totalUnits, 4)}</TableCell>
+                    <TableCell className="text-right font-mono font-medium">{fmtCurrency(d.nav)}</TableCell>
+                    <TableCell className={cn("text-right font-mono text-sm", d.returnPct >= 0 ? "text-[oklch(0.72_0.19_145)]" : "text-[oklch(0.65_0.22_25)]")}>
+                      {d.returnPct >= 0 ? "+" : ""}{fmt(d.returnPct)}%
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </Card>
+      )}
 
       {/* Monthly NAV Table */}
       <Card className="border-border/50 bg-card/50">

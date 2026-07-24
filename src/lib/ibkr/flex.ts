@@ -122,6 +122,7 @@ export interface FlexCashTransaction {
   symbol: string;
   amount: number;
   currency: string;
+  fxRateToBase: number; // IBKR's exact rate to base (USD); 0 if the query omits it
   description: string;
 }
 
@@ -146,6 +147,7 @@ export function parseCashTransactions(xml: string): FlexCashTransaction[] {
     symbol: a.symbol ?? "",
     amount: Number(a.amount ?? 0),
     currency: a.currency ?? "USD",
+    fxRateToBase: Number(a.fxRateToBase ?? 0),
     description: a.description ?? "",
   }));
 }

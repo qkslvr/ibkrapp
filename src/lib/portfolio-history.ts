@@ -47,3 +47,25 @@ export function recordSnapshot(currentValue: number): PortfolioHistoryPoint[] {
   writeCache(CACHE_KEY, history);
   return history;
 }
+
+// Merge a full daily series (e.g. backfilled from the Flex NAV query's
+// EquitySummaryByReportDateInBase) into the durable store. Incoming points win
+// for the days they cover; days only present in the existing store are kept.
+// This makes the daily portfolio-balance chart survive Flex being offline.
+export function mergeDailySeries(
+  points: PortfolioHistoryPoint[],
+): PortfolioHistoryPoint[] {
+  const usable = points.filter((p) => p.date && p.value > 0);
+  if (usable.length === 0) return getPortfolioHistory();
+
+  const byDate = new Map<string, number>();
+  for (const p of getPortfolioHistory()) byDate.set(p.date, p.value);
+  for (const p of usable) byDate.set(p.date, p.value); // incoming wins
+
+  const merged = [...byDate.entries()]
+    .map(([date, value]) => ({ date, value }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  writeCache(CACHE_KEY, merged);
+  return merged;
+}

@@ -1,17 +1,26 @@
 import { NextResponse } from "next/server";
 import { readCache, writeCache } from "@/lib/cache";
-import { NAVSummary, NAVDeposit, NAVMonthlySnapshot } from "@/types";
+import { NAVSummary, NAVDeposit, NAVMonthlySnapshot, NAVDailyPoint } from "@/types";
 import {
   fetchFlexStatement,
   parseCashTransactions,
   parseEquitySummary,
 } from "@/lib/ibkr/flex";
-import { getPortfolioHistory, recordSnapshot } from "@/lib/portfolio-history";
+import {
+  getPortfolioHistory,
+  recordSnapshot,
+  mergeDailySeries,
+} from "@/lib/portfolio-history";
 import { getCurrentPortfolioValue } from "@/lib/ibkr/current-value";
+import { toUSD } from "@/lib/fx";
 
 const FLEX_ACTIVITY_QUERY_ID = process.env.IBKR_FLEX_ACTIVITY_QUERY_ID || "";
 const FLEX_NAV_QUERY_ID = process.env.IBKR_FLEX_NAV_QUERY_ID || "";
 const NAV_START_DATE = process.env.IBKR_NAV_START_DATE || ""; // exclude deposits before this date
+// Founding batch: every deposit on/before this date subscribes at the base NAV
+// of $100 (the fund's initial capital arrived as one batch — the only exception
+// to pricing subscriptions at the prevailing NAV). Overridable via env.
+const NAV_BATCH_UNTIL_DATE = process.env.IBKR_NAV_BATCH_UNTIL_DATE || "2026-02-13";
 const CACHE_KEY = "nav_summary";
 const BASE_NAV = 100; // starting NAV per unit
 
@@ -51,6 +60,14 @@ export async function GET() {
       if (date) dailyValue[date] = row.total;
     }
 
+    // If the Flex NAV query gave us a real daily series, persist it to the
+    // durable store so the portfolio-balance chart survives Flex being offline.
+    if (Object.keys(dailyValue).length > 1) {
+      mergeDailySeries(
+        Object.entries(dailyValue).map(([date, value]) => ({ date, value })),
+      );
+    }
+
     // Flex account doesn't have an EquitySummaryByReportDateInBase section —
     // fall back to our own daily snapshot history (same store the front-page
     // performance chart uses), anchored at the deposit date. Record today's
@@ -61,11 +78,25 @@ export async function GET() {
       for (const p of history) dailyValue[p.date] = p.value;
     }
 
-    // Get deposit events from activity query, sorted ascending by date
+    // Get deposit events from activity query, sorted ascending by date.
+    // Deposits made in a non-USD currency (e.g. AED wired in and converted) are
+    // counted at the USD actually credited — using IBKR's exact fxRateToBase when
+    // present, otherwise a pegged fallback. Counting the foreign face value as USD
+    // would over-issue units and crash NAV per unit for every later subscription.
     const cashTxns = parseCashTransactions(activityXml ?? equityXml ?? "");
     const rawDeposits = cashTxns
       .filter((t) => t.type === "Deposits/Withdrawals" && t.amount > 0)
-      .map((t) => ({ date: parseDateStr(t.dateTime), amount: t.amount }))
+      .map((t) => {
+        const originalCurrency = (t.currency || "USD").toUpperCase();
+        const amountUSD = toUSD(t.amount, originalCurrency, t.fxRateToBase);
+        return {
+          date: parseDateStr(t.dateTime),
+          amount: amountUSD,
+          originalAmount: t.amount,
+          originalCurrency,
+          fxRateToUSD: t.amount !== 0 ? amountUSD / t.amount : 1,
+        };
+      })
       .filter((t) => !NAV_START_DATE || t.date >= NAV_START_DATE)
       .sort((a, b) => a.date.localeCompare(b.date));
 
@@ -92,8 +123,8 @@ export async function GET() {
 
     for (const dep of rawDeposits) {
       let navAtDeposit: number;
-      if (totalUnits === 0) {
-        // First deposit — set base NAV
+      if (totalUnits === 0 || dep.date <= NAV_BATCH_UNTIL_DATE) {
+        // Founding batch (or very first deposit) — everyone buys in at base NAV.
         navAtDeposit = BASE_NAV;
       } else {
         const portfolioValue = portfolioValueBefore(dep.date);
@@ -101,7 +132,15 @@ export async function GET() {
       }
       const unitsIssued = dep.amount / navAtDeposit;
       totalUnits += unitsIssued;
-      deposits.push({ date: dep.date, amount: dep.amount, navAtDeposit, unitsIssued });
+      deposits.push({
+        date: dep.date,
+        amount: dep.amount,
+        originalAmount: dep.originalAmount,
+        originalCurrency: dep.originalCurrency,
+        fxRateToUSD: dep.fxRateToUSD,
+        navAtDeposit,
+        unitsIssued,
+      });
     }
 
     // Build monthly snapshots using end-of-month portfolio values
@@ -155,6 +194,27 @@ export async function GET() {
       });
     }
 
+    // Daily portfolio balance & NAV — one row per day we have a balance for,
+    // so the report shows exactly how NAV per unit is derived (balance ÷ units
+    // outstanding as of that day). On a deposit day both the balance and the
+    // unit count step up together, so NAV stays continuous.
+    const daily: NAVDailyPoint[] = [];
+    for (const date of sortedDates) {
+      const unitsAsOf = deposits
+        .filter((d) => d.date <= date)
+        .reduce((s, d) => s + d.unitsIssued, 0);
+      if (unitsAsOf === 0) continue;
+      const portfolioValue = dailyValue[date];
+      const nav = portfolioValue / unitsAsOf;
+      daily.push({
+        date,
+        portfolioValue,
+        totalUnits: unitsAsOf,
+        nav,
+        returnPct: ((nav - BASE_NAV) / BASE_NAV) * 100,
+      });
+    }
+
     // Current state
     const latestDates = Object.keys(dailyValue).sort();
     const latestValue =
@@ -170,6 +230,7 @@ export async function GET() {
       totalReturnPct: ((currentNAV - BASE_NAV) / BASE_NAV) * 100,
       deposits,
       monthly,
+      daily,
     };
 
     // A zero portfolio value means the equity summary couldn't be read this time —
