@@ -22,7 +22,12 @@ import {
 import { useNAV } from "@/hooks/useNAV";
 import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
-import { TrendingUp, TrendingDown, DollarSign, Users, BarChart3 } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { TrendingUp, TrendingDown, DollarSign, Users, BarChart3, ArrowUpDown, Download } from "lucide-react";
+import type { NAVSummary } from "@/types";
+import { downloadMonthlyReport } from "@/lib/nav-pdf";
 
 function fmt(n: number, decimals = 2) {
   return n.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
@@ -32,8 +37,138 @@ function fmtCurrency(n: number) {
   return "$" + fmt(n);
 }
 
+function SortHeader({
+  label,
+  k,
+  align = "right",
+  sortKey,
+  sortDir,
+  onSort,
+}: {
+  label: string;
+  k: SortKey;
+  align?: "left" | "right";
+  sortKey: SortKey;
+  sortDir: "asc" | "desc";
+  onSort: (k: SortKey) => void;
+}) {
+  const active = sortKey === k;
+  return (
+    <TableHead className={align === "right" ? "text-right" : ""}>
+      <button
+        onClick={() => onSort(k)}
+        className={cn(
+          "inline-flex items-center gap-1 whitespace-nowrap hover:text-foreground",
+          align === "right" && "flex-row-reverse",
+          active && "text-foreground",
+        )}
+      >
+        <span>{label}</span>
+        {active ? (
+          <span className="text-[10px]">{sortDir === "asc" ? "▲" : "▼"}</span>
+        ) : (
+          <ArrowUpDown className="h-3 w-3 opacity-40" />
+        )}
+      </button>
+    </TableHead>
+  );
+}
+
+// ── Combined ledger (daily balances + subscriptions) ───────────────────────────
+type LedgerKind = "Balance" | "Subscription";
+type SortKey =
+  | "date"
+  | "portfolioValue"
+  | "navAtSub"
+  | "unitsIssued"
+  | "unitsOutstanding"
+  | "navPerUnit"
+  | "returnPct";
+
+interface LedgerRow {
+  key: string;
+  date: string;
+  kind: LedgerKind;
+  portfolioValue: number | null;
+  navAtSub: number | null;
+  unitsIssued: number | null;
+  unitsOutstanding: number;
+  navPerUnit: number | null;
+  returnPct: number;
+  originalCurrency?: string;
+  originalAmount?: number;
+  amountUSD?: number;
+}
+
+// One row per daily balance and one per subscription. Subscription rows leave
+// the balance/NAV-per-unit cells blank; balance rows leave NAV-at-subscription
+// and units-issued blank.
+function buildLedger(nav: NAVSummary | null | undefined): LedgerRow[] {
+  if (!nav) return [];
+  const rows: LedgerRow[] = [];
+
+  for (const d of nav.daily ?? []) {
+    rows.push({
+      key: `bal-${d.date}`,
+      date: d.date,
+      kind: "Balance",
+      portfolioValue: d.portfolioValue,
+      navAtSub: null,
+      unitsIssued: null,
+      unitsOutstanding: d.totalUnits,
+      navPerUnit: d.nav,
+      returnPct: d.returnPct,
+    });
+  }
+
+  const depsAsc = [...nav.deposits].sort((a, b) => a.date.localeCompare(b.date));
+  let cum = 0;
+  depsAsc.forEach((dep, i) => {
+    cum += dep.unitsIssued;
+    rows.push({
+      key: `sub-${dep.date}-${i}`,
+      date: dep.date,
+      kind: "Subscription",
+      portfolioValue: null,
+      navAtSub: dep.navAtDeposit,
+      unitsIssued: dep.unitsIssued,
+      unitsOutstanding: cum,
+      navPerUnit: null,
+      returnPct: ((dep.navAtDeposit - 100) / 100) * 100,
+      originalCurrency: dep.originalCurrency,
+      originalAmount: dep.originalAmount,
+      amountUSD: dep.amount,
+    });
+  });
+
+  return rows;
+}
+
+function sortLedger(rows: LedgerRow[], key: SortKey, dir: "asc" | "desc"): LedgerRow[] {
+  const mul = dir === "asc" ? 1 : -1;
+  return [...rows].sort((a, b) => {
+    if (key === "date") {
+      const c = a.date.localeCompare(b.date);
+      // On ties, keep Balance before Subscription for a stable read.
+      return (c || (a.kind < b.kind ? -1 : a.kind > b.kind ? 1 : 0)) * mul;
+    }
+    const av = a[key] as number | null;
+    const bv = b[key] as number | null;
+    if (av == null && bv == null) return 0;
+    if (av == null) return 1; // blanks always sink to the bottom
+    if (bv == null) return -1;
+    return (av - bv) * mul;
+  });
+}
+
 export default function NAVPage() {
   const { data: nav, isLoading } = useNAV();
+  const [sortKey, setSortKey] = useState<SortKey>("date");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [typeFilter, setTypeFilter] = useState<"all" | LedgerKind>("all");
+  const [pdfBusy, setPdfBusy] = useState<string | null>(null);
+
+  const ledger = useMemo(() => buildLedger(nav), [nav]);
 
   if (isLoading) {
     return (
@@ -71,6 +206,33 @@ export default function NAVPage() {
         nav: +m.nav.toFixed(4),
         balance: m.portfolioValue,
       }));
+
+  const visibleRows = sortLedger(
+    typeFilter === "all" ? ledger : ledger.filter((r) => r.kind === typeFilter),
+    sortKey,
+    sortDir,
+  );
+
+  function toggleSort(key: SortKey) {
+    if (key === sortKey) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir(key === "date" || key === "returnPct" ? "desc" : "desc");
+    }
+  }
+
+  async function handlePdf(month: string) {
+    if (!nav) return;
+    setPdfBusy(month);
+    try {
+      await downloadMonthlyReport(nav, month);
+    } finally {
+      setPdfBusy(null);
+    }
+  }
+
+  const dash = <span className="text-muted-foreground/40">—</span>;
 
   return (
     <div className="space-y-6">
@@ -187,97 +349,107 @@ export default function NAVPage() {
         </Card>
       )}
 
-      {/* Deposit / Units Ledger */}
+      {/* Combined Ledger: daily balances + subscriptions */}
       <Card className="border-border/50 bg-card/50">
-        <div className="border-b border-border/50 px-6 py-4">
-          <h2 className="text-sm font-medium">Capital Subscriptions &amp; Units Issued</h2>
-          <p className="text-xs text-muted-foreground mt-0.5">Each deposit is converted to units at the NAV on the date of subscription. Non-USD deposits are counted at the USD credited after conversion.</p>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/50 px-6 py-4">
+          <div>
+            <h2 className="text-sm font-medium">Fund Ledger — Balances &amp; Subscriptions</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              NAV / unit = portfolio balance ÷ units outstanding. Subscriptions are priced at the NAV on their date; non-USD deposits count the USD credited.
+            </p>
+          </div>
+          <div className="flex items-center gap-1 rounded-md border border-border/50 p-0.5">
+            {(["all", "Balance", "Subscription"] as const).map((t) => (
+              <button
+                key={t}
+                onClick={() => setTypeFilter(t)}
+                className={cn(
+                  "rounded px-2.5 py-1 text-xs transition-colors",
+                  typeFilter === t ? "bg-foreground/10 text-foreground" : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {t === "all" ? "All" : t === "Balance" ? "Balances" : "Subscriptions"}
+              </button>
+            ))}
+          </div>
         </div>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead className="text-right">Amount Invested</TableHead>
-              <TableHead className="text-right">NAV at Subscription</TableHead>
-              <TableHead className="text-right">Units Issued</TableHead>
-              <TableHead className="text-right">Current Value</TableHead>
-              <TableHead className="text-right">Return</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {nav.deposits.map((dep, i) => {
-              const currentValue = dep.unitsIssued * nav.currentNAV;
-              const returnPct = ((nav.currentNAV - dep.navAtDeposit) / dep.navAtDeposit) * 100;
-              return (
-                <TableRow key={i}>
-                  <TableCell className="text-muted-foreground">
-                    {format(parseISO(dep.date), "MMM d, yyyy")}
-                  </TableCell>
-                  <TableCell className="text-right font-mono">
-                    {fmtCurrency(dep.amount)}
-                    {dep.originalCurrency && dep.originalCurrency !== "USD" && (
-                      <span className="block text-xs text-muted-foreground">
-                        {dep.originalCurrency} {fmt(dep.originalAmount)}
+        <div className="max-h-[460px] overflow-y-auto">
+          <Table>
+            <TableHeader className="sticky top-0 z-10 bg-card/95 backdrop-blur">
+              <TableRow>
+                <SortHeader label="Date" k="date" align="left" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                <TableHead>Type</TableHead>
+                <SortHeader label="Portfolio Balance" k="portfolioValue" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                <SortHeader label="NAV @ Sub" k="navAtSub" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                <SortHeader label="Units Issued" k="unitsIssued" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                <SortHeader label="Units Outstanding" k="unitsOutstanding" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                <SortHeader label="NAV / Unit" k="navPerUnit" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                <SortHeader label="Return vs Base" k="returnPct" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {visibleRows.map((r) => (
+                <TableRow key={r.key}>
+                  <TableCell className="text-muted-foreground whitespace-nowrap">
+                    {format(parseISO(r.date), "MMM d, yyyy")}
+                    {r.kind === "Subscription" && (
+                      <span className="block text-xs text-muted-foreground/70">
+                        {r.originalCurrency && r.originalCurrency !== "USD"
+                          ? `${r.originalCurrency} ${fmt(r.originalAmount ?? 0)} → ${fmtCurrency(r.amountUSD ?? 0)}`
+                          : fmtCurrency(r.amountUSD ?? 0)}
                       </span>
                     )}
                   </TableCell>
-                  <TableCell className="text-right font-mono">{fmtCurrency(dep.navAtDeposit)}</TableCell>
-                  <TableCell className="text-right font-mono">{fmt(dep.unitsIssued, 4)}</TableCell>
-                  <TableCell className="text-right font-mono">{fmtCurrency(currentValue)}</TableCell>
-                  <TableCell className={cn("text-right font-mono text-sm", returnPct >= 0 ? "text-[oklch(0.72_0.19_145)]" : "text-[oklch(0.65_0.22_25)]")}>
-                    {returnPct >= 0 ? "+" : ""}{fmt(returnPct)}%
+                  <TableCell>
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        "text-[10px] font-normal",
+                        r.kind === "Subscription"
+                          ? "border-[oklch(0.7_0.15_250)]/40 text-[oklch(0.7_0.15_250)]"
+                          : "border-border/60 text-muted-foreground",
+                      )}
+                    >
+                      {r.kind}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right font-mono">
+                    {r.portfolioValue != null ? fmtCurrency(r.portfolioValue) : dash}
+                  </TableCell>
+                  <TableCell className="text-right font-mono">
+                    {r.navAtSub != null ? fmtCurrency(r.navAtSub) : dash}
+                  </TableCell>
+                  <TableCell className="text-right font-mono">
+                    {r.unitsIssued != null ? fmt(r.unitsIssued, 4) : dash}
+                  </TableCell>
+                  <TableCell className="text-right font-mono">{fmt(r.unitsOutstanding, 4)}</TableCell>
+                  <TableCell className="text-right font-mono font-medium">
+                    {r.navPerUnit != null ? fmtCurrency(r.navPerUnit) : dash}
+                  </TableCell>
+                  <TableCell className={cn("text-right font-mono text-sm", r.returnPct >= 0 ? "text-[oklch(0.72_0.19_145)]" : "text-[oklch(0.65_0.22_25)]")}>
+                    {r.returnPct >= 0 ? "+" : ""}{fmt(r.returnPct)}%
                   </TableCell>
                 </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </Card>
-
-      {/* Daily Balance & NAV Table */}
-      {hasDaily && (
-        <Card className="border-border/50 bg-card/50">
-          <div className="border-b border-border/50 px-6 py-4">
-            <h2 className="text-sm font-medium">Daily Portfolio Balance &amp; NAV</h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              NAV / unit = portfolio balance ÷ units outstanding that day
-            </p>
-          </div>
-          <div className="max-h-[420px] overflow-y-auto">
-            <Table>
-              <TableHeader className="sticky top-0 bg-card/95 backdrop-blur">
+              ))}
+              {visibleRows.length === 0 && (
                 <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead className="text-right">Portfolio Balance</TableHead>
-                  <TableHead className="text-right">Units Outstanding</TableHead>
-                  <TableHead className="text-right">NAV / Unit</TableHead>
-                  <TableHead className="text-right">Return vs Base</TableHead>
+                  <TableCell colSpan={8} className="text-center text-sm text-muted-foreground py-8">
+                    No rows for this filter.
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {[...daily].reverse().map((d) => (
-                  <TableRow key={d.date}>
-                    <TableCell className="text-muted-foreground">
-                      {format(parseISO(d.date), "MMM d, yyyy")}
-                    </TableCell>
-                    <TableCell className="text-right font-mono">{fmtCurrency(d.portfolioValue)}</TableCell>
-                    <TableCell className="text-right font-mono">{fmt(d.totalUnits, 4)}</TableCell>
-                    <TableCell className="text-right font-mono font-medium">{fmtCurrency(d.nav)}</TableCell>
-                    <TableCell className={cn("text-right font-mono text-sm", d.returnPct >= 0 ? "text-[oklch(0.72_0.19_145)]" : "text-[oklch(0.65_0.22_25)]")}>
-                      {d.returnPct >= 0 ? "+" : ""}{fmt(d.returnPct)}%
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </Card>
-      )}
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </Card>
 
       {/* Monthly NAV Table */}
       <Card className="border-border/50 bg-card/50">
         <div className="border-b border-border/50 px-6 py-4">
           <h2 className="text-sm font-medium">Monthly NAV Report</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Download a month-end PDF: subscriptions booked that month, their effect on NAV, and the daily balance/NAV table.
+          </p>
         </div>
         <Table>
           <TableHeader>
@@ -287,6 +459,7 @@ export default function NAVPage() {
               <TableHead className="text-right">Units Outstanding</TableHead>
               <TableHead className="text-right">NAV / Unit</TableHead>
               <TableHead className="text-right">Return vs Base</TableHead>
+              <TableHead className="text-right">Report</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -300,6 +473,18 @@ export default function NAVPage() {
                 <TableCell className="text-right font-mono font-medium">{fmtCurrency(m.nav)}</TableCell>
                 <TableCell className={cn("text-right font-mono text-sm", m.returnPct >= 0 ? "text-[oklch(0.72_0.19_145)]" : "text-[oklch(0.65_0.22_25)]")}>
                   {m.returnPct >= 0 ? "+" : ""}{fmt(m.returnPct)}%
+                </TableCell>
+                <TableCell className="text-right">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 gap-1.5 text-xs"
+                    disabled={pdfBusy === m.month}
+                    onClick={() => handlePdf(m.month)}
+                  >
+                    <Download className="h-3 w-3" />
+                    {pdfBusy === m.month ? "…" : "PDF"}
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
