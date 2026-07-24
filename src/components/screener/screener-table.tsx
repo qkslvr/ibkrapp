@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { StockLogo } from "@/components/ui/stock-logo";
 import {
   Table,
   TableBody,
@@ -51,8 +52,9 @@ const COLUMNS: Column[] = [
     render: (s) => (
       <Link
         href={`/stock/${s.ticker}`}
-        className="font-mono font-semibold text-primary hover:underline"
+        className="flex items-center gap-2 font-mono font-semibold text-primary hover:underline"
       >
+        <StockLogo symbol={s.ticker} size={24} className="h-6 w-6 shrink-0" />
         {s.ticker}
       </Link>
     ),

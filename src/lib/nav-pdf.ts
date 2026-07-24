@@ -100,6 +100,10 @@ export async function downloadMonthlyReport(nav: NAVSummary, month: string): Pro
   const startNav = monthDaily[0]?.nav ?? 100;
   const endNav = monthDaily[monthDaily.length - 1]?.nav ?? snapshot?.nav ?? 100;
   const navChangePct = startNav > 0 ? ((endNav - startNav) / startNav) * 100 : 0;
+  // Weighted-average subscription cost per unit — the reference the fund's
+  // money-weighted return is measured against (not the $100 base).
+  const avgCost = nav.avgCostPerUnit || 100;
+  const retVsAvg = (v: number) => (avgCost > 0 ? ((v - avgCost) / avgCost) * 100 : 0);
 
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const pageW = doc.internal.pageSize.getWidth();
@@ -123,6 +127,8 @@ export async function downloadMonthlyReport(nav: NAVSummary, month: string): Pro
     ["Units outstanding", snapshot ? num(snapshot.totalUnits) : "—"],
     ["NAV / unit (month end)", snapshot ? money(snapshot.nav) : money(endNav)],
     ["NAV movement over month", `${money(startNav)} -> ${money(endNav)}  (${pct(navChangePct)})`],
+    ["Average cost / unit", money(avgCost)],
+    ["Return vs avg cost", pct(retVsAvg(endNav))],
     ["Return vs base ($100)", snapshot ? pct(snapshot.returnPct) : pct(endNav - 100)],
   ];
   autoTable(doc, {
@@ -182,14 +188,14 @@ export async function downloadMonthlyReport(nav: NAVSummary, month: string): Pro
   doc.text("Daily Portfolio Balance & NAV", marginX, y);
   autoTable(doc, {
     startY: y + 8,
-    head: [["Date", "Portfolio Balance", "Units Outstanding", "NAV / Unit", "Daily Chg", "Return vs Base"]],
+    head: [["Date", "Portfolio Balance", "Units Outstanding", "NAV / Unit", "Daily Chg", "Return vs Avg Cost"]],
     body: monthDaily.map((d) => [
       dayLabel(d.date),
       money(d.portfolioValue),
       num(d.totalUnits),
       money(d.nav),
       pct(d.navChangePct ?? 0),
-      pct(d.returnPct),
+      pct(retVsAvg(d.nav)),
     ]),
     headStyles: { fillColor: [40, 40, 45], textColor: [245, 245, 245], fontSize: 9 },
     styles: { fontSize: 8.5, cellPadding: 3 },

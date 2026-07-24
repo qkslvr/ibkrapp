@@ -274,6 +274,10 @@ export async function GET() {
       latestDates.length > 0 ? dailyValue[latestDates[latestDates.length - 1]] : 0;
     const currentNAV = totalUnits > 0 ? latestValue / totalUnits : BASE_NAV;
     const totalCapitalInvested = rawDeposits.reduce((s, d) => s + d.amount, 0);
+    // Weighted-average cost per unit across all subscriptions. Since deposits
+    // buy in at different NAVs, this drifts from the $100 base — it's the true
+    // cost reference for a money-weighted return.
+    const avgCostPerUnit = totalUnits > 0 ? totalCapitalInvested / totalUnits : BASE_NAV;
     const currentCash =
       latestDates.length > 0 ? dailyCash[latestDates[latestDates.length - 1]] ?? 0 : 0;
 
@@ -283,6 +287,7 @@ export async function GET() {
       totalCapitalInvested,
       currentPortfolioValue: latestValue,
       currentCash,
+      avgCostPerUnit,
       totalReturnPct: ((currentNAV - BASE_NAV) / BASE_NAV) * 100,
       deposits,
       monthly,

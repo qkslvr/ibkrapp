@@ -110,6 +110,7 @@ export interface NAVSummary {
   totalCapitalInvested: number;
   currentPortfolioValue: number;
   currentCash: number;
+  avgCostPerUnit: number; // weighted-avg subscription price per unit
   totalReturnPct: number;
   deposits: NAVDeposit[];
   monthly: NAVMonthlySnapshot[];

@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChangeIndicator } from "@/components/dashboard/change-indicator";
+import { StockLogo } from "@/components/ui/stock-logo";
 import { useStockFundamentals } from "@/hooks/useStockFundamentals";
 import { useStockProfile } from "@/hooks/useStockProfile";
 import { cn, formatMarketCap } from "@/lib/utils";
@@ -126,9 +127,7 @@ function WatchlistRow({
     <TableRow className="transition-colors hover:bg-accent/50">
       <TableCell>
         <Link href={`/stock/${symbol}`} className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary text-xs font-bold">
-            {symbol.slice(0, 2)}
-          </div>
+          <StockLogo symbol={symbol} size={32} className="h-8 w-8 shrink-0" />
           <div>
             <p className="font-medium">{symbol}</p>
             <p className="max-w-[180px] truncate text-xs text-muted-foreground">

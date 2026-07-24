@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { ChangeIndicator } from "./change-indicator";
+import { StockLogo } from "@/components/ui/stock-logo";
 import { Position } from "@/types";
 import { cn, formatMarketCap } from "@/lib/utils";
 import { Search, ArrowUpDown } from "lucide-react";
@@ -50,6 +51,12 @@ export function HoldingsTable({ positions, totalPortfolioValue }: HoldingsTableP
     costBasis: positions.reduce((s, p) => s + p.costBasis, 0),
     marketValue: positions.reduce((s, p) => s + p.marketValue, 0),
     dayChange: positions.reduce((s, p) => s + p.dayChange, 0),
+    dayChangePercent: (() => {
+      const mv = positions.reduce((s, p) => s + p.marketValue, 0);
+      const dc = positions.reduce((s, p) => s + p.dayChange, 0);
+      const prev = mv - dc;
+      return prev !== 0 ? (dc / prev) * 100 : 0;
+    })(),
     unrealizedPL: positions.reduce((s, p) => s + p.unrealizedPL, 0),
     unrealizedPLPercent: positions.reduce((s, p) => s + p.unrealizedPL, 0) /
       positions.reduce((s, p) => s + p.costBasis, 0) * 100,
@@ -139,9 +146,7 @@ export function HoldingsTable({ positions, totalPortfolioValue }: HoldingsTableP
                     href={`/stock/${position.symbol}`}
                     className="flex items-center gap-3"
                   >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary text-xs font-bold">
-                      {position.symbol.slice(0, 2)}
-                    </div>
+                    <StockLogo symbol={position.symbol} size={32} className="h-8 w-8 shrink-0" />
                     <div>
                       <p className="font-medium">{position.symbol}</p>
                       <p className="text-xs text-muted-foreground">
@@ -170,6 +175,7 @@ export function HoldingsTable({ positions, totalPortfolioValue }: HoldingsTableP
                     value={position.dayChange}
                     percentage={position.dayChangePercent}
                     showIcon={false}
+                    showValue={false}
                     size="xs"
                     fractionDigits={0}
                   />
@@ -220,8 +226,9 @@ export function HoldingsTable({ positions, totalPortfolioValue }: HoldingsTableP
               <TableCell className="text-right">
                 <ChangeIndicator
                   value={totals.dayChange}
+                  percentage={totals.dayChangePercent}
                   showIcon={false}
-                  showPercentage={false}
+                  showValue={false}
                   size="xs"
                   fractionDigits={0}
                 />

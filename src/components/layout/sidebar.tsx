@@ -15,7 +15,7 @@ import {
   Filter,
 } from "lucide-react";
 
-const navigation = [
+export const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Performance", href: "/performance", icon: LineChart },
   { name: "Income", href: "/income", icon: Wallet },
@@ -26,11 +26,12 @@ const navigation = [
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
-export function Sidebar() {
+// Shared inner content — used by the desktop rail and the mobile drawer.
+export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r border-border/50 bg-sidebar">
+    <>
       {/* Logo */}
       <div className="flex h-16 items-center gap-2 border-b border-border/50 px-6">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
@@ -50,6 +51,7 @@ export function Sidebar() {
             <Link
               key={item.name}
               href={item.href}
+              onClick={onNavigate}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
                 isActive
@@ -71,6 +73,15 @@ export function Sidebar() {
           <span>IBKR Connected</span>
         </div>
       </div>
+    </>
+  );
+}
+
+// Desktop rail — hidden below the lg breakpoint (mobile uses the drawer).
+export function Sidebar() {
+  return (
+    <aside className="fixed left-0 top-0 z-40 hidden h-screen w-64 flex-col border-r border-border/50 bg-sidebar lg:flex">
+      <SidebarContent />
     </aside>
   );
 }
