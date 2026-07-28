@@ -12,7 +12,7 @@ import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { usePortfolioSummary } from "@/hooks/usePortfolioSummary";
 import { usePositions } from "@/hooks/usePositions";
 import { useTransactions } from "@/hooks/useTransactions";
-import { useNAV } from "@/hooks/useNAV";
+import { useLiveNav } from "@/hooks/useLiveNav";
 import { mockSectorAllocation } from "@/lib/mock-data";
 import { DividendInfo, RiskMetrics, SectorAllocation, TopMover } from "@/types";
 
@@ -35,7 +35,8 @@ export default function DashboardPage() {
   const { data: summary, isLoading: summaryLoading } = usePortfolioSummary();
   const { data: positions, isLoading: positionsLoading } = usePositions();
   const { data: transactions } = useTransactions(30);
-  const { data: nav } = useNAV();
+  const live = useLiveNav();
+  const nav = live.nav;
 
   const sectorAllocation = useMemo<SectorAllocation[]>(() => {
     if (!positions?.length) return mockSectorAllocation;
@@ -82,18 +83,18 @@ export default function DashboardPage() {
     };
   }, [positions]);
 
-  // Hero metrics. The fund's NAV summary is authoritative for value / invested /
-  // return / cash (the IBKR account summary's cost basis is unreliable here).
-  const lastDaily = nav?.daily?.[nav.daily.length - 1];
-  const heroPV = nav?.currentPortfolioValue ?? summary?.totalValue ?? 0;
+  // Hero metrics. The fund's NAV summary is authoritative (the IBKR account
+  // summary's cost basis is unreliable), and intraday we use the LIVE value
+  // (Finviz-priced holdings + cash) so the numbers move with the market.
+  const heroPV = nav ? live.liveValue : summary?.totalValue ?? 0;
   const heroInvested = nav?.totalCapitalInvested ?? summary?.totalCost ?? 0;
   const heroReturn = nav ? heroPV - heroInvested : summary?.totalReturn ?? 0;
   const heroReturnPct = nav
     ? heroInvested > 0 ? (heroReturn / heroInvested) * 100 : 0
     : summary?.totalReturnPercent ?? 0;
-  const heroCash = nav?.currentCash ?? summary?.cashBalance ?? 0;
-  const heroDayPct = lastDaily?.navChangePct ?? summary?.dayChangePercent ?? 0;
-  const heroDay = nav ? (heroDayPct / 100) * heroPV : summary?.dayChange ?? 0;
+  const heroCash = nav ? live.liveCash : summary?.cashBalance ?? 0;
+  const heroDayPct = nav ? live.todayChangePct : summary?.dayChangePercent ?? 0;
+  const heroDay = nav ? live.todayChangeValue : summary?.dayChange ?? 0;
 
   const displaySummary = {
     totalValue: heroPV,

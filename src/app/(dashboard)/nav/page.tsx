@@ -20,7 +20,7 @@ import {
   ReferenceLine,
   ReferenceDot,
 } from "recharts";
-import { useNAV } from "@/hooks/useNAV";
+import { useLiveNav } from "@/hooks/useLiveNav";
 import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useMemo, useState } from "react";
@@ -171,7 +171,7 @@ function sortLedger(rows: LedgerRow[], key: SortKey, dir: "asc" | "desc"): Ledge
 }
 
 export default function NAVPage() {
-  const { data: nav, isLoading } = useNAV();
+  const { nav, isLoading, daily: liveDaily, liveNav, liveValue, isLive } = useLiveNav();
   const [sortKey, setSortKey] = useState<SortKey>("date");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [typeFilter, setTypeFilter] = useState<"all" | LedgerKind>("all");
@@ -195,11 +195,11 @@ export default function NAVPage() {
     );
   }
 
-  const isPositive = nav.totalReturnPct >= 0;
+  const isPositive = liveNav >= 100;
 
-  // Prefer the real daily series (portfolio balance + NAV per day). Fall back to
-  // the monthly snapshots if a daily series isn't available yet.
-  const daily = nav.daily ?? [];
+  // Live daily series (official EOD points + an intraday "today" point when the
+  // market's open). Charts and the current-value cards read from this.
+  const daily = liveDaily;
   const hasDaily = daily.length > 1;
 
   const balanceData = daily.map((d) => ({
@@ -274,10 +274,19 @@ export default function NAVPage() {
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <DollarSign className="h-4 w-4" />
             Current NAV / Unit
+            {isLive && (
+              <span className="ml-auto flex items-center gap-1 rounded-full border border-[oklch(0.74_0.19_150)]/30 bg-[oklch(0.74_0.19_150)]/10 px-1.5 py-0.5 text-[10px] font-medium text-[oklch(0.74_0.19_150)]">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[oklch(0.74_0.19_150)] opacity-70" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[oklch(0.74_0.19_150)]" />
+                </span>
+                LIVE
+              </span>
+            )}
           </div>
-          <p className="mt-2 font-mono text-2xl font-semibold">{fmtCurrency(nav.currentNAV)}</p>
+          <p className="mt-2 font-mono text-2xl font-semibold">{fmtCurrency(liveNav)}</p>
           <p className={cn("mt-1 text-xs", isPositive ? "text-[oklch(0.72_0.19_145)]" : "text-[oklch(0.65_0.22_25)]")}>
-            {isPositive ? "+" : ""}{fmt(nav.totalReturnPct)}% vs base $100
+            {isPositive ? "+" : ""}{fmt(((liveNav - 100) / 100) * 100)}% vs base $100
           </p>
         </Card>
 
@@ -294,7 +303,7 @@ export default function NAVPage() {
             <BarChart3 className="h-4 w-4" />
             Portfolio Value
           </div>
-          <p className="mt-2 font-mono text-2xl font-semibold">{fmtCurrency(nav.currentPortfolioValue)}</p>
+          <p className="mt-2 font-mono text-2xl font-semibold">{fmtCurrency(liveValue)}</p>
         </Card>
 
         <Card className="border-border/50 bg-card/60 p-5">
@@ -304,7 +313,7 @@ export default function NAVPage() {
           </div>
           <p className="mt-2 font-mono text-2xl font-semibold">{fmtCurrency(nav.totalCapitalInvested)}</p>
           <p className={cn("mt-1 text-xs", isPositive ? "text-[oklch(0.72_0.19_145)]" : "text-[oklch(0.65_0.22_25)]")}>
-            {isPositive ? "+" : ""}{fmtCurrency(nav.currentPortfolioValue - nav.totalCapitalInvested)} unrealised P&L
+            {isPositive ? "+" : ""}{fmtCurrency(liveValue - nav.totalCapitalInvested)} unrealised P&L
           </p>
         </Card>
       </div>

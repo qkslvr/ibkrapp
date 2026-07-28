@@ -13,7 +13,7 @@ import {
 } from "recharts";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useNAV } from "@/hooks/useNAV";
+import { useLiveNav } from "@/hooks/useLiveNav";
 import { cn } from "@/lib/utils";
 
 const RANGES = [
@@ -41,9 +41,8 @@ type Metric = "nav" | "value";
 export function NavShareChart() {
   const [range, setRange] = useState<(typeof RANGES)[number]>(RANGES[3]);
   const [metric, setMetric] = useState<Metric>("nav");
-  const { data: nav, isLoading } = useNAV();
+  const { nav, isLoading, isLive, liveNav, liveValue, liveCash, returnPct, daily } = useLiveNav();
 
-  const daily = nav?.daily ?? [];
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - range.days);
   const cutoffStr = cutoff.toISOString().slice(0, 10);
@@ -69,10 +68,9 @@ export function NavShareChart() {
     .map((p) => ({ date: p.date, value: p.value, ...subByDate.get(p.date)! }));
 
   const isNav = metric === "nav";
-  const currentNav = nav?.currentNAV ?? 100;
-  const portfolioValue = nav?.currentPortfolioValue ?? 0;
-  const cash = nav?.currentCash ?? 0;
-  const returnPct = nav?.totalReturnPct ?? 0;
+  const currentNav = liveNav;
+  const portfolioValue = liveValue;
+  const cash = liveCash;
   const isPositive = returnPct >= 0;
   const stroke = isPositive ? "oklch(0.72 0.19 145)" : "oklch(0.65 0.22 25)";
   const gradientId = "navShareGradient";
@@ -90,6 +88,15 @@ export function NavShareChart() {
             <h3 className="text-sm font-medium text-muted-foreground">
               {isNav ? "NAV per Share" : "Portfolio Value"}
             </h3>
+            {isLive && (
+              <span className="flex items-center gap-1 rounded-full border border-[oklch(0.74_0.19_150)]/30 bg-[oklch(0.74_0.19_150)]/10 px-1.5 py-0.5 text-[10px] font-medium text-[oklch(0.74_0.19_150)]">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[oklch(0.74_0.19_150)] opacity-70" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[oklch(0.74_0.19_150)]" />
+                </span>
+                LIVE
+              </span>
+            )}
             <div className="flex gap-0.5 rounded-md bg-secondary/50 p-0.5">
               {(["nav", "value"] as const).map((m) => (
                 <button
