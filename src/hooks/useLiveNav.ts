@@ -2,6 +2,7 @@
 
 import { useNAV } from "./useNAV";
 import { usePositions } from "./usePositions";
+import { usePortfolioSummary } from "./usePortfolioSummary";
 import { NAVDailyPoint, NAVSummary } from "@/types";
 
 const BASE_NAV = 100;
@@ -33,6 +34,7 @@ export interface LiveNav {
 export function useLiveNav(): LiveNav {
   const { data: nav, isLoading: navLoading } = useNAV();
   const { data: positions, isLoading: posLoading } = usePositions();
+  const { data: summary } = usePortfolioSummary();
 
   if (!nav) {
     return {
@@ -52,7 +54,13 @@ export function useLiveNav(): LiveNav {
     };
   }
 
-  const liveCash = nav.currentCash;
+  // Cash must come from the SAME live snapshot as the holdings, or buying stock
+  // (cash down, securities up) double-counts the spent cash. The IBKR gateway's
+  // account summary reflects trades immediately and refreshes on the same 60s
+  // cadence as positions; the Flex figure is end-of-day and lags. Prefer the
+  // gateway cash, fall back to Flex only when the gateway has never reported.
+  const liveCash =
+    summary && Number.isFinite(summary.cashBalance) ? summary.cashBalance : nav.currentCash;
   const liveSecurities =
     positions && positions.length > 0
       ? positions.reduce((s, p) => s + Math.abs(p.marketValue), 0)
