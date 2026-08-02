@@ -134,34 +134,27 @@ export default function DashboardPage() {
       <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           title="Total Portfolio Value"
-          value={displaySummary.totalValue.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-          })}
+          value={displaySummary.totalValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
           change={displaySummary.dayChangePercent}
           changeLabel="today"
           size="lg"
         />
         <MetricCard
           title="Total Return"
-          value={displaySummary.totalReturn.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-          })}
+          value={Math.abs(displaySummary.totalReturn).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+          prefix={displaySummary.totalReturn >= 0 ? "+$" : "-$"}
           change={displaySummary.totalReturnPercent}
           changeLabel="all time"
         />
         <MetricCard
           title="Today's Change"
-          value={Math.abs(displaySummary.dayChange).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-          })}
+          value={Math.abs(displaySummary.dayChange).toLocaleString(undefined, { maximumFractionDigits: 0 })}
           prefix={displaySummary.dayChange >= 0 ? "+$" : "-$"}
           change={displaySummary.dayChangePercent}
         />
         <MetricCard
           title="Cash Available"
-          value={displaySummary.cashBalance.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-          })}
+          value={displaySummary.cashBalance.toLocaleString(undefined, { maximumFractionDigits: 0 })}
         />
       </div>
 
