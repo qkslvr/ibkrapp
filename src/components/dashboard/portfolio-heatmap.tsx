@@ -108,7 +108,7 @@ export function PortfolioHeatmap({ positions }: { positions: Position[] }) {
     .sort((a, b) => b.size - a.size);
 
   return (
-    <Card className="border-border/50 bg-card/50 p-4">
+    <Card className="overflow-hidden border-border/50 bg-card/50 p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="text-sm font-medium text-muted-foreground">Portfolio Heatmap</h3>
         <div className="flex gap-0.5 rounded-md bg-secondary/50 p-0.5">
@@ -130,7 +130,7 @@ export function PortfolioHeatmap({ positions }: { positions: Position[] }) {
         Tile size = position weight · color = {mode === "move" ? "that day's % move" : "$ contribution to today's change"}
       </p>
 
-      <div className="mt-3 h-64">
+      <div className="mt-3 h-64 w-full min-w-0 overflow-hidden">
         <ResponsiveContainer width="100%" height="100%">
           <Treemap
             data={data}

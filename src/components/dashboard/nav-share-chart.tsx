@@ -71,6 +71,8 @@ export function NavShareChart() {
   const currentNav = liveNav;
   const portfolioValue = liveValue;
   const cash = liveCash;
+  const avgCost = nav?.avgCostPerUnit ?? 100;
+  const retVsAvg = avgCost > 0 ? ((currentNav - avgCost) / avgCost) * 100 : 0;
   const isPositive = returnPct >= 0;
   const stroke = isPositive ? "oklch(0.72 0.19 145)" : "oklch(0.65 0.22 25)";
   const gradientId = "navShareGradient";
@@ -115,20 +117,34 @@ export function NavShareChart() {
           {isLoading ? (
             <div className="mt-1 h-9 w-40 animate-pulse rounded bg-secondary/50" />
           ) : (
-            <div className="mt-1 flex items-baseline gap-2">
-              <p className="text-3xl font-semibold tracking-tight">
-                {isNav ? money(currentNav) : money(portfolioValue)}
+            <>
+              <div className="mt-1 flex items-baseline gap-2">
+                <p className="text-3xl font-semibold tracking-tight">
+                  {isNav ? money(currentNav) : money(portfolioValue)}
+                </p>
+                <span
+                  className={cn(
+                    "text-sm font-medium",
+                    isPositive ? "text-[oklch(0.72_0.19_145)]" : "text-[oklch(0.65_0.22_25)]",
+                  )}
+                >
+                  {isPositive ? "+" : ""}
+                  {returnPct.toFixed(2)}% vs base $100
+                </span>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Avg investor NAV{" "}
+                <span className="font-mono text-foreground">{money(avgCost)}</span>
+                <span
+                  className={cn(
+                    "ml-1 font-mono",
+                    retVsAvg >= 0 ? "text-[oklch(0.72_0.19_145)]" : "text-[oklch(0.65_0.22_25)]",
+                  )}
+                >
+                  ({retVsAvg >= 0 ? "+" : ""}{retVsAvg.toFixed(2)}% vs avg)
+                </span>
               </p>
-              <span
-                className={cn(
-                  "text-sm font-medium",
-                  isPositive ? "text-[oklch(0.72_0.19_145)]" : "text-[oklch(0.65_0.22_25)]",
-                )}
-              >
-                {isPositive ? "+" : ""}
-                {returnPct.toFixed(2)}% vs base $100
-              </span>
-            </div>
+            </>
           )}
         </div>
         <div className="flex gap-1 rounded-lg bg-secondary/50 p-1">
@@ -226,6 +242,14 @@ export function NavShareChart() {
                   y={100}
                   stroke="oklch(0.82 0.15 78 / 0.45)"
                   strokeDasharray="4 4"
+                />
+              )}
+              {isNav && Math.abs(avgCost - 100) > 0.4 && (
+                <ReferenceLine
+                  y={avgCost}
+                  stroke="oklch(0.7 0.15 258 / 0.65)"
+                  strokeDasharray="2 3"
+                  label={{ value: "Avg cost", position: "insideTopRight", fontSize: 10, fill: "oklch(0.72 0.15 258)" }}
                 />
               )}
               <Area
