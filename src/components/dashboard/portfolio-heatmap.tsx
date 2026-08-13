@@ -1,0 +1,166 @@
+"use client";
+
+import { useState } from "react";
+import { Treemap, ResponsiveContainer, Tooltip } from "recharts";
+import { Card } from "@/components/ui/card";
+import { Position } from "@/types";
+import { cn } from "@/lib/utils";
+
+type Mode = "move" | "contribution";
+
+// Green→red heat fill: t in [0,1] is intensity, `up` picks the hue.
+function heatFill(up: boolean, t: number) {
+  const c = Math.max(0.06, Math.min(t, 1));
+  const hue = up ? 150 : 25;
+  const L = 0.32 + 0.33 * c;
+  const C = 0.05 + 0.16 * c;
+  return `oklch(${L.toFixed(3)} ${C.toFixed(3)} ${hue})`;
+}
+
+interface Node {
+  name: string;
+  size: number;
+  symbol: string;
+  dayPct: number;
+  dayChange: number;
+  heat: string;
+  metricLabel: string;
+  [key: string]: string | number;
+}
+
+function TileContent(props: unknown) {
+  const p = props as {
+    x: number; y: number; width: number; height: number;
+    symbol?: string; heat?: string; metricLabel?: string;
+  };
+  const { x, y, width, height, symbol, heat, metricLabel } = p;
+  if (width <= 0 || height <= 0) return null;
+  const showText = !!symbol && width > 34 && height > 18;
+  const showMetric = !!symbol && width > 44 && height > 34;
+  return (
+    <g>
+      <rect
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        rx={4}
+        fill={heat ?? "oklch(0.28 0.02 268)"}
+        stroke="oklch(0.16 0.01 268)"
+        strokeWidth={1}
+      />
+      {showText && (
+        <text
+          x={x + width / 2}
+          y={y + height / 2 - (showMetric ? 6 : 0)}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fill="oklch(0.98 0 0)"
+          fontSize={Math.min(13, Math.max(9, width / 5))}
+          fontWeight={700}
+        >
+          {symbol}
+        </text>
+      )}
+      {showMetric && (
+        <text
+          x={x + width / 2}
+          y={y + height / 2 + 9}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fill="oklch(1 0 0 / 0.8)"
+          fontSize={10}
+          fontFamily="var(--font-mono)"
+        >
+          {metricLabel}
+        </text>
+      )}
+    </g>
+  );
+}
+
+export function PortfolioHeatmap({ positions }: { positions: Position[] }) {
+  const [mode, setMode] = useState<Mode>("move");
+
+  const maxContribution = Math.max(...positions.map((p) => Math.abs(p.dayChange)), 1);
+
+  const data: Node[] = positions
+    .filter((p) => Math.abs(p.marketValue) > 0)
+    .map((p) => {
+      const up = (mode === "move" ? p.dayChangePercent : p.dayChange) >= 0;
+      const t =
+        mode === "move"
+          ? Math.abs(p.dayChangePercent) / 4 // cap intensity at ±4%
+          : Math.abs(p.dayChange) / maxContribution;
+      return {
+        name: p.symbol,
+        size: Math.abs(p.marketValue),
+        symbol: p.symbol,
+        dayPct: p.dayChangePercent,
+        dayChange: p.dayChange,
+        heat: heatFill(up, t),
+        metricLabel:
+          mode === "move"
+            ? `${p.dayChangePercent >= 0 ? "+" : ""}${p.dayChangePercent.toFixed(1)}%`
+            : `${p.dayChange >= 0 ? "+" : "-"}$${Math.round(Math.abs(p.dayChange)).toLocaleString()}`,
+      };
+    })
+    .sort((a, b) => b.size - a.size);
+
+  return (
+    <Card className="border-border/50 bg-card/50 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h3 className="text-sm font-medium text-muted-foreground">Portfolio Heatmap</h3>
+        <div className="flex gap-0.5 rounded-md bg-secondary/50 p-0.5">
+          {([["move", "Day Move"], ["contribution", "Contribution"]] as const).map(([m, label]) => (
+            <button
+              key={m}
+              onClick={() => setMode(m)}
+              className={cn(
+                "rounded px-2 py-0.5 text-[11px] transition-colors",
+                mode === m ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <p className="mt-1 text-xs text-muted-foreground">
+        Tile size = position weight · color = {mode === "move" ? "that day's % move" : "$ contribution to today's change"}
+      </p>
+
+      <div className="mt-3 h-64">
+        <ResponsiveContainer width="100%" height="100%">
+          <Treemap
+            data={data}
+            dataKey="size"
+            nameKey="name"
+            content={<TileContent />}
+            isAnimationActive={false}
+          >
+            <Tooltip
+              content={({ active, payload }) => {
+                if (!active || !payload?.length) return null;
+                const n = payload[0].payload as Node;
+                const up = n.dayPct >= 0;
+                return (
+                  <div className="rounded-lg border border-border/50 bg-popover px-3 py-2 text-xs shadow-lg">
+                    <p className="font-semibold">{n.symbol}</p>
+                    <p className="mt-0.5 font-mono" style={{ color: up ? "oklch(0.74 0.19 150)" : "oklch(0.66 0.21 22)" }}>
+                      {n.dayPct >= 0 ? "+" : ""}{n.dayPct.toFixed(2)}% today
+                    </p>
+                    <p className="font-mono text-muted-foreground">
+                      {n.dayChange >= 0 ? "+" : "-"}${Math.round(Math.abs(n.dayChange)).toLocaleString()} contribution
+                    </p>
+                    <p className="font-mono text-muted-foreground">${Math.round(n.size).toLocaleString()} value</p>
+                  </div>
+                );
+              }}
+            />
+          </Treemap>
+        </ResponsiveContainer>
+      </div>
+    </Card>
+  );
+}

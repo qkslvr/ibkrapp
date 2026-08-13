@@ -4,8 +4,8 @@ import { useMemo } from "react";
 import { MetricCard } from "@/components/dashboard/metric-card";
 import { NavShareChart } from "@/components/dashboard/nav-share-chart";
 import { HoldingsTable } from "@/components/dashboard/holdings-table";
-import { SectorChart } from "@/components/dashboard/sector-chart";
-import { TopMovers } from "@/components/dashboard/top-movers";
+import { SectorChart, SectorCompany } from "@/components/dashboard/sector-chart";
+import { PortfolioHeatmap } from "@/components/dashboard/portfolio-heatmap";
 import { DividendsWidget } from "@/components/dashboard/dividends-widget";
 import { RiskMetricsWidget } from "@/components/dashboard/risk-metrics";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
@@ -14,7 +14,7 @@ import { usePositions } from "@/hooks/usePositions";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useLiveNav } from "@/hooks/useLiveNav";
 import { mockSectorAllocation } from "@/lib/mock-data";
-import { DividendInfo, RiskMetrics, SectorAllocation, TopMover } from "@/types";
+import { DividendInfo, RiskMetrics, SectorAllocation } from "@/types";
 
 const SECTOR_COLORS: Record<string, string> = {
   Technology: "#6366f1",
@@ -53,34 +53,20 @@ export default function DashboardPage() {
     }));
   }, [positions]);
 
-  const topMovers = useMemo<{ gainers: TopMover[]; losers: TopMover[] }>(() => {
-    if (!positions?.length) {
-      return { gainers: [], losers: [] };
+  // Holdings grouped by sector, for the sector chart's hover list.
+  const companiesBySector = useMemo<Record<string, SectorCompany[]>>(() => {
+    const map: Record<string, SectorCompany[]> = {};
+    if (!positions?.length) return map;
+    const total = positions.reduce((s, p) => s + Math.abs(p.marketValue), 0);
+    for (const p of positions) {
+      (map[p.sector] ??= []).push({
+        symbol: p.symbol,
+        name: p.name,
+        weight: total > 0 ? (Math.abs(p.marketValue) / total) * 100 : 0,
+        dayPct: p.dayChangePercent,
+      });
     }
-    const sorted = [...positions].sort(
-      (a, b) => b.dayChangePercent - a.dayChangePercent
-    );
-    return {
-      gainers: sorted
-        .filter((p) => p.dayChangePercent > 0)
-        .slice(0, 3)
-        .map((p) => ({
-          symbol: p.symbol,
-          name: p.name,
-          change: p.dayChange,
-          changePercent: p.dayChangePercent,
-        })),
-      losers: sorted
-        .filter((p) => p.dayChangePercent < 0)
-        .slice(-3)
-        .reverse()
-        .map((p) => ({
-          symbol: p.symbol,
-          name: p.name,
-          change: p.dayChange,
-          changePercent: p.dayChangePercent,
-        })),
-    };
+    return map;
   }, [positions]);
 
   // Hero metrics. The fund's NAV summary is authoritative (the IBKR account
@@ -164,12 +150,9 @@ export default function DashboardPage() {
           <NavShareChart />
         </div>
         <div className="space-y-6">
-          <SectorChart data={sectorAllocation} />
-          {!positionsLoading && (
-            <TopMovers
-              gainers={topMovers.gainers}
-              losers={topMovers.losers}
-            />
+          <SectorChart data={sectorAllocation} companies={companiesBySector} />
+          {!positionsLoading && positions && positions.length > 0 && (
+            <PortfolioHeatmap positions={positions} />
           )}
         </div>
       </div>

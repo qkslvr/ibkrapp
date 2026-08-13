@@ -145,7 +145,30 @@ export function HoldingsTable({ positions, totalPortfolioValue }: HoldingsTableP
               <SortableHeader label="Invested" sortKeyName="costBasis" />
               <SortableHeader label="Value" sortKeyName="marketValue" />
               <SortableHeader label="Today" sortKeyName="dayChangePercent" />
-              <SortableHeader label="Total Return" sortKeyName="unrealizedPL" />
+              {/* Total Return with $ / % sort toggle */}
+              <TableHead className="whitespace-nowrap text-right text-xs uppercase tracking-wide text-muted-foreground">
+                <span className="inline-flex items-center gap-1.5">
+                  Total Return
+                  <span className="inline-flex overflow-hidden rounded-md border border-border/60">
+                    {(["unrealizedPL", "unrealizedPLPercent"] as const).map((k, i) => (
+                      <button
+                        key={k}
+                        onClick={() => handleSort(k)}
+                        className={cn(
+                          "px-1.5 py-0.5 text-[10px] font-semibold transition-colors",
+                          i === 1 && "border-l border-border/60",
+                          sortKey === k
+                            ? "bg-primary/20 text-foreground"
+                            : "text-muted-foreground hover:text-foreground",
+                        )}
+                      >
+                        {k === "unrealizedPL" ? "$" : "%"}
+                        {sortKey === k && (sortOrder === "asc" ? " ↑" : " ↓")}
+                      </button>
+                    ))}
+                  </span>
+                </span>
+              </TableHead>
               <SortableHeader label="Weight" sortKeyName="weight" />
               <SortableHeader label="Mkt Cap" sortKeyName="marketCap" />
             </TableRow>
