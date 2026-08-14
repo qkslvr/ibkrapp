@@ -85,13 +85,13 @@ export function SectorChart({ data, companies = {} }: SectorChartProps) {
               onMouseEnter={() => setActive(index)}
               onMouseLeave={() => setActive(null)}
               className={cn(
-                "flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left transition-colors",
+                "flex w-full items-start gap-2 rounded-md px-1.5 py-1 text-left transition-colors",
                 active === index ? "bg-accent/60" : "hover:bg-accent/30",
               )}
             >
-              <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: colorFor(index) }} />
-              <span className="flex-1 truncate text-sm">{sector.sector}</span>
-              <span className="font-mono text-sm text-muted-foreground">{sector.weight.toFixed(1)}%</span>
+              <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: colorFor(index) }} />
+              <span className="min-w-0 flex-1 text-sm leading-tight">{sector.sector}</span>
+              <span className="shrink-0 pl-1 font-mono text-sm tabular-nums text-muted-foreground">{sector.weight.toFixed(1)}%</span>
             </button>
           ))}
         </div>

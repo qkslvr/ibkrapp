@@ -83,7 +83,7 @@ export function NavShareChart() {
     isNav ? "$" + v.toFixed(0) : "$" + (v / 1000).toFixed(0) + "k";
 
   return (
-    <Card className="border-border/50 bg-card/50 p-6">
+    <Card className="flex h-full flex-col border-border/50 bg-card/50 p-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
@@ -170,7 +170,7 @@ export function NavShareChart() {
         <Stat label="Total Invested" value={money(nav?.totalCapitalInvested ?? 0)} />
       </div>
 
-      <div className="mt-4 h-64">
+      <div className="mt-4 min-h-[260px] flex-1">
         {isLoading ? (
           <div className="h-full w-full animate-pulse rounded bg-secondary/50" />
         ) : chartData.length < 2 ? (

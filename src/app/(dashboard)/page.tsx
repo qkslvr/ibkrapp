@@ -145,7 +145,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Performance Chart & Sector Allocation */}
-      <div className="grid items-start gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3">
         <div className="min-w-0 lg:col-span-2">
           <NavShareChart />
         </div>
