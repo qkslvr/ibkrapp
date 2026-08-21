@@ -146,18 +146,19 @@ export default function DashboardPage() {
 
       {/* Performance Chart & Sector Allocation */}
       <div className="grid gap-6 lg:grid-cols-3">
-        {/* Chart, with the heatmap stretched as a wide row beneath it */}
-        <div className="min-w-0 space-y-6 lg:col-span-2">
+        <div className="min-w-0 lg:col-span-2">
           <NavShareChart />
-          {!positionsLoading && positions && positions.length > 0 && (
-            <PortfolioHeatmap positions={positions} />
-          )}
         </div>
-        {/* Sector fills the right column alongside both */}
+        {/* Sector fills the right column to match the chart height */}
         <div className="min-w-0">
           <SectorChart data={sectorAllocation} companies={companiesBySector} />
         </div>
       </div>
+
+      {/* Heatmap as a full-width landscape row beneath the chart + sector */}
+      {!positionsLoading && positions && positions.length > 0 && (
+        <PortfolioHeatmap positions={positions} />
+      )}
 
       {/* Holdings Table */}
       <div>

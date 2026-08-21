@@ -8,12 +8,14 @@ import { cn } from "@/lib/utils";
 
 type Mode = "move" | "contribution";
 
-// Green→red heat fill: t in [0,1] is intensity, `up` picks the hue.
+// Heat fill tuned to the site palette: tiles start as a near-neutral slate
+// (tinted toward the site's gain-green / loss-red) and deepen with intensity —
+// refined rather than the harsh "traffic light" of a stock-market treemap.
 function heatFill(up: boolean, t: number) {
-  const c = Math.max(0.06, Math.min(t, 1));
-  const hue = up ? 150 : 25;
-  const L = 0.32 + 0.33 * c;
-  const C = 0.05 + 0.16 * c;
+  const c = Math.max(0.04, Math.min(t, 1));
+  const hue = up ? 150 : 26;
+  const L = 0.33 + 0.2 * c;    // 0.33 → 0.53
+  const C = 0.035 + 0.14 * c;  // 0.035 → 0.175
   return `oklch(${L.toFixed(3)} ${C.toFixed(3)} ${hue})`;
 }
 
@@ -40,24 +42,26 @@ function TileContent(props: unknown) {
   return (
     <g>
       <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        rx={4}
-        fill={heat ?? "oklch(0.28 0.02 268)"}
-        stroke="oklch(0.16 0.01 268)"
+        x={x + 1}
+        y={y + 1}
+        width={Math.max(width - 2, 0)}
+        height={Math.max(height - 2, 0)}
+        rx={7}
+        fill={heat ?? "oklch(0.3 0.02 268)"}
+        stroke="oklch(1 0 0 / 0.06)"
         strokeWidth={1}
       />
       {showText && (
         <text
           x={x + width / 2}
-          y={y + height / 2 - (showMetric ? 6 : 0)}
+          y={y + height / 2 - (showMetric ? 7 : 0)}
           textAnchor="middle"
           dominantBaseline="middle"
-          fill="oklch(0.98 0 0)"
-          fontSize={Math.min(13, Math.max(9, width / 5))}
+          fill="oklch(0.99 0 0)"
+          fontSize={Math.min(14, Math.max(9.5, width / 4.6))}
           fontWeight={700}
+          letterSpacing="0.02em"
+          style={{ textShadow: "0 1px 2px oklch(0 0 0 / 0.45)" }}
         >
           {symbol}
         </text>
@@ -65,11 +69,11 @@ function TileContent(props: unknown) {
       {showMetric && (
         <text
           x={x + width / 2}
-          y={y + height / 2 + 9}
+          y={y + height / 2 + 10}
           textAnchor="middle"
           dominantBaseline="middle"
-          fill="oklch(1 0 0 / 0.8)"
-          fontSize={10}
+          fill="oklch(1 0 0 / 0.82)"
+          fontSize={10.5}
           fontFamily="var(--font-mono)"
         >
           {metricLabel}
@@ -130,7 +134,7 @@ export function PortfolioHeatmap({ positions }: { positions: Position[] }) {
         Tile size = position weight · color = {mode === "move" ? "that day's % move" : "$ contribution to today's change"}
       </p>
 
-      <div className="mt-3 h-64 w-full min-w-0 overflow-hidden">
+      <div className="mt-3 h-72 w-full min-w-0 overflow-hidden sm:h-80">
         <ResponsiveContainer width="100%" height="100%">
           <Treemap
             data={data}
