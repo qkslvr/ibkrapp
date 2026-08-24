@@ -41,7 +41,7 @@ export function MetricCard({
           "pointer-events-none absolute inset-0 opacity-[0.06] transition-opacity group-hover:opacity-[0.1]",
           isPositive && "bg-gradient-to-br from-[oklch(0.72_0.19_145)] to-transparent",
           isNegative && "bg-gradient-to-br from-[oklch(0.65_0.22_25)] to-transparent",
-          isNeutral && "bg-gradient-to-br from-[oklch(0.72_0.15_255)] to-transparent"
+          isNeutral && "bg-gradient-to-br from-[oklch(0.79_0.11_84)] to-transparent"
         )}
       />
       {/* Top hairline accent */}

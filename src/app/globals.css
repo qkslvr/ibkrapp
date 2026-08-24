@@ -83,42 +83,40 @@
 }
 
 .dark {
-  /* Cool slate surfaces + warm off-white ink. The base keeps a faint indigo
-     undertone; text is a soft warm white (not glaring pure white) so long
-     sessions stay easy on the eyes. Surfaces are clearly layered:
-     bg < sidebar < card < popover. */
-  --background: oklch(0.208 0.014 268);
-  --foreground: oklch(0.955 0.006 80);
-  --card: oklch(0.242 0.015 268);
-  --card-foreground: oklch(0.955 0.006 80);
-  --popover: oklch(0.258 0.016 268);
-  --popover-foreground: oklch(0.955 0.006 80);
-  --primary: oklch(0.72 0.15 258);
-  --primary-foreground: oklch(0.98 0.01 260);
-  --secondary: oklch(0.29 0.015 268);
-  --secondary-foreground: oklch(0.955 0.006 80);
-  --muted: oklch(0.29 0.015 268);
-  --muted-foreground: oklch(0.73 0.014 78);
-  --accent: oklch(0.315 0.018 268);
-  --accent-foreground: oklch(0.955 0.006 80);
-  --destructive: oklch(0.65 0.2 25);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.72 0.15 258);
-  /* Data-viz accents — a vivid, harmonious ramp (blue, teal, amber, violet, rose). */
-  --chart-1: oklch(0.72 0.16 258);
+  /* Theseus Capital brand: a warm near-black ground with a refined gold accent
+     and soft warm-white ink. Surfaces layer bg < sidebar < card < popover. */
+  --background: oklch(0.158 0.006 75);
+  --foreground: oklch(0.95 0.01 82);
+  --card: oklch(0.192 0.007 75);
+  --card-foreground: oklch(0.95 0.01 82);
+  --popover: oklch(0.21 0.008 75);
+  --popover-foreground: oklch(0.95 0.01 82);
+  --primary: oklch(0.79 0.11 84);            /* gold */
+  --primary-foreground: oklch(0.2 0.03 80);  /* dark ink on gold */
+  --secondary: oklch(0.238 0.008 75);
+  --secondary-foreground: oklch(0.95 0.01 82);
+  --muted: oklch(0.238 0.008 75);
+  --muted-foreground: oklch(0.72 0.016 82);
+  --accent: oklch(0.262 0.01 75);
+  --accent-foreground: oklch(0.95 0.01 82);
+  --destructive: oklch(0.62 0.2 25);
+  --border: oklch(1 0.02 85 / 10%);
+  --input: oklch(1 0.02 85 / 12%);
+  --ring: oklch(0.79 0.11 84);
+  /* Data-viz accents — gold-led, harmonious ramp. */
+  --chart-1: oklch(0.79 0.11 84);
   --chart-2: oklch(0.76 0.15 178);
   --chart-3: oklch(0.82 0.15 78);
   --chart-4: oklch(0.68 0.19 305);
   --chart-5: oklch(0.68 0.2 18);
-  --sidebar: oklch(0.188 0.014 268);
-  --sidebar-foreground: oklch(0.955 0.006 80);
-  --sidebar-primary: oklch(0.72 0.15 258);
-  --sidebar-primary-foreground: oklch(0.98 0.01 260);
-  --sidebar-accent: oklch(0.29 0.016 268);
-  --sidebar-accent-foreground: oklch(0.955 0.006 80);
-  --sidebar-border: oklch(1 0 0 / 9%);
-  --sidebar-ring: oklch(0.72 0.15 258);
+  --sidebar: oklch(0.138 0.005 75);
+  --sidebar-foreground: oklch(0.95 0.01 82);
+  --sidebar-primary: oklch(0.79 0.11 84);
+  --sidebar-primary-foreground: oklch(0.2 0.03 80);
+  --sidebar-accent: oklch(0.238 0.01 75);
+  --sidebar-accent-foreground: oklch(0.95 0.01 82);
+  --sidebar-border: oklch(1 0.02 85 / 9%);
+  --sidebar-ring: oklch(0.79 0.11 84);
 
   /* Finance-specific colors */
   --gain: oklch(0.74 0.19 150);
@@ -126,7 +124,8 @@
   --loss: oklch(0.66 0.21 22);
   --loss-muted: oklch(0.66 0.21 22 / 15%);
   --neutral: oklch(0.65 0 0);
-  --accent-warm: oklch(0.82 0.15 78);
+  --gold: oklch(0.79 0.11 84);
+  --accent-warm: oklch(0.82 0.14 82);
 }
 
 @layer base {
@@ -135,13 +134,12 @@
   }
   body {
     @apply bg-background text-foreground;
-    /* Layered ambient light: a cool indigo glow top-left, a violet wash
-       top-right, and a faint warm ember low-left — fixed so it reads as
-       ambient depth rather than scrolling content. */
+    /* Warm ambient light: a soft gold glow top-left, an amber wash top-right,
+       and a faint ember low-center — fixed so it reads as ambient depth. */
     background-image:
-      radial-gradient(1100px 520px at 12% -8%, oklch(0.72 0.15 258 / 0.12), transparent 60%),
-      radial-gradient(900px 520px at 100% -2%, oklch(0.7 0.16 305 / 0.07), transparent 58%),
-      radial-gradient(1000px 700px at 50% 118%, oklch(0.78 0.13 70 / 0.05), transparent 60%);
+      radial-gradient(1100px 520px at 12% -8%, oklch(0.79 0.11 84 / 0.10), transparent 60%),
+      radial-gradient(900px 520px at 100% -2%, oklch(0.72 0.1 70 / 0.06), transparent 58%),
+      radial-gradient(1000px 700px at 50% 118%, oklch(0.6 0.08 55 / 0.05), transparent 60%);
     background-attachment: fixed;
     background-repeat: no-repeat;
   }
@@ -169,4 +167,34 @@
     background-image: radial-gradient(oklch(1 0 0 / 0.05) 1px, transparent 1px);
     background-size: 22px 22px;
   }
+}
+
+@layer utilities {
+  /* Brand display serif for Theseus wordmarks and headlines. */
+  .font-display {
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia,
+      "Times New Roman", serif;
+  }
+  .text-gold {
+    color: var(--gold);
+  }
+}
+
+/* Landing loader + entrance animations (the logo appears centered on load,
+   then the veil lifts and the page rises in). */
+@keyframes theseus-mark-in {
+  0% { opacity: 0; transform: scale(0.9); letter-spacing: 0.5em; }
+  60% { opacity: 1; }
+  100% { opacity: 1; transform: scale(1); letter-spacing: 0.24em; }
+}
+@keyframes theseus-veil-out {
+  0%, 48% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+@keyframes theseus-rise {
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-anim] { animation: none !important; opacity: 1 !important; visibility: visible !important; }
 }

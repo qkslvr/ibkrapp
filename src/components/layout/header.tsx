@@ -128,8 +128,14 @@ export function Header() {
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem>Account Settings</DropdownMenuItem>
             <DropdownMenuItem>IBKR Connection</DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive">
-              Disconnect
+            <DropdownMenuItem
+              className="text-destructive"
+              onClick={async () => {
+                await fetch("/api/auth/logout", { method: "POST" });
+                window.location.href = "/login";
+              }}
+            >
+              Sign out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

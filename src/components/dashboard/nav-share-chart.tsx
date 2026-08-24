@@ -185,11 +185,11 @@ export function NavShareChart() {
                   <stop offset="0%" stopColor={stroke} stopOpacity={0.28} />
                   <stop offset="100%" stopColor={stroke} stopOpacity={0} />
                 </linearGradient>
-                {/* Accent stroke ramp — indigo → violet → warm amber */}
+                {/* Accent stroke ramp — deep gold → warm amber (brand) */}
                 <linearGradient id="navStrokeRamp" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="oklch(0.72 0.16 258)" />
-                  <stop offset="55%" stopColor="oklch(0.68 0.19 305)" />
-                  <stop offset="100%" stopColor="oklch(0.82 0.15 78)" />
+                  <stop offset="0%" stopColor="oklch(0.72 0.1 70)" />
+                  <stop offset="55%" stopColor="oklch(0.79 0.11 84)" />
+                  <stop offset="100%" stopColor="oklch(0.85 0.13 92)" />
                 </linearGradient>
                 <filter id="navGlow" x="-20%" y="-20%" width="140%" height="140%">
                   <feGaussianBlur stdDeviation="3.2" result="blur" />
@@ -247,9 +247,9 @@ export function NavShareChart() {
               {isNav && Math.abs(avgCost - 100) > 0.4 && (
                 <ReferenceLine
                   y={avgCost}
-                  stroke="oklch(0.7 0.15 258 / 0.65)"
+                  stroke="oklch(0.79 0.11 84 / 0.7)"
                   strokeDasharray="2 3"
-                  label={{ value: "Avg cost", position: "insideTopRight", fontSize: 10, fill: "oklch(0.72 0.15 258)" }}
+                  label={{ value: "Avg cost", position: "insideTopRight", fontSize: 10, fill: "oklch(0.85 0.13 92)" }}
                 />
               )}
               <Area
@@ -267,8 +267,8 @@ export function NavShareChart() {
                   x={m.date}
                   y={m.value}
                   r={4}
-                  fill="oklch(0.7 0.15 250)"
-                  stroke="oklch(0.18 0.01 270)"
+                  fill="oklch(0.82 0.13 90)"
+                  stroke="oklch(0.16 0.006 75)"
                   strokeWidth={1.5}
                   ifOverflow="extendDomain"
                 />

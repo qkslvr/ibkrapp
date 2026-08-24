@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Portfolio Dashboard | IBKR",
-  description: "Investment portfolio management dashboard",
+  title: "Theseus Capital",
+  description: "An AI-focused fund.",
 };
 
 export default function RootLayout({

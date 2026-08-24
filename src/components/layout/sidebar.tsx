@@ -10,13 +10,12 @@ import {
   History,
   Eye,
   Settings,
-  TrendingUp,
   Building2,
   Filter,
 } from "lucide-react";
 
 export const navigation = [
-  { name: "Dashboard", href: "/", icon: LayoutDashboard },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Performance", href: "/performance", icon: LineChart },
   { name: "Income", href: "/income", icon: Wallet },
   { name: "Transactions", href: "/transactions", icon: History },
@@ -34,10 +33,10 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     <>
       {/* Logo */}
       <div className="flex h-16 items-center gap-2.5 border-b border-border/50 px-6">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[oklch(0.72_0.15_255)] to-[oklch(0.62_0.2_285)] shadow-lg shadow-[oklch(0.72_0.15_255)]/20">
-          <TrendingUp className="h-4 w-4 text-white" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-full border border-primary/40 bg-primary/10">
+          <span className="font-display text-lg leading-none text-primary">Θ</span>
         </div>
-        <span className="text-lg font-semibold tracking-tight">Portfolio</span>
+        <span className="font-display text-base tracking-wide">Theseus Capital</span>
       </div>
 
       {/* Navigation */}
