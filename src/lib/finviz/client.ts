@@ -8,7 +8,7 @@ const API_KEY = process.env.FINVIZ_API_KEY || "";
 // Custom-view (v=152) column indices we request. The export echoes columns in
 // this order with named headers; we still parse by header name to be robust.
 const COLUMN_INDICES = [
-  1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 14, 16, 17, 18, 19, 21, 22, 23, 32, 33, 39,
+  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 16, 17, 18, 19, 21, 22, 23, 32, 33, 39,
   40, 41, 44, 46, 47, 48, 62, 65, 66, 67, 68,
 ];
 
@@ -102,6 +102,7 @@ function rowsToStocks(rows: string[][]): ScreenerStock[] {
     company: idx("Company"),
     sector: idx("Sector"),
     industry: idx("Industry"),
+    country: idx("Country"),
     marketCap: idx("Market Cap"),
     pe: idx("P/E"),
     forwardPE: idx("Forward P/E"),
@@ -139,6 +140,7 @@ function rowsToStocks(rows: string[][]): ScreenerStock[] {
       company: str(r[col.company]),
       sector: str(r[col.sector]),
       industry: str(r[col.industry]),
+      country: str(r[col.country]) || null,
       marketCap: mc != null ? mc * 1e6 : null, // Finviz reports millions; store dollars
       pe: num(r[col.pe]),
       forwardPE: num(r[col.forwardPE]),

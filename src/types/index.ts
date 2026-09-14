@@ -197,6 +197,7 @@ export interface ScreenerStock {
   company: string;
   sector: string;
   industry: string;
+  country: string | null;
   marketCap: number | null; // dollars
   pe: number | null;
   forwardPE: number | null;

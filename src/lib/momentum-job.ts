@@ -12,6 +12,7 @@ import { computeMomentum, MomentumScore } from "@/lib/momentum";
 export interface MomentumRow {
   symbol: string;
   company: string;
+  country: string | null; // home country (Finviz), so ADRs show their origin
   marketCap: number | null;
   epsGrowthQoQ: number | null;
   m: MomentumScore;
@@ -76,6 +77,7 @@ export async function runMomentum(): Promise<void> {
           job.rows.push({
             symbol: c.ticker,
             company: c.company,
+            country: c.country,
             marketCap: c.marketCap,
             epsGrowthQoQ: c.epsGrowthQoQ,
             m,

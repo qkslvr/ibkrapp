@@ -85,7 +85,17 @@ export function MomentumTable({ rows }: { rows: MomentumRow[] }) {
   const [sortKey, setSortKey] = useState<SortKey>("score");
   const [dir, setDir] = useState<"asc" | "desc">("desc");
   const [text, setText] = useState("");
+  const [country, setCountry] = useState("All");
   const [colFilters, setColFilters] = useState<Partial<Record<NumKey, string>>>({});
+
+  const countries = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const r of rows) {
+      const c = r.country || "Unknown";
+      counts.set(c, (counts.get(c) ?? 0) + 1);
+    }
+    return [...counts.entries()].sort((a, b) => b[1] - a[1]);
+  }, [rows]);
 
   const toggle = (k: SortKey) => {
     if (k === sortKey) setDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -105,6 +115,7 @@ export function MomentumTable({ rows }: { rows: MomentumRow[] }) {
   const processed = useMemo(() => {
     const q = text.trim().toLowerCase();
     const filtered = rows.filter((r) => {
+      if (country !== "All" && (r.country || "Unknown") !== country) return false;
       if (q && !r.symbol.toLowerCase().includes(q) && !r.company.toLowerCase().includes(q)) return false;
       return activeFilters.every(({ k, pred }) => pred(numVal(r, k)));
     });
@@ -114,7 +125,7 @@ export function MomentumTable({ rows }: { rows: MomentumRow[] }) {
       return ((numVal(a, sortKey) ?? -Infinity) - (numVal(b, sortKey) ?? -Infinity)) * mul;
     });
     return { total: filtered.length, rows: sorted.slice(0, RENDER_CAP) };
-  }, [rows, text, activeFilters, sortKey, dir]);
+  }, [rows, text, country, activeFilters, sortKey, dir]);
 
   const SortBtn = ({ k, label, hint }: { k: SortKey; label: string; hint?: string }) => {
     const active = sortKey === k;
@@ -135,9 +146,21 @@ export function MomentumTable({ rows }: { rows: MomentumRow[] }) {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="relative w-full max-w-xs">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input placeholder="Filter ticker or company…" value={text} onChange={(e) => setText(e.target.value)} className="h-9 bg-secondary/50 pl-9 text-sm" />
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative w-full max-w-[16rem]">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input placeholder="Filter ticker or company…" value={text} onChange={(e) => setText(e.target.value)} className="h-9 bg-secondary/50 pl-9 text-sm" />
+          </div>
+          <select
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+            className="h-9 rounded-md border border-border bg-secondary/50 px-3 text-sm text-foreground focus:border-primary/60 focus:outline-none"
+          >
+            <option value="All">All countries ({rows.length})</option>
+            {countries.map(([c, n]) => (
+              <option key={c} value={c}>{c} ({n})</option>
+            ))}
+          </select>
         </div>
         <p className="text-xs text-muted-foreground">
           {processed.total > RENDER_CAP ? `Showing top ${RENDER_CAP} of ${processed.total.toLocaleString()}` : `${processed.total.toLocaleString()} stocks`}
@@ -178,7 +201,14 @@ export function MomentumTable({ rows }: { rows: MomentumRow[] }) {
                   <Link href={`/stock/${r.symbol}`} className="flex items-center gap-2.5">
                     <StockLogo symbol={r.symbol} size={26} className="h-[26px] w-[26px] shrink-0" />
                     <span className="min-w-0">
-                      <span className="block font-mono font-semibold">{r.symbol}</span>
+                      <span className="flex items-center gap-1.5 font-mono font-semibold">
+                        {r.symbol}
+                        {r.country && r.country !== "United States" && (
+                          <span className="rounded bg-secondary px-1 py-0.5 text-[9px] font-normal uppercase tracking-wide text-primary/90">
+                            {r.country}
+                          </span>
+                        )}
+                      </span>
                       <span className="block max-w-[180px] truncate text-xs text-muted-foreground">{r.company}</span>
                     </span>
                   </Link>
