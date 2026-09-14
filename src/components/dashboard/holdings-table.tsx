@@ -199,8 +199,20 @@ export function HoldingsTable({ positions, totalPortfolioValue }: HoldingsTableP
                     {p.shares.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="font-mono tabular-nums">{money0(p.currentPrice)}</div>
-                    <div className="font-mono text-xs text-muted-foreground">avg {money0(p.avgCost)}</div>
+                    <div className="font-mono tabular-nums">
+                      {money0(p.currentPrice)}
+                      {p.marketCap != null && (
+                        <span className="text-xs text-muted-foreground/60"> ({formatMarketCap(p.marketCap)})</span>
+                      )}
+                    </div>
+                    <div className="font-mono text-xs text-muted-foreground">
+                      avg {money0(p.avgCost)}
+                      {p.marketCap != null && p.currentPrice > 0 && (
+                        <span className="text-muted-foreground/60">
+                          {" "}({formatMarketCap(p.marketCap * (p.avgCost / p.currentPrice))})
+                        </span>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell className="text-right font-mono tabular-nums text-muted-foreground">
                     {money0(p.costBasis)}
