@@ -375,3 +375,26 @@ export async function searchTickers(
   }
   return [...symStarts, ...symContains, ...nameContains].slice(0, limit);
 }
+
+const CAP_UNIVERSE_TTL = 24 * 60 * 60_000; // 24h — refreshed by the nightly job
+
+/**
+ * Every US-listed stock with market cap over `minCapUsd` (default $1B).
+ * Pulls Finviz's "small-cap and over" set (>$300M) once and filters client-side.
+ */
+export async function screenByMarketCap(minCapUsd = 1e9): Promise<ScreenerStock[]> {
+  const cacheKey = "finviz-cap-universe";
+  const filterAbove = (list: ScreenerStock[]) =>
+    list.filter((s) => (s.marketCap ?? 0) >= minCapUsd);
+
+  const fresh = readCache<ScreenerStock[]>(cacheKey, CAP_UNIVERSE_TTL);
+  if (fresh) return filterAbove(fresh);
+
+  const url = buildUrl({ f: "cap_smallover", c: COLUMN_INDICES.join(",") });
+  const rows = await fetchCsv(url);
+  if (!rows) return filterAbove(readCache<ScreenerStock[]>(cacheKey) ?? []);
+
+  const stocks = rowsToStocks(rows);
+  if (stocks.length > 0) writeCache(cacheKey, stocks);
+  return filterAbove(stocks);
+}

@@ -8,7 +8,8 @@ function isPublic(pathname: string): boolean {
   return (
     pathname === "/" ||
     pathname.startsWith("/login") ||
-    pathname.startsWith("/api/auth/")
+    pathname.startsWith("/api/auth/") ||
+    pathname.startsWith("/api/cron/")
   );
 }
 
