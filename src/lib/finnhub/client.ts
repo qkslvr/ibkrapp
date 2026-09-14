@@ -80,3 +80,21 @@ export async function getCandleData(
     resolution,
   });
 }
+
+interface MetricResponse {
+  series?: { quarterly?: { eps?: { period: string; v: number }[] } };
+}
+
+/** Full quarterly EPS history, most-recent quarter first. One API call. */
+export async function getQuarterlyEps(symbol: string): Promise<number[] | null> {
+  const data = await finnhubFetch<MetricResponse>("/stock/metric", {
+    symbol,
+    metric: "all",
+  });
+  const eps = data?.series?.quarterly?.eps;
+  if (!eps || eps.length === 0) return null;
+  return [...eps]
+    .filter((e) => typeof e.v === "number")
+    .sort((a, b) => b.period.localeCompare(a.period))
+    .map((e) => e.v);
+}
