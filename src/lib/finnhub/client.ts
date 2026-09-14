@@ -81,20 +81,41 @@ export async function getCandleData(
   });
 }
 
+type Point = { period: string; v: number };
 interface MetricResponse {
-  series?: { quarterly?: { eps?: { period: string; v: number }[] } };
+  series?: {
+    quarterly?: {
+      eps?: Point[];
+      pb?: Point[];
+      bookValue?: Point[]; // total book equity → pb × bookValue = market cap
+    };
+  };
 }
 
-/** Full quarterly EPS history, most-recent quarter first. One API call. */
-export async function getQuarterlyEps(symbol: string): Promise<number[] | null> {
-  const data = await finnhubFetch<MetricResponse>("/stock/metric", {
-    symbol,
-    metric: "all",
-  });
-  const eps = data?.series?.quarterly?.eps;
-  if (!eps || eps.length === 0) return null;
-  return [...eps]
-    .filter((e) => typeof e.v === "number")
+export interface QuarterlySeries {
+  eps: number[]; // quarterly EPS, most-recent first
+  marketCap: number[]; // quarterly market cap (pb × book equity), most-recent first
+}
+
+const toSeries = (pts?: Point[]): number[] =>
+  (pts ?? [])
+    .filter((p) => typeof p.v === "number")
     .sort((a, b) => b.period.localeCompare(a.period))
-    .map((e) => e.v);
+    .map((p) => p.v);
+
+/** Quarterly EPS + market-cap history from one metric call. */
+export async function getQuarterlySeries(symbol: string): Promise<QuarterlySeries | null> {
+  const data = await finnhubFetch<MetricResponse>("/stock/metric", { symbol, metric: "all" });
+  const q = data?.series?.quarterly;
+  if (!q?.eps?.length) return null;
+
+  // Market cap per quarter = pb × total book equity, aligned by period.
+  const pb = new Map((q.pb ?? []).map((p) => [p.period, p.v]));
+  const bv = new Map((q.bookValue ?? []).map((p) => [p.period, p.v]));
+  const marketCap = [...bv.keys()]
+    .filter((per) => pb.has(per) && typeof pb.get(per) === "number" && typeof bv.get(per) === "number")
+    .sort((a, b) => b.localeCompare(a))
+    .map((per) => (pb.get(per) as number) * (bv.get(per) as number));
+
+  return { eps: toSeries(q.eps), marketCap };
 }

@@ -10,14 +10,18 @@ import type { MomentumRow } from "@/lib/momentum-job";
 import { Search, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 
 const GOLD = "oklch(0.82 0.13 90)";
+const GAIN = "oklch(0.74 0.19 150)";
 const LOSS = "oklch(0.66 0.21 22)";
 const RENDER_CAP = 400;
 
-type SortKey = "symbol" | "q2" | "q4" | "q6" | "q8" | "score" | "marketCap";
+type SortKey =
+  | "symbol"
+  | "q2" | "q4" | "q6" | "q8"
+  | "mc2" | "mc4" | "mc6" | "mc8"
+  | "score" | "marketCap";
 type NumKey = Exclude<SortKey, "symbol">;
-const NUM_COLS: NumKey[] = ["q2", "q4", "q6", "q8", "score", "marketCap"];
+const NUM_COLS: NumKey[] = ["q2", "q4", "q6", "q8", "mc2", "mc4", "mc6", "mc8", "score", "marketCap"];
 
-// Parse a filter expression like ">40", ">=100", "<10", "40" (bare = ≥).
 function makePredicate(expr: string): ((v: number | null) => boolean) | null {
   const m = expr.trim().match(/^(>=|<=|>|<|=)?\s*(-?\d*\.?\d+)$/);
   if (!m) return null;
@@ -36,12 +40,11 @@ function makePredicate(expr: string): ((v: number | null) => boolean) | null {
   };
 }
 
-// Numeric value used for both sorting and column filters. Market cap is
-// expressed in $B so a user can type ">10" for $10B.
 function numVal(r: MomentumRow, k: NumKey): number | null {
   if (k === "score") return r.m.score;
   if (k === "marketCap") return r.marketCap != null ? r.marketCap / 1e9 : null;
-  return r.m[k];
+  if (k.startsWith("mc")) return r.mc[("q" + k.slice(2)) as "q2" | "q4" | "q6" | "q8"];
+  return r.m[k as "q2" | "q4" | "q6" | "q8"];
 }
 
 function GrowthCell({ value, pass }: { value: number | null; pass: boolean }) {
@@ -50,21 +53,18 @@ function GrowthCell({ value, pass }: { value: number | null; pass: boolean }) {
   return (
     <span className="inline-flex items-center gap-1 font-mono tabular-nums" style={{ color: pass ? GOLD : neg ? LOSS : undefined }}>
       {pass && <span className="text-[10px]">✓</span>}
-      {value >= 0 ? "+" : ""}
-      {value.toFixed(0)}%
+      {value >= 0 ? "+" : ""}{value.toFixed(0)}%
     </span>
   );
 }
 
-// Module-level so it isn't re-created each render (which would drop focus).
-function ColFilter({ value, onChange, ph }: { value: string; onChange: (v: string) => void; ph: string }) {
+function DeltaCell({ value }: { value: number | null }) {
+  if (value == null) return <span className="text-muted-foreground/40">—</span>;
+  const up = value >= 0;
   return (
-    <input
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={ph}
-      className="h-6 w-16 rounded border border-border/60 bg-background/60 px-1.5 text-right font-mono text-[11px] text-foreground placeholder:text-muted-foreground/50 focus:border-primary/60 focus:outline-none"
-    />
+    <span className="font-mono tabular-nums" style={{ color: up ? GAIN : LOSS }}>
+      {up ? "+" : ""}{value.toFixed(0)}%
+    </span>
   );
 }
 
@@ -81,6 +81,17 @@ function ScorePips({ score }: { score: number }) {
   );
 }
 
+function ColFilter({ value, onChange, ph }: { value: string; onChange: (v: string) => void; ph: string }) {
+  return (
+    <input
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={ph}
+      className="h-6 w-14 rounded border border-border/60 bg-background/60 px-1.5 text-right font-mono text-[11px] text-foreground placeholder:text-muted-foreground/50 focus:border-primary/60 focus:outline-none"
+    />
+  );
+}
+
 export function MomentumTable({ rows }: { rows: MomentumRow[] }) {
   const [sortKey, setSortKey] = useState<SortKey>("score");
   const [dir, setDir] = useState<"asc" | "desc">("desc");
@@ -90,25 +101,18 @@ export function MomentumTable({ rows }: { rows: MomentumRow[] }) {
 
   const countries = useMemo(() => {
     const counts = new Map<string, number>();
-    for (const r of rows) {
-      const c = r.country || "Unknown";
-      counts.set(c, (counts.get(c) ?? 0) + 1);
-    }
+    for (const r of rows) counts.set(r.country || "Unknown", (counts.get(r.country || "Unknown") ?? 0) + 1);
     return [...counts.entries()].sort((a, b) => b[1] - a[1]);
   }, [rows]);
 
   const toggle = (k: SortKey) => {
     if (k === sortKey) setDir((d) => (d === "asc" ? "desc" : "asc"));
-    else {
-      setSortKey(k);
-      setDir(k === "symbol" ? "asc" : "desc");
-    }
+    else { setSortKey(k); setDir(k === "symbol" ? "asc" : "desc"); }
   };
 
   const activeFilters = useMemo(
-    () =>
-      NUM_COLS.map((k) => ({ k, pred: makePredicate(colFilters[k] ?? "") }))
-        .filter((x): x is { k: NumKey; pred: (v: number | null) => boolean } => x.pred != null),
+    () => NUM_COLS.map((k) => ({ k, pred: makePredicate(colFilters[k] ?? "") }))
+      .filter((x): x is { k: NumKey; pred: (v: number | null) => boolean } => x.pred != null),
     [colFilters],
   );
 
@@ -127,13 +131,12 @@ export function MomentumTable({ rows }: { rows: MomentumRow[] }) {
     return { total: filtered.length, rows: sorted.slice(0, RENDER_CAP) };
   }, [rows, text, country, activeFilters, sortKey, dir]);
 
+  const setFilter = (k: NumKey) => (v: string) => setColFilters((f) => ({ ...f, [k]: v }));
+
   const SortBtn = ({ k, label, hint }: { k: SortKey; label: string; hint?: string }) => {
     const active = sortKey === k;
     return (
-      <button
-        onClick={() => toggle(k)}
-        className={cn("inline-flex items-center gap-1 whitespace-nowrap uppercase tracking-wide hover:text-foreground", active ? "text-foreground" : "text-muted-foreground")}
-      >
+      <button onClick={() => toggle(k)} className={cn("inline-flex items-center gap-1 whitespace-nowrap uppercase tracking-wide hover:text-foreground", active ? "text-foreground" : "text-muted-foreground")}>
         {label}
         {hint && <span className="normal-case text-muted-foreground/60">{hint}</span>}
         {active ? (dir === "asc" ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />) : <ArrowUpDown className="h-3 w-3 opacity-40" />}
@@ -141,7 +144,7 @@ export function MomentumTable({ rows }: { rows: MomentumRow[] }) {
     );
   };
 
-  const setFilter = (k: NumKey) => (v: string) => setColFilters((f) => ({ ...f, [k]: v }));
+  const div = "border-l border-border/50";
 
   return (
     <div className="space-y-3">
@@ -151,15 +154,9 @@ export function MomentumTable({ rows }: { rows: MomentumRow[] }) {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input placeholder="Filter ticker or company…" value={text} onChange={(e) => setText(e.target.value)} className="h-9 bg-secondary/50 pl-9 text-sm" />
           </div>
-          <select
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            className="h-9 rounded-md border border-border bg-secondary/50 px-3 text-sm text-foreground focus:border-primary/60 focus:outline-none"
-          >
+          <select value={country} onChange={(e) => setCountry(e.target.value)} className="h-9 rounded-md border border-border bg-secondary/50 px-3 text-sm text-foreground focus:border-primary/60 focus:outline-none">
             <option value="All">All countries ({rows.length})</option>
-            {countries.map(([c, n]) => (
-              <option key={c} value={c}>{c} ({n})</option>
-            ))}
+            {countries.map(([c, n]) => <option key={c} value={c}>{c} ({n})</option>)}
           </select>
         </div>
         <p className="text-xs text-muted-foreground">
@@ -171,60 +168,75 @@ export function MomentumTable({ rows }: { rows: MomentumRow[] }) {
       <div className="overflow-x-auto rounded-xl border border-border/60 bg-card/50">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-border/60 text-xs">
-              <th className="w-8 py-3 pl-4 text-right font-medium uppercase tracking-wide text-muted-foreground">#</th>
-              <th className="px-3 py-3 text-left font-medium"><SortBtn k="symbol" label="Ticker" /></th>
-              <th className="px-3 py-3 text-right font-medium"><SortBtn k="q2" label="2Q" hint={`>${THRESHOLDS.q2}%`} /></th>
-              <th className="px-3 py-3 text-right font-medium"><SortBtn k="q4" label="4Q" hint={`>${THRESHOLDS.q4}%`} /></th>
-              <th className="px-3 py-3 text-right font-medium"><SortBtn k="q6" label="6Q" hint={`>${THRESHOLDS.q6}%`} /></th>
-              <th className="px-3 py-3 text-right font-medium"><SortBtn k="q8" label="8Q" hint={`>${THRESHOLDS.q8}%`} /></th>
-              <th className="px-3 py-3 text-right font-medium"><SortBtn k="score" label="Score" /></th>
-              <th className="px-3 py-3 pr-4 text-right font-medium"><SortBtn k="marketCap" label="Mkt Cap" /></th>
+            {/* group super-header */}
+            <tr className="text-[10px] uppercase tracking-wider text-muted-foreground/70">
+              <th colSpan={2} className="py-2" />
+              <th colSpan={4} className={cn("py-2 text-center", div)}>EPS Growth (TTM)</th>
+              <th colSpan={4} className={cn("py-2 text-center", div)}>Market Cap Δ</th>
+              <th colSpan={2} className={div} />
             </tr>
-            {/* Per-column filter row */}
+            <tr className="border-b border-border/60 text-xs">
+              <th className="w-8 py-2 pl-4 text-right font-medium uppercase tracking-wide text-muted-foreground">#</th>
+              <th className="px-3 py-2 text-left font-medium"><SortBtn k="symbol" label="Ticker" /></th>
+              <th className={cn("px-2.5 py-2 text-right font-medium", div)}><SortBtn k="q2" label="2Q" hint={`>${THRESHOLDS.q2}%`} /></th>
+              <th className="px-2.5 py-2 text-right font-medium"><SortBtn k="q4" label="4Q" hint={`>${THRESHOLDS.q4}%`} /></th>
+              <th className="px-2.5 py-2 text-right font-medium"><SortBtn k="q6" label="6Q" hint={`>${THRESHOLDS.q6}%`} /></th>
+              <th className="px-2.5 py-2 text-right font-medium"><SortBtn k="q8" label="8Q" hint={`>${THRESHOLDS.q8}%`} /></th>
+              <th className={cn("px-2.5 py-2 text-right font-medium", div)}><SortBtn k="mc2" label="2Q" /></th>
+              <th className="px-2.5 py-2 text-right font-medium"><SortBtn k="mc4" label="4Q" /></th>
+              <th className="px-2.5 py-2 text-right font-medium"><SortBtn k="mc6" label="6Q" /></th>
+              <th className="px-2.5 py-2 text-right font-medium"><SortBtn k="mc8" label="8Q" /></th>
+              <th className={cn("px-3 py-2 text-right font-medium", div)}><SortBtn k="score" label="Score" /></th>
+              <th className="px-3 py-2 pr-4 text-right font-medium"><SortBtn k="marketCap" label="Mkt Cap" /></th>
+            </tr>
+            {/* per-column filters */}
             <tr className="border-b border-border/60 bg-secondary/10">
-              <th></th>
+              <th />
               <th className="px-3 py-1.5 text-left text-[10px] uppercase tracking-wide text-muted-foreground/60">filter →</th>
-              <th className="px-3 py-1.5 text-right"><ColFilter value={colFilters.q2 ?? ""} onChange={setFilter("q2")} ph=">10" /></th>
-              <th className="px-3 py-1.5 text-right"><ColFilter value={colFilters.q4 ?? ""} onChange={setFilter("q4")} ph=">40" /></th>
-              <th className="px-3 py-1.5 text-right"><ColFilter value={colFilters.q6 ?? ""} onChange={setFilter("q6")} ph=">60" /></th>
-              <th className="px-3 py-1.5 text-right"><ColFilter value={colFilters.q8 ?? ""} onChange={setFilter("q8")} ph=">100" /></th>
-              <th className="px-3 py-1.5 text-right"><ColFilter value={colFilters.score ?? ""} onChange={setFilter("score")} ph=">=3" /></th>
-              <th className="px-3 py-1.5 pr-4 text-right"><ColFilter value={colFilters.marketCap ?? ""} onChange={setFilter("marketCap")} ph=">10 (B)" /></th>
+              <th className={cn("px-2.5 py-1.5 text-right", div)}><ColFilter value={colFilters.q2 ?? ""} onChange={setFilter("q2")} ph=">10" /></th>
+              <th className="px-2.5 py-1.5 text-right"><ColFilter value={colFilters.q4 ?? ""} onChange={setFilter("q4")} ph=">40" /></th>
+              <th className="px-2.5 py-1.5 text-right"><ColFilter value={colFilters.q6 ?? ""} onChange={setFilter("q6")} ph=">60" /></th>
+              <th className="px-2.5 py-1.5 text-right"><ColFilter value={colFilters.q8 ?? ""} onChange={setFilter("q8")} ph=">100" /></th>
+              <th className={cn("px-2.5 py-1.5 text-right", div)}><ColFilter value={colFilters.mc2 ?? ""} onChange={setFilter("mc2")} ph=">0" /></th>
+              <th className="px-2.5 py-1.5 text-right"><ColFilter value={colFilters.mc4 ?? ""} onChange={setFilter("mc4")} ph=">0" /></th>
+              <th className="px-2.5 py-1.5 text-right"><ColFilter value={colFilters.mc6 ?? ""} onChange={setFilter("mc6")} ph=">0" /></th>
+              <th className="px-2.5 py-1.5 text-right"><ColFilter value={colFilters.mc8 ?? ""} onChange={setFilter("mc8")} ph=">0" /></th>
+              <th className={cn("px-3 py-1.5 text-right", div)}><ColFilter value={colFilters.score ?? ""} onChange={setFilter("score")} ph=">=3" /></th>
+              <th className="px-3 py-1.5 pr-4 text-right"><ColFilter value={colFilters.marketCap ?? ""} onChange={setFilter("marketCap")} ph=">10" /></th>
             </tr>
           </thead>
           <tbody>
             {processed.rows.map((r, i) => (
-              <tr key={r.symbol} className={cn("border-b border-border/40 transition-colors hover:bg-accent/40 [&_td]:px-3 [&_td]:py-2.5", r.m.score === 4 && "bg-primary/[0.04]")}>
+              <tr key={r.symbol} className={cn("border-b border-border/40 transition-colors hover:bg-accent/40 [&_td]:px-2.5 [&_td]:py-2.5", r.m.score === 4 && "bg-primary/[0.04]")}>
                 <td className="pl-4 text-right font-mono text-xs text-muted-foreground/70">{i + 1}</td>
-                <td>
+                <td className="px-3">
                   <Link href={`/stock/${r.symbol}`} className="flex items-center gap-2.5">
                     <StockLogo symbol={r.symbol} size={26} className="h-[26px] w-[26px] shrink-0" />
                     <span className="min-w-0">
                       <span className="flex items-center gap-1.5 font-mono font-semibold">
                         {r.symbol}
                         {r.country && r.country !== "United States" && (
-                          <span className="rounded bg-secondary px-1 py-0.5 text-[9px] font-normal uppercase tracking-wide text-primary/90">
-                            {r.country}
-                          </span>
+                          <span className="rounded bg-secondary px-1 py-0.5 text-[9px] font-normal uppercase tracking-wide text-primary/90">{r.country}</span>
                         )}
                       </span>
-                      <span className="block max-w-[180px] truncate text-xs text-muted-foreground">{r.company}</span>
+                      <span className="block max-w-[160px] truncate text-xs text-muted-foreground">{r.company}</span>
                     </span>
                   </Link>
                 </td>
-                <td className="text-right"><GrowthCell value={r.m.q2} pass={r.m.pass2} /></td>
+                <td className={cn("text-right", div)}><GrowthCell value={r.m.q2} pass={r.m.pass2} /></td>
                 <td className="text-right"><GrowthCell value={r.m.q4} pass={r.m.pass4} /></td>
                 <td className="text-right"><GrowthCell value={r.m.q6} pass={r.m.pass6} /></td>
                 <td className="text-right"><GrowthCell value={r.m.q8} pass={r.m.pass8} /></td>
-                <td className="text-right"><ScorePips score={r.m.score} /></td>
+                <td className={cn("text-right", div)}><DeltaCell value={r.mc.q2} /></td>
+                <td className="text-right"><DeltaCell value={r.mc.q4} /></td>
+                <td className="text-right"><DeltaCell value={r.mc.q6} /></td>
+                <td className="text-right"><DeltaCell value={r.mc.q8} /></td>
+                <td className={cn("text-right", div)}><ScorePips score={r.m.score} /></td>
                 <td className="pr-4 text-right font-mono text-muted-foreground">{formatMarketCap(r.marketCap ?? 0)}</td>
               </tr>
             ))}
             {processed.rows.length === 0 && (
-              <tr>
-                <td colSpan={8} className="py-10 text-center text-sm text-muted-foreground">No stocks match these filters.</td>
-              </tr>
+              <tr><td colSpan={12} className="py-10 text-center text-sm text-muted-foreground">No stocks match these filters.</td></tr>
             )}
           </tbody>
         </table>

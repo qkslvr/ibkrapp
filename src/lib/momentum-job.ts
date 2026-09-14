@@ -6,8 +6,8 @@
 // and is meant to run overnight. Results are cached; the page just polls them.
 import { readCache, writeCache } from "@/lib/cache";
 import { screenByMarketCap } from "@/lib/finviz/client";
-import { getQuarterlyEps } from "@/lib/finnhub/client";
-import { computeMomentum, MomentumScore } from "@/lib/momentum";
+import { getQuarterlySeries } from "@/lib/finnhub/client";
+import { computeMomentum, computeMcapChange, MomentumScore, McapChange } from "@/lib/momentum";
 
 export interface MomentumRow {
   symbol: string;
@@ -16,6 +16,7 @@ export interface MomentumRow {
   marketCap: number | null;
   epsGrowthQoQ: number | null;
   m: MomentumScore;
+  mc: McapChange; // market-cap % change over 2/4/6/8 quarters
 }
 export interface MomentumJob {
   status: "computing" | "ready";
@@ -71,9 +72,9 @@ export async function runMomentum(): Promise<void> {
     for (const c of candidates) {
       await sleep(PACE_MS);
       try {
-        const eps = await getQuarterlyEps(c.ticker);
-        const m = eps ? computeMomentum(eps) : null;
-        if (m) {
+        const series = await getQuarterlySeries(c.ticker);
+        const m = series ? computeMomentum(series.eps) : null;
+        if (m && series) {
           job.rows.push({
             symbol: c.ticker,
             company: c.company,
@@ -81,6 +82,7 @@ export async function runMomentum(): Promise<void> {
             marketCap: c.marketCap,
             epsGrowthQoQ: c.epsGrowthQoQ,
             m,
+            mc: computeMcapChange(series.marketCap),
           });
         }
       } catch {

@@ -58,3 +58,17 @@ export function computeMomentum(eps: number[]): MomentumScore | null {
     quartersAvailable: eps.length,
   };
 }
+
+export interface McapChange {
+  q2: number | null; // market-cap % change over 2 / 4 / 6 / 8 quarters
+  q4: number | null;
+  q6: number | null;
+  q8: number | null;
+}
+
+/** Point-to-point % change of a market-cap series (most-recent first). */
+export function computeMcapChange(mcap: number[]): McapChange {
+  const g = (n: number): number | null =>
+    mcap.length > n && mcap[n] ? ((mcap[0] - mcap[n]) / Math.abs(mcap[n])) * 100 : null;
+  return { q2: g(2), q4: g(4), q6: g(6), q8: g(8) };
+}
