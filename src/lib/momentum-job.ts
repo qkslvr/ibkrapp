@@ -75,6 +75,12 @@ export async function runMomentum(): Promise<void> {
         const series = await getQuarterlySeries(c.ticker);
         const m = series ? computeMomentum(series.eps) : null;
         if (m && series) {
+          // Finnhub mcap series is in $millions; Finviz marketCap is in dollars.
+          const prevQ = series.marketCap[0] != null ? series.marketCap[0] * 1e6 : null;
+          const now =
+            c.marketCap != null && prevQ && prevQ !== 0
+              ? ((c.marketCap - prevQ) / prevQ) * 100
+              : null;
           job.rows.push({
             symbol: c.ticker,
             company: c.company,
@@ -82,7 +88,7 @@ export async function runMomentum(): Promise<void> {
             marketCap: c.marketCap,
             epsGrowthQoQ: c.epsGrowthQoQ,
             m,
-            mc: computeMcapChange(series.marketCap),
+            mc: { now, ...computeMcapChange(series.marketCap) },
           });
         }
       } catch {

@@ -17,10 +17,10 @@ const RENDER_CAP = 400;
 type SortKey =
   | "symbol"
   | "q2" | "q4" | "q6" | "q8"
-  | "mc2" | "mc4" | "mc6" | "mc8"
+  | "mcNow" | "mc2" | "mc4" | "mc6" | "mc8"
   | "score" | "marketCap";
 type NumKey = Exclude<SortKey, "symbol">;
-const NUM_COLS: NumKey[] = ["q2", "q4", "q6", "q8", "mc2", "mc4", "mc6", "mc8", "score", "marketCap"];
+const NUM_COLS: NumKey[] = ["q2", "q4", "q6", "q8", "mcNow", "mc2", "mc4", "mc6", "mc8", "score", "marketCap"];
 
 function makePredicate(expr: string): ((v: number | null) => boolean) | null {
   const m = expr.trim().match(/^(>=|<=|>|<|=)?\s*(-?\d*\.?\d+)$/);
@@ -43,6 +43,7 @@ function makePredicate(expr: string): ((v: number | null) => boolean) | null {
 function numVal(r: MomentumRow, k: NumKey): number | null {
   if (k === "score") return r.m.score;
   if (k === "marketCap") return r.marketCap != null ? r.marketCap / 1e9 : null;
+  if (k === "mcNow") return r.mc.now;
   if (k.startsWith("mc")) return r.mc[("q" + k.slice(2)) as "q2" | "q4" | "q6" | "q8"];
   return r.m[k as "q2" | "q4" | "q6" | "q8"];
 }
@@ -172,7 +173,7 @@ export function MomentumTable({ rows }: { rows: MomentumRow[] }) {
             <tr className="text-[10px] uppercase tracking-wider text-muted-foreground/70">
               <th colSpan={2} className="py-2" />
               <th colSpan={4} className={cn("py-2 text-center", div)}>EPS Growth (TTM)</th>
-              <th colSpan={4} className={cn("py-2 text-center", div)}>Market Cap Δ</th>
+              <th colSpan={5} className={cn("py-2 text-center", div)}>Market Cap Δ</th>
               <th colSpan={2} className={div} />
             </tr>
             <tr className="border-b border-border/60 text-xs">
@@ -182,7 +183,8 @@ export function MomentumTable({ rows }: { rows: MomentumRow[] }) {
               <th className="px-2.5 py-2 text-right font-medium"><SortBtn k="q4" label="4Q" hint={`>${THRESHOLDS.q4}%`} /></th>
               <th className="px-2.5 py-2 text-right font-medium"><SortBtn k="q6" label="6Q" hint={`>${THRESHOLDS.q6}%`} /></th>
               <th className="px-2.5 py-2 text-right font-medium"><SortBtn k="q8" label="8Q" hint={`>${THRESHOLDS.q8}%`} /></th>
-              <th className={cn("px-2.5 py-2 text-right font-medium", div)}><SortBtn k="mc2" label="2Q" /></th>
+              <th className={cn("px-2.5 py-2 text-right font-medium", div)}><SortBtn k="mcNow" label="Now" /></th>
+              <th className="px-2.5 py-2 text-right font-medium"><SortBtn k="mc2" label="2Q" /></th>
               <th className="px-2.5 py-2 text-right font-medium"><SortBtn k="mc4" label="4Q" /></th>
               <th className="px-2.5 py-2 text-right font-medium"><SortBtn k="mc6" label="6Q" /></th>
               <th className="px-2.5 py-2 text-right font-medium"><SortBtn k="mc8" label="8Q" /></th>
@@ -197,7 +199,8 @@ export function MomentumTable({ rows }: { rows: MomentumRow[] }) {
               <th className="px-2.5 py-1.5 text-right"><ColFilter value={colFilters.q4 ?? ""} onChange={setFilter("q4")} ph=">40" /></th>
               <th className="px-2.5 py-1.5 text-right"><ColFilter value={colFilters.q6 ?? ""} onChange={setFilter("q6")} ph=">60" /></th>
               <th className="px-2.5 py-1.5 text-right"><ColFilter value={colFilters.q8 ?? ""} onChange={setFilter("q8")} ph=">100" /></th>
-              <th className={cn("px-2.5 py-1.5 text-right", div)}><ColFilter value={colFilters.mc2 ?? ""} onChange={setFilter("mc2")} ph=">0" /></th>
+              <th className={cn("px-2.5 py-1.5 text-right", div)}><ColFilter value={colFilters.mcNow ?? ""} onChange={setFilter("mcNow")} ph=">0" /></th>
+              <th className="px-2.5 py-1.5 text-right"><ColFilter value={colFilters.mc2 ?? ""} onChange={setFilter("mc2")} ph=">0" /></th>
               <th className="px-2.5 py-1.5 text-right"><ColFilter value={colFilters.mc4 ?? ""} onChange={setFilter("mc4")} ph=">0" /></th>
               <th className="px-2.5 py-1.5 text-right"><ColFilter value={colFilters.mc6 ?? ""} onChange={setFilter("mc6")} ph=">0" /></th>
               <th className="px-2.5 py-1.5 text-right"><ColFilter value={colFilters.mc8 ?? ""} onChange={setFilter("mc8")} ph=">0" /></th>
@@ -227,7 +230,8 @@ export function MomentumTable({ rows }: { rows: MomentumRow[] }) {
                 <td className="text-right"><GrowthCell value={r.m.q4} pass={r.m.pass4} /></td>
                 <td className="text-right"><GrowthCell value={r.m.q6} pass={r.m.pass6} /></td>
                 <td className="text-right"><GrowthCell value={r.m.q8} pass={r.m.pass8} /></td>
-                <td className={cn("text-right", div)}><DeltaCell value={r.mc.q2} /></td>
+                <td className={cn("text-right", div)}><DeltaCell value={r.mc.now} /></td>
+                <td className="text-right"><DeltaCell value={r.mc.q2} /></td>
                 <td className="text-right"><DeltaCell value={r.mc.q4} /></td>
                 <td className="text-right"><DeltaCell value={r.mc.q6} /></td>
                 <td className="text-right"><DeltaCell value={r.mc.q8} /></td>
@@ -236,7 +240,7 @@ export function MomentumTable({ rows }: { rows: MomentumRow[] }) {
               </tr>
             ))}
             {processed.rows.length === 0 && (
-              <tr><td colSpan={12} className="py-10 text-center text-sm text-muted-foreground">No stocks match these filters.</td></tr>
+              <tr><td colSpan={13} className="py-10 text-center text-sm text-muted-foreground">No stocks match these filters.</td></tr>
             )}
           </tbody>
         </table>
