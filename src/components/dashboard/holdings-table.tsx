@@ -93,10 +93,12 @@ export function HoldingsTable({ positions, totalPortfolioValue }: HoldingsTableP
     label,
     sortKeyName,
     align = "right",
+    className,
   }: {
     label: string;
     sortKeyName: SortKey;
     align?: "left" | "right";
+    className?: string;
   }) => {
     const active = sortKey === sortKeyName;
     return (
@@ -105,6 +107,7 @@ export function HoldingsTable({ positions, totalPortfolioValue }: HoldingsTableP
           "cursor-pointer select-none whitespace-nowrap text-xs uppercase tracking-wide transition-colors hover:text-foreground",
           active ? "text-foreground" : "text-muted-foreground",
           align === "right" && "text-right",
+          className,
         )}
         onClick={() => handleSort(sortKeyName)}
       >
@@ -169,8 +172,7 @@ export function HoldingsTable({ positions, totalPortfolioValue }: HoldingsTableP
                   </span>
                 </span>
               </TableHead>
-              <SortableHeader label="Weight" sortKeyName="weight" />
-              <SortableHeader label="Mkt Cap" sortKeyName="marketCap" />
+              <SortableHeader label="Weight" sortKeyName="weight" className="pr-4" />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -239,7 +241,7 @@ export function HoldingsTable({ positions, totalPortfolioValue }: HoldingsTableP
                       {pctStr(p.unrealizedPLPercent)}
                     </div>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="pr-4 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <div className="hidden h-1.5 w-14 overflow-hidden rounded-full bg-secondary sm:block">
                         <div
@@ -249,9 +251,6 @@ export function HoldingsTable({ positions, totalPortfolioValue }: HoldingsTableP
                       </div>
                       <span className="font-mono text-sm tabular-nums">{w.toFixed(1)}%</span>
                     </div>
-                  </TableCell>
-                  <TableCell className="pr-4 text-right font-mono text-sm tabular-nums text-muted-foreground">
-                    {formatMarketCap(p.marketCap ?? 0)}
                   </TableCell>
                 </TableRow>
               );
@@ -274,8 +273,7 @@ export function HoldingsTable({ positions, totalPortfolioValue }: HoldingsTableP
                 </div>
                 <div className="font-mono text-xs tabular-nums text-muted-foreground">{pctStr(totalReturnPct)}</div>
               </TableCell>
-              <TableCell className="pr-0 text-right font-mono text-sm tabular-nums">{totalWeight.toFixed(1)}%</TableCell>
-              <TableCell />
+              <TableCell className="pr-4 text-right font-mono text-sm tabular-nums">{totalWeight.toFixed(1)}%</TableCell>
             </TableRow>
           </TableFooter>
         </Table>
