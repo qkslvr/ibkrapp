@@ -9,7 +9,7 @@ import {
 
 // Extract ticker symbol from IBKR contract description
 // IBKR descriptions look like "AAPL" or "AAPL Stock" or "Apple Inc (AAPL)"
-function extractSymbol(contractDesc: string): string {
+export function extractSymbol(contractDesc: string): string {
   // Try to extract uppercase ticker from parentheses first
   const parenMatch = contractDesc.match(/\(([A-Z]{1,5})\)/);
   if (parenMatch) return parenMatch[1];
@@ -72,6 +72,11 @@ export function transformPosition(
 
   const weight = totalPortfolioValue > 0 ? (Math.abs(marketValue) / totalPortfolioValue) * 100 : 0;
 
+  // Analyst consensus 12-month target and the implied upside from here.
+  const analystTarget = isOption ? null : quote?.targetPrice ?? null;
+  const expectedReturn =
+    analystTarget != null && currentPrice > 0 ? (analystTarget / currentPrice - 1) * 100 : null;
+
   // For options, show contract description as name instead of company name
   const displayName = isOption
     ? raw.contractDesc.split("[")[0].trim()
@@ -94,6 +99,8 @@ export function transformPosition(
     marketCap: quote?.marketCap ?? null,
     beta: isOption ? null : quote?.beta ?? null,
     dividendYield: isOption ? null : quote?.dividendYield ?? null,
+    analystTarget,
+    expectedReturn,
     logo: undefined,
   };
 }

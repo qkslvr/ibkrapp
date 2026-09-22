@@ -16,6 +16,8 @@ export interface Position {
   marketCap: number | null;
   beta: number | null;
   dividendYield: number | null; // %, from Finviz
+  analystTarget: number | null; // consensus 12-month price target ($)
+  expectedReturn: number | null; // % upside from current price to that target
   logo?: string;
 }
 
@@ -224,6 +226,7 @@ export interface ScreenerStock {
   low52wPct: number | null; // % distance above the 52-week low
   low50dPct: number | null; // % distance above the 50-day low
   analystRecom: number | null; // 1 = Strong Buy … 5 = Strong Sell
+  targetPrice: number | null; // analyst consensus 12-month price target
   beta: number | null;
   price: number | null;
   change: number | null; // %

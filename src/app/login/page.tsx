@@ -93,7 +93,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center text-center">
           <span className="flex h-12 w-12 items-center justify-center rounded-full border border-primary/40 bg-primary/10">
-            <span className="font-display text-2xl leading-none text-primary">Θ</span>
+            <span className="font-display text-2xl leading-none text-primary">M</span>
           </span>
           <h1 className="font-display mt-4 text-2xl">Investor Login</h1>
           <p className="mt-1 text-sm text-muted-foreground">

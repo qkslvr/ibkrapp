@@ -34,9 +34,9 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       {/* Logo */}
       <div className="flex h-16 items-center gap-2.5 border-b border-border/50 px-6">
         <div className="flex h-8 w-8 items-center justify-center rounded-full border border-primary/40 bg-primary/10">
-          <span className="font-display text-lg leading-none text-primary">Θ</span>
+          <span className="font-display text-lg leading-none text-primary">M</span>
         </div>
-        <span className="font-display text-base tracking-wide">Theseus Capital</span>
+        <span className="font-display text-base tracking-wide">Metallic Capital</span>
       </div>
 
       {/* Navigation */}
@@ -77,9 +77,15 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 // Desktop rail — hidden below the lg breakpoint (mobile uses the drawer).
-export function Sidebar() {
+// `collapsed` slides it off-screen; the AppShell drops the content offset to match.
+export function Sidebar({ collapsed = false }: { collapsed?: boolean }) {
   return (
-    <aside className="fixed left-0 top-0 z-40 hidden h-screen w-64 flex-col border-r border-border/50 bg-sidebar lg:flex">
+    <aside
+      className={cn(
+        "fixed left-0 top-0 z-40 hidden h-screen w-64 flex-col border-r border-border/50 bg-sidebar transition-transform duration-200 lg:flex",
+        collapsed && "lg:-translate-x-full"
+      )}
+    >
       <SidebarContent />
     </aside>
   );

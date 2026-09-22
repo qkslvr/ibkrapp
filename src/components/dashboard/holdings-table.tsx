@@ -71,6 +71,15 @@ export function HoldingsTable({ positions, totalPortfolioValue }: HoldingsTableP
   const totalReturnPct = totals.costBasis !== 0 ? (totals.unrealizedPL / totals.costBasis) * 100 : 0;
   const totalWeight = positions.reduce((s, p) => s + weightOf(p), 0);
 
+  // Portfolio-weighted analyst expected return (by |market value|, over the
+  // holdings that have a target).
+  const withTarget = positions.filter((p) => p.expectedReturn != null);
+  const expBase = withTarget.reduce((s, p) => s + Math.abs(p.marketValue), 0);
+  const weightedExpReturn =
+    expBase > 0
+      ? withTarget.reduce((s, p) => s + (p.expectedReturn as number) * (Math.abs(p.marketValue) / expBase), 0)
+      : null;
+
   const filtered = positions
     .filter(
       (p) =>
@@ -172,6 +181,7 @@ export function HoldingsTable({ positions, totalPortfolioValue }: HoldingsTableP
                   </span>
                 </span>
               </TableHead>
+              <SortableHeader label="Exp. Return" sortKeyName="expectedReturn" />
               <SortableHeader label="Weight" sortKeyName="weight" className="pr-4" />
             </TableRow>
           </TableHeader>
@@ -241,6 +251,25 @@ export function HoldingsTable({ positions, totalPortfolioValue }: HoldingsTableP
                       {pctStr(p.unrealizedPLPercent)}
                     </div>
                   </TableCell>
+                  <TableCell className="text-right">
+                    {p.expectedReturn != null ? (
+                      <>
+                        <div
+                          className="font-mono text-sm tabular-nums"
+                          style={{ color: p.expectedReturn >= 0 ? GAIN : LOSS }}
+                        >
+                          {pctStr(p.expectedReturn)}
+                        </div>
+                        {p.analystTarget != null && (
+                          <div className="font-mono text-xs tabular-nums text-muted-foreground">
+                            {money0(p.analystTarget)} tgt
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <span className="text-muted-foreground/40">—</span>
+                    )}
+                  </TableCell>
                   <TableCell className="pr-4 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <div className="hidden h-1.5 w-14 overflow-hidden rounded-full bg-secondary sm:block">
@@ -272,6 +301,12 @@ export function HoldingsTable({ positions, totalPortfolioValue }: HoldingsTableP
                   {signedMoney0(totals.unrealizedPL)}
                 </div>
                 <div className="font-mono text-xs tabular-nums text-muted-foreground">{pctStr(totalReturnPct)}</div>
+              </TableCell>
+              <TableCell
+                className="text-right font-mono text-sm tabular-nums"
+                style={weightedExpReturn != null ? { color: weightedExpReturn >= 0 ? GAIN : LOSS } : undefined}
+              >
+                {weightedExpReturn != null ? pctStr(weightedExpReturn) : "—"}
               </TableCell>
               <TableCell className="pr-4 text-right font-mono text-sm tabular-nums">{totalWeight.toFixed(1)}%</TableCell>
             </TableRow>

@@ -9,7 +9,7 @@ const API_KEY = process.env.FINVIZ_API_KEY || "";
 // this order with named headers; we still parse by header name to be robust.
 const COLUMN_INDICES = [
   1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 16, 17, 18, 19, 21, 22, 23, 32, 33, 39,
-  40, 41, 44, 46, 47, 48, 62, 65, 66, 67, 68,
+  40, 41, 44, 46, 47, 48, 62, 65, 66, 67, 68, 69,
 ];
 
 export type ScreenerIndex = "sp500" | "ndx" | "dji" | "all";
@@ -129,6 +129,7 @@ function rowsToStocks(rows: string[][]): ScreenerStock[] {
     low52w: idx("52-Week Low"),
     low50d: idx("50-Day Low"),
     analystRecom: idx("Analyst Recom"),
+    targetPrice: idx("Target Price"),
     beta: idx("Beta"),
     price: idx("Price"),
     change: idx("Change"),
@@ -170,6 +171,7 @@ function rowsToStocks(rows: string[][]): ScreenerStock[] {
       low52wPct: num(r[col.low52w]),
       low50dPct: num(r[col.low50d]),
       analystRecom: num(r[col.analystRecom]),
+      targetPrice: num(r[col.targetPrice]),
       beta: num(r[col.beta]),
       price: num(r[col.price]),
       change: num(r[col.change]),

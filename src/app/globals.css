@@ -48,42 +48,53 @@
 }
 
 :root {
+  /* Metallic Capital — light: warm paper ground, gold accent, warm near-black ink.
+     Defines the finance-specific colors too, so gain/loss/gold survive the switch. */
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --background: oklch(0.985 0.006 85);       /* warm paper */
+  --foreground: oklch(0.22 0.012 75);        /* warm near-black ink */
+  --card: oklch(1 0.003 85);                 /* clean warm white */
+  --card-foreground: oklch(0.22 0.012 75);
+  --popover: oklch(1 0.003 85);
+  --popover-foreground: oklch(0.22 0.012 75);
+  --primary: oklch(0.66 0.115 78);           /* gold, deepened for contrast on light */
+  --primary-foreground: oklch(0.99 0.01 85);
+  --secondary: oklch(0.955 0.008 85);
+  --secondary-foreground: oklch(0.28 0.012 75);
+  --muted: oklch(0.955 0.008 85);
+  --muted-foreground: oklch(0.5 0.014 80);
+  --accent: oklch(0.94 0.014 84);
+  --accent-foreground: oklch(0.28 0.012 75);
+  --destructive: oklch(0.55 0.2 25);
+  --border: oklch(0.885 0.01 85);
+  --input: oklch(0.9 0.01 85);
+  --ring: oklch(0.66 0.115 78);
+  --chart-1: oklch(0.66 0.115 78);
+  --chart-2: oklch(0.58 0.13 180);
+  --chart-3: oklch(0.72 0.14 78);
+  --chart-4: oklch(0.55 0.18 305);
+  --chart-5: oklch(0.58 0.2 20);
+  --sidebar: oklch(0.97 0.007 85);
+  --sidebar-foreground: oklch(0.22 0.012 75);
+  --sidebar-primary: oklch(0.66 0.115 78);
+  --sidebar-primary-foreground: oklch(0.99 0.01 85);
+  --sidebar-accent: oklch(0.93 0.014 84);
+  --sidebar-accent-foreground: oklch(0.28 0.012 75);
+  --sidebar-border: oklch(0.885 0.01 85);
+  --sidebar-ring: oklch(0.66 0.115 78);
+
+  /* Finance-specific colors — tuned to stay readable on the light ground. */
+  --gain: oklch(0.52 0.15 150);
+  --gain-muted: oklch(0.52 0.15 150 / 14%);
+  --loss: oklch(0.53 0.2 25);
+  --loss-muted: oklch(0.53 0.2 25 / 14%);
+  --neutral: oklch(0.5 0 0);
+  --gold: oklch(0.66 0.115 78);
+  --accent-warm: oklch(0.64 0.13 80);
 }
 
 .dark {
-  /* Theseus Capital brand: a warm near-black ground with a refined gold accent
+  /* Metallic Capital brand: a warm near-black ground with a refined gold accent
      and soft warm-white ink. Surfaces layer bg < sidebar < card < popover. */
   --background: oklch(0.158 0.006 75);
   --foreground: oklch(0.95 0.01 82);
@@ -134,14 +145,19 @@
   }
   body {
     @apply bg-background text-foreground;
-    /* Warm ambient light: a soft gold glow top-left, an amber wash top-right,
-       and a faint ember low-center — fixed so it reads as ambient depth. */
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    /* Light: a faint warm wash so the paper ground doesn't read as flat white. */
+    background-image:
+      radial-gradient(1100px 520px at 12% -8%, oklch(0.8 0.09 84 / 0.05), transparent 60%),
+      radial-gradient(900px 520px at 100% -2%, oklch(0.75 0.08 70 / 0.035), transparent 58%);
+  }
+  /* Dark: the richer gold ambient glow. */
+  .dark body {
     background-image:
       radial-gradient(1100px 520px at 12% -8%, oklch(0.79 0.11 84 / 0.10), transparent 60%),
       radial-gradient(900px 520px at 100% -2%, oklch(0.72 0.1 70 / 0.06), transparent 58%),
       radial-gradient(1000px 700px at 50% 118%, oklch(0.6 0.08 55 / 0.05), transparent 60%);
-    background-attachment: fixed;
-    background-repeat: no-repeat;
   }
 }
 
@@ -170,7 +186,7 @@
 }
 
 @layer utilities {
-  /* Brand display serif for Theseus wordmarks and headlines. */
+  /* Brand display serif for Metallic wordmarks and headlines. */
   .font-display {
     font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia,
       "Times New Roman", serif;

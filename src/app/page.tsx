@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Theseus Capital",
+  title: "Metallic Capital",
   description: "An AI-focused fund.",
 };
 
@@ -11,7 +11,7 @@ function Monogram({ className = "" }: { className?: string }) {
       className={`flex items-center justify-center rounded-full border border-primary/40 bg-primary/10 ${className}`}
       aria-hidden
     >
-      <span className="font-display leading-none text-primary">Θ</span>
+      <span className="font-display leading-none text-primary">M</span>
     </span>
   );
 }
@@ -58,7 +58,7 @@ export default function Home() {
           data-anim
           style={{ animation: "theseus-rise 0.9s ease both", animationDelay: "1.05s" }}
         >
-          Theseus Capital
+          Metallic Capital
         </h1>
         <p
           className="font-display mt-6 max-w-xl text-balance text-lg italic text-muted-foreground sm:text-xl"
@@ -82,7 +82,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="relative z-10 flex items-center justify-center px-6 pb-8 text-center text-xs tracking-wide text-muted-foreground/70">
-        © {new Date().getFullYear()} Theseus Capital · By invitation only
+        © {new Date().getFullYear()} Metallic Capital · By invitation only
       </footer>
 
       {/* Loader veil — the mark appears centered on every load, then lifts */}

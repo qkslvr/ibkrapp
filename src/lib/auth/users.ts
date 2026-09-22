@@ -1,4 +1,4 @@
-// Access list + per-person passwords for Theseus Capital.
+// Access list + per-person passwords for Metallic Capital.
 // Only whitelisted emails may hold an account; each sets their own password on
 // first sign-in. There is one fund — everyone authorized sees the same
 // dashboard — so this is an access list, not multi-tenant accounts.

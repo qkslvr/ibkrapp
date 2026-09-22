@@ -41,6 +41,8 @@ export const mockPositions: Position[] = [
     marketCap: 780_000_000_000,
     beta: null,
     dividendYield: null,
+    analystTarget: 466.8,
+    expectedReturn: 12,
     logo: "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/AVGO.png",
   },
   {
@@ -60,6 +62,8 @@ export const mockPositions: Position[] = [
     marketCap: 260_000_000_000,
     beta: null,
     dividendYield: null,
+    analystTarget: 498.96,
+    expectedReturn: 12,
     logo: "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/AMD.png",
   },
   {
@@ -79,6 +83,8 @@ export const mockPositions: Position[] = [
     marketCap: 970_000_000_000,
     beta: null,
     dividendYield: null,
+    analystTarget: 447.78,
+    expectedReturn: 12,
     logo: "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/TSM.png",
   },
   {
@@ -98,6 +104,8 @@ export const mockPositions: Position[] = [
     marketCap: 125_000_000_000,
     beta: null,
     dividendYield: null,
+    analystTarget: 2071.68,
+    expectedReturn: 12,
     logo: "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/KLAC.png",
   },
   {
@@ -117,6 +125,8 @@ export const mockPositions: Position[] = [
     marketCap: 92_000_000_000,
     beta: null,
     dividendYield: null,
+    analystTarget: 397.1,
+    expectedReturn: 12,
     logo: "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/CDNS.png",
   },
   {
@@ -136,6 +146,8 @@ export const mockPositions: Position[] = [
     marketCap: 88_000_000_000,
     beta: null,
     dividendYield: null,
+    analystTarget: 900.07,
+    expectedReturn: 12,
     logo: "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/MU.png",
   },
 ];
