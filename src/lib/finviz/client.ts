@@ -86,7 +86,10 @@ async function fetchCsv(url: string): Promise<string[][] | null> {
     const res = await fetch(url, { redirect: "follow", next: { revalidate: 0 } });
     if (!res.ok) return null;
     const text = await res.text();
-    const lines = text.split("\n").filter((l) => l.trim().length > 0);
+    // Finviz uses CRLF line endings; strip the trailing \r so the LAST column's
+    // header (and value) isn't left as e.g. "Target Price\r", which breaks the
+    // by-header column lookup.
+    const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
     return lines.map(parseCsvLine);
   } catch {
     return null;
