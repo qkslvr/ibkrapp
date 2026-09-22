@@ -126,100 +126,63 @@ export async function getQuarterlySeries(symbol: string): Promise<QuarterlySerie
   return { eps: toSeries(q.eps), marketCap };
 }
 
-// ── Rich quarterly history for the multi-screen screener ──────────────────────
-// Finnhub's metric series is per-share / ratios only, so absolute revenue and
-// net profit are derived the same way we validated for the S&P-500 export:
-//   price[q]  = psTTM × trailing-4Q salesPerShare  (fallbacks: peTTM, pfcfTTM)
-//   shares[q] = marketCap[q] / price[q]             (median-filled for gaps)
-//   revenue[q]    = salesPerShare[q] × shares[q]
-//   netProfit[q]  = eps[q]          × shares[q]
+// ── Quarterly history for the multi-screen screener ───────────────────────────
+// Finnhub's metric series is per-share / ratios only, so we can't read absolute
+// revenue/profit off a single quarter — and deriving it (revenue = salesPerShare
+// × shares) is fragile: a bad salesPerShare point or a stock split corrupts the
+// implied share count and blows the growth ratio up (e.g. BMY showing 23×).
+//
+// Instead we use two split-invariant identities that give trailing-12-month
+// magnitudes directly, at each quarter-end:
+//   revenueTTM[q]   = marketCap[q] / psTTM[q]
+//   netProfitTTM[q] = marketCap[q] / peTTM[q]   (only where peTTM > 0)
+//   marketCap[q]    = pb[q] × bookValue[q]
+// psTTM and peTTM are price/…-per-share ratios, so a split cancels top and
+// bottom — the result tracks the actual reported figures ($48B for BMY, etc.).
+// Growth screens therefore compare TTM now vs TTM N quarters ago.
 // All arrays are most-recent-first, index-aligned, up to `MAX_Q` quarters.
 const MAX_Q = 12;
 
 export interface ScreenerSeries {
   periods: string[];      // quarter-end dates, most-recent-first
-  revenue: (number | null)[];
-  netProfit: (number | null)[];
+  revenue: (number | null)[];      // trailing-12-month revenue, $ (split-proof)
+  netProfit: (number | null)[];    // trailing-12-month net profit, $
   profitMargin: (number | null)[]; // %, per quarter
   pe: (number | null)[];           // trailing P/E per quarter
   marketCap: (number | null)[];    // dollars, quarter-end
 }
 
-const median = (xs: number[]): number | null => {
-  if (!xs.length) return null;
-  const s = [...xs].sort((a, b) => a - b);
-  const m = Math.floor(s.length / 2);
-  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
-};
-
 /** Quarterly revenue / net-profit / margin / P-E history from one metric call. */
 export async function getScreenerSeries(symbol: string): Promise<ScreenerSeries | null> {
   const data = await finnhubFetch<MetricResponse>("/stock/metric", { symbol, metric: "all" });
   const q = data?.series?.quarterly;
-  if (!q?.eps?.length) return null;
+  if (!q) return null;
 
   const map = (pts?: Point[]) =>
     new Map((pts ?? []).filter((p) => typeof p.v === "number").map((p) => [p.period, p.v]));
-  const eps = map(q.eps), sps = map(q.salesPerShare), pb = map(q.pb), bv = map(q.bookValue);
+  const pb = map(q.pb), bv = map(q.bookValue);
   const nm = map(q.netMargin), psttm = map(q.psTTM), pettm = map(q.peTTM);
-  const pfcf = map(q.pfcfTTM), fcfps = map(q.fcfPerShareTTM);
 
-  const periods = [...eps.keys()]
-    .filter((p) => pb.has(p) && bv.has(p))
+  const periods = [...pb.keys()]
+    .filter((p) => bv.has(p))
     .sort((a, b) => b.localeCompare(a))
     .slice(0, MAX_Q);
   if (!periods.length) return null;
 
-  // trailing-4-quarter sum of a per-share series, as of period p
-  const ttm = (m: Map<string, number>, p: string): number | null => {
-    const idx = periods.indexOf(p);
-    const win = periods.slice(idx, idx + 4);
-    if (win.length < 4 || win.some((x) => !m.has(x))) return null;
-    return win.reduce((s, x) => s + (m.get(x) as number), 0);
-  };
-
-  // salesPerShare outlier guard (Finnhub occasionally emits a bad quarter)
-  const spsVals = periods.map((p) => sps.get(p)).filter((v): v is number => v != null && v > 0);
-  const medSps = median(spsVals);
-  const cleanSps = (p: string): number | null => {
-    const v = sps.get(p);
-    if (v == null) return medSps;
-    if (medSps && (v > 2.5 * medSps || v < 0.4 * medSps)) return medSps;
-    return v;
-  };
-
-  const recs = periods.map((p) => {
-    const mcap = (pb.get(p) as number) * (bv.get(p) as number) * 1e6;
-    let price: number | null = null;
-    const st = ttm(sps, p);
-    if (psttm.get(p) && st) price = (psttm.get(p) as number) * st;
-    if (price == null && pettm.get(p)) {
-      const et = ttm(eps, p);
-      if (et && et > 0) price = (pettm.get(p) as number) * et;
-    }
-    if (price == null && pfcf.get(p)) {
-      const ft = ttm(fcfps, p);
-      if (ft && ft > 0) price = (pfcf.get(p) as number) * ft;
-    }
-    const shares = price ? mcap / price : null;
-    return { p, mcap, shares };
-  });
-  const medShares = median(recs.map((r) => r.shares).filter((s): s is number => s != null));
+  const mcap = (p: string) => (pb.get(p) as number) * (bv.get(p) as number) * 1e6;
 
   return {
     periods,
-    revenue: recs.map((r) => {
-      const sh = r.shares ?? medShares;
-      const s = cleanSps(r.p);
-      return sh != null && s != null ? s * sh : null;
+    revenue: periods.map((p) => {
+      const ps = psttm.get(p);
+      return ps && ps > 0 ? mcap(p) / ps : null;
     }),
-    netProfit: recs.map((r) => {
-      const sh = r.shares ?? medShares;
-      const e = eps.get(r.p);
-      return sh != null && e != null ? e * sh : null;
+    netProfit: periods.map((p) => {
+      const pe = pettm.get(p);
+      return pe && pe > 0 ? mcap(p) / pe : null; // only meaningful when profitable
     }),
     profitMargin: periods.map((p) => (nm.has(p) ? (nm.get(p) as number) * 100 : null)),
     pe: periods.map((p) => (pettm.has(p) ? (pettm.get(p) as number) : null)),
-    marketCap: recs.map((r) => r.mcap),
+    marketCap: periods.map((p) => mcap(p)),
   };
 }
