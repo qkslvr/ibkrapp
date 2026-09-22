@@ -125,6 +125,9 @@ function rowsToStocks(rows: string[][]): ScreenerStock[] {
     perfQuarter: idx("Performance (Quarter)"),
     perfYear: idx("Performance (Year)"),
     perfYTD: idx("Performance (YTD)"),
+    high52w: idx("52-Week High"),
+    low52w: idx("52-Week Low"),
+    low50d: idx("50-Day Low"),
     analystRecom: idx("Analyst Recom"),
     beta: idx("Beta"),
     price: idx("Price"),
@@ -163,6 +166,9 @@ function rowsToStocks(rows: string[][]): ScreenerStock[] {
       perfQuarter: num(r[col.perfQuarter]),
       perfYear: num(r[col.perfYear]),
       perfYTD: num(r[col.perfYTD]),
+      high52wPct: num(r[col.high52w]),
+      low52wPct: num(r[col.low52w]),
+      low50dPct: num(r[col.low50d]),
       analystRecom: num(r[col.analystRecom]),
       beta: num(r[col.beta]),
       price: num(r[col.price]),
@@ -392,7 +398,10 @@ export async function screenByMarketCap(minCapUsd = 1e9): Promise<ScreenerStock[
   const fresh = readCache<ScreenerStock[]>(cacheKey, CAP_UNIVERSE_TTL);
   if (fresh) return filterAbove(fresh);
 
-  const url = buildUrl({ f: "cap_smallover", c: COLUMN_INDICES.join(",") });
+  // Full column set (1..70) so the 52-week-high / 50-day-low distance columns
+  // the screens need are present alongside the standard fundamentals.
+  const allCols = Array.from({ length: 70 }, (_, i) => i + 1).join(",");
+  const url = buildUrl({ f: "cap_smallover", c: allCols });
   const rows = await fetchCsv(url);
   if (!rows) return filterAbove(readCache<ScreenerStock[]>(cacheKey) ?? []);
 

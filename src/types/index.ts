@@ -220,6 +220,9 @@ export interface ScreenerStock {
   perfQuarter: number | null; // %
   perfYear: number | null; // %
   perfYTD: number | null; // %
+  high52wPct: number | null; // % distance from 52-week high (≤ 0 below the high)
+  low52wPct: number | null; // % distance above the 52-week low
+  low50dPct: number | null; // % distance above the 50-day low
   analystRecom: number | null; // 1 = Strong Buy … 5 = Strong Sell
   beta: number | null;
   price: number | null;
