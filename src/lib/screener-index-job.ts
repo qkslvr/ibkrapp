@@ -46,36 +46,23 @@ export function isRunning(): boolean {
   return running;
 }
 
-const MONTHS: Record<string, number> = {
-  jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
-  jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11,
-};
-
-/** Parse a Finviz earnings date ("Feb 05 AMC", "May 28/b", "Sep 3") to an ISO
- *  date near `now`. Finviz shows the *next* scheduled report, so we snap the
- *  year to keep it within roughly [-40d, +300d] of today. */
-function parseEarnings(raw: string | null, now: number): string | null {
-  if (!raw) return null;
-  const m = raw.match(/([A-Za-z]{3})\w*\s+(\d{1,2})/);
-  if (!m) return null;
-  const mon = MONTHS[m[1].toLowerCase()];
-  if (mon == null) return null;
-  const day = parseInt(m[2], 10);
-  const y = new Date(now).getUTCFullYear();
-  let d = Date.UTC(y, mon, day);
-  if (d < now - 40 * DAY) d = Date.UTC(y + 1, mon, day);
-  else if (d > now + 300 * DAY) d = Date.UTC(y - 1, mon, day);
-  return new Date(d).toISOString().slice(0, 10);
+/** Finviz reports the most-recent earnings datetime, e.g. "7/30/2026 4:30:00 PM"
+ *  (V8's Date.parse handles that US format directly). Returns ms, or NaN. */
+function parseEarnings(raw: string | null): number {
+  return raw ? Date.parse(raw) : NaN;
 }
 
-/** Should we re-pull this stock's Finnhub fundamentals tonight? */
-function needsRefetch(prev: ScreenStock | undefined, now: number): boolean {
+/** Should we re-pull this stock's Finnhub fundamentals tonight? We do when it has
+ *  reported earnings since we last pulled it — i.e. Finviz's most-recent earnings
+ *  date is in the past and later than our last fetch. (A future/next-scheduled
+ *  date means no new report yet → reuse.) */
+function needsRefetch(prev: ScreenStock | undefined, earnRaw: string | null, now: number): boolean {
   if (!prev) return true; // new to the universe
-  const age = now - (prev.fetchedAt ?? 0);
-  if (age > HARD_MAX_AGE) return true;
-  const ne = prev.nextEarnings ? Date.parse(prev.nextEarnings) : NaN;
-  if (Number.isNaN(ne)) return age > UNKNOWN_EARNINGS_MAX_AGE;
-  return now >= ne; // its previously-known earnings date has arrived → it has reported
+  const fetchedAt = prev.fetchedAt ?? 0;
+  if (now - fetchedAt > HARD_MAX_AGE) return true;
+  const e = parseEarnings(earnRaw);
+  if (Number.isNaN(e)) return now - fetchedAt > UNKNOWN_EARNINGS_MAX_AGE;
+  return e <= now && e > fetchedAt; // a report landed after our last pull
 }
 
 /** Run a full index build (incremental). No-op if one is already running. */
@@ -100,7 +87,7 @@ export async function runScreenerIndex(): Promise<void> {
 
     for (const u of candidates) {
       const p = prev.get(u.ticker);
-      const refetch = needsRefetch(p, now);
+      const refetch = needsRefetch(p, u.earningsDate, now);
 
       let series = null;
       if (refetch) {
@@ -143,7 +130,7 @@ export async function runScreenerIndex(): Promise<void> {
         rev, profit, pm, peSeries,
         // bookkeeping
         fetchedAt: refetch ? now : p?.fetchedAt ?? now,
-        nextEarnings: refetch ? parseEarnings(u.earningsDate, now) : p?.nextEarnings ?? null,
+        nextEarnings: u.earningsDate || null, // most-recent earnings date seen (for reference)
       });
 
       job.done++;
