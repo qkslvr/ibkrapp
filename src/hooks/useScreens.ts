@@ -13,6 +13,7 @@ export interface ScreenRow {
   symbol: string;
   company: string;
   country: string | null;
+  sector: string | null;
   price: number | null;
   marketCap: number | null;
   pe: number | null;

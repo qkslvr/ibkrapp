@@ -36,6 +36,7 @@ export async function GET(request: Request) {
       symbol: s.symbol,
       company: s.company,
       country: s.country,
+      sector: s.sector,
       price: s.price,
       marketCap: s.marketCap,
       pe: s.pe,

@@ -8,6 +8,7 @@ export interface ScreenStock {
   symbol: string;
   company: string;
   country: string | null;
+  sector: string | null;
   // live-ish snapshot (Finviz)
   price: number | null;
   marketCap: number | null; // dollars
@@ -21,6 +22,9 @@ export interface ScreenStock {
   low30: number | null;
   low60: number | null;
   high52w: number | null;
+  // bookkeeping for incremental refresh (ignored by predicates)
+  fetchedAt?: number; // when the Finnhub fundamentals were last pulled
+  nextEarnings?: string | null; // next earnings date (ISO) known at that pull
 }
 
 export type Fmt = "mult" | "pct" | "belowpct" | "money" | "price";

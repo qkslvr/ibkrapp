@@ -45,19 +45,12 @@ export function ScreensTable({ rows, metrics, defaultSort }: {
     defaultSort.startsWith("pe") || defaultSort === "below" ? "asc" : "desc",
   );
   const [text, setText] = useState("");
-  const [country, setCountry] = useState("All");
 
   // reset the sort when the screen (its default) changes
   useEffect(() => {
     setSortKey(defaultSort);
     setDir(defaultSort.startsWith("pe") || defaultSort === "below" ? "asc" : "desc");
   }, [defaultSort]);
-
-  const countries = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const r of rows) counts.set(r.country || "Unknown", (counts.get(r.country || "Unknown") ?? 0) + 1);
-    return [...counts.entries()].sort((a, b) => b[1] - a[1]);
-  }, [rows]);
 
   const cols: Col[] = useMemo(() => {
     const metricCols: Col[] = metrics.map((m) => ({
@@ -90,20 +83,24 @@ export function ScreensTable({ rows, metrics, defaultSort }: {
   const processed = useMemo(() => {
     const q = text.trim().toLowerCase();
     const filtered = rows.filter((r) => {
-      if (country !== "All" && (r.country || "Unknown") !== country) return false;
-      if (q && !r.symbol.toLowerCase().includes(q) && !r.company.toLowerCase().includes(q)) return false;
-      return true;
+      if (!q) return true;
+      return (
+        r.symbol.toLowerCase().includes(q) ||
+        r.company.toLowerCase().includes(q) ||
+        (r.sector ?? "").toLowerCase().includes(q)
+      );
     });
     const mul = dir === "asc" ? 1 : -1;
     const col = cols.find((c) => c.key === sortKey);
     const sorted = [...filtered].sort((a, b) => {
       if (sortKey === "symbol") return a.symbol.localeCompare(b.symbol) * mul;
+      if (sortKey === "sector") return (a.sector ?? "").localeCompare(b.sector ?? "") * mul;
       const av = col?.num(a) ?? -Infinity;
       const bv = col?.num(b) ?? -Infinity;
       return (av - bv) * mul;
     });
     return { total: filtered.length, rows: sorted.slice(0, RENDER_CAP) };
-  }, [rows, text, country, sortKey, dir, cols]);
+  }, [rows, text, sortKey, dir, cols]);
 
   const SortBtn = ({ k, label, hint }: { k: string; label: string; hint?: string }) => {
     const active = sortKey === k;
@@ -122,14 +119,10 @@ export function ScreensTable({ rows, metrics, defaultSort }: {
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3">
-          <div className="relative w-full max-w-[16rem]">
+          <div className="relative w-full max-w-[18rem]">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Filter ticker or company…" value={text} onChange={(e) => setText(e.target.value)} className="h-9 bg-secondary/50 pl-9 text-sm" />
+            <Input placeholder="Filter ticker, company or sector…" value={text} onChange={(e) => setText(e.target.value)} className="h-9 bg-secondary/50 pl-9 text-sm" />
           </div>
-          <select value={country} onChange={(e) => setCountry(e.target.value)} className="h-9 rounded-md border border-border bg-secondary/50 px-3 text-sm text-foreground focus:border-primary/60 focus:outline-none">
-            <option value="All">All countries ({rows.length})</option>
-            {countries.map(([c, n]) => <option key={c} value={c}>{c} ({n})</option>)}
-          </select>
         </div>
         <p className="text-xs text-muted-foreground">
           {processed.total > RENDER_CAP ? `Showing top ${RENDER_CAP} of ${processed.total.toLocaleString()}` : `${processed.total.toLocaleString()} match${processed.total === 1 ? "" : "es"}`}
@@ -142,6 +135,7 @@ export function ScreensTable({ rows, metrics, defaultSort }: {
             <tr className="border-b border-border/60 text-xs">
               <th className="w-8 py-2 pl-4 text-right font-medium uppercase tracking-wide text-muted-foreground">#</th>
               <th className="px-3 py-2 text-left font-medium"><SortBtn k="symbol" label="Ticker" /></th>
+              <th className="px-3 py-2 text-left font-medium"><SortBtn k="sector" label="Sector" /></th>
               {cols.map((c, i) => (
                 <th key={c.key} className={cn("px-2.5 py-2 text-right font-medium", i === 0 && div)}>
                   <SortBtn k={c.key} label={c.label} hint={c.hint} />
@@ -167,13 +161,14 @@ export function ScreensTable({ rows, metrics, defaultSort }: {
                     </span>
                   </Link>
                 </td>
+                <td className="px-3 text-left text-xs text-muted-foreground">{r.sector || "—"}</td>
                 {cols.map((c, ci) => (
                   <td key={c.key} className={cn("text-right", ci === 0 && div)}>{c.render(r)}</td>
                 ))}
               </tr>
             ))}
             {processed.rows.length === 0 && (
-              <tr><td colSpan={cols.length + 2} className="py-10 text-center text-sm text-muted-foreground">No stocks match this screen.</td></tr>
+              <tr><td colSpan={cols.length + 3} className="py-10 text-center text-sm text-muted-foreground">No stocks match this screen.</td></tr>
             )}
           </tbody>
         </table>
