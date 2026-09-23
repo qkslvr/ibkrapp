@@ -26,9 +26,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <Sidebar collapsed={collapsed} />
-      <div className={cn("transition-[padding] duration-200", collapsed ? "lg:pl-0" : "lg:pl-64")}>
-        <Header onToggleSidebar={toggle} sidebarCollapsed={collapsed} />
+      <Sidebar collapsed={collapsed} onToggle={toggle} />
+      <div className={cn("transition-[padding] duration-200", collapsed ? "lg:pl-16" : "lg:pl-64")}>
+        <Header />
         <main className="p-4 sm:p-6">{children}</main>
       </div>
     </div>

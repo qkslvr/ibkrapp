@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Search, Bell, RefreshCw, WifiOff, Database, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Search, Bell, RefreshCw, WifiOff, Database } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useIBKRAuth } from "@/hooks/useIBKRAuth";
@@ -59,13 +59,7 @@ function ConnectionBadge({
   );
 }
 
-export function Header({
-  onToggleSidebar,
-  sidebarCollapsed,
-}: {
-  onToggleSidebar?: () => void;
-  sidebarCollapsed?: boolean;
-} = {}) {
+export function Header() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { connected, hasCachedData, loading } = useIBKRAuth();
   const queryClient = useQueryClient();
@@ -78,21 +72,9 @@ export function Header({
 
   return (
     <header className="glass sticky top-0 z-30 flex h-16 items-center justify-between gap-2 border-b border-white/10 px-4 shadow-[0_1px_0_0_oklch(1_0_0_/_0.04)_inset,0_8px_24px_-16px_oklch(0_0_0_/_0.6)] sm:px-6">
-      {/* Menu (mobile) + sidebar toggle (desktop) + Search */}
+      {/* Menu (mobile) + Search */}
       <div className="flex min-w-0 flex-1 items-center gap-2">
         <MobileSidebar />
-        {onToggleSidebar && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hidden h-9 w-9 shrink-0 lg:inline-flex"
-            onClick={onToggleSidebar}
-            title={sidebarCollapsed ? "Show sidebar" : "Hide sidebar"}
-            aria-label={sidebarCollapsed ? "Show sidebar" : "Hide sidebar"}
-          >
-            {sidebarCollapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
-          </Button>
-        )}
         <div className="relative w-full max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
