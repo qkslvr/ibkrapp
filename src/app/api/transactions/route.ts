@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { readCache, writeCache } from "@/lib/cache";
 import { Transaction } from "@/types";
 import { fetchFlexStatement, parseTrades, parseCashTransactions, parseTransfers } from "@/lib/ibkr/flex";
+import { toUSD } from "@/lib/fx";
 
 const FLEX_ACTIVITY_QUERY_ID = process.env.IBKR_FLEX_ACTIVITY_QUERY_ID || "";
 
@@ -47,7 +48,7 @@ function parseFlexDividends(xml: string): Transaction[] {
         symbol,
         shares: 0,
         price: 0,
-        total: t.amount,
+        total: +toUSD(t.amount, t.currency, t.fxRateToBase).toFixed(2),
         fees: 0,
       };
     });
@@ -63,7 +64,9 @@ function parseFlexDeposits(xml: string): Transaction[] {
       symbol: t.description || "CASH",
       shares: 0,
       price: 0,
-      total: t.amount,
+      // Non-USD deposits (e.g. AED) are shown at the USD actually credited, using
+      // IBKR's exact rate when present and the AED peg otherwise — matching NAV.
+      total: +toUSD(t.amount, t.currency, t.fxRateToBase).toFixed(2),
       fees: 0,
     }));
 }
@@ -72,7 +75,8 @@ function parseFlexTransfers(xml: string): Transaction[] {
   return parseTransfers(xml)
     .filter((t) => t.quantity !== 0 || t.cashTransfer !== 0)
     .map((t, i) => {
-      const total = t.cashTransfer !== 0 ? t.cashTransfer : t.transferPrice * Math.abs(t.quantity);
+      const raw = t.cashTransfer !== 0 ? t.cashTransfer : t.transferPrice * Math.abs(t.quantity);
+      const total = +toUSD(raw, t.currency).toFixed(2);
       return {
         id: `transfer-${t.date}-${t.symbol || "cash"}-${i}`,
         date: parseDateStr(t.date),

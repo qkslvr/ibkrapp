@@ -114,6 +114,7 @@ export interface NAVSummary {
   currentCash: number;
   avgCostPerUnit: number; // weighted-avg subscription price per unit
   totalReturnPct: number;
+  xirr: number | null; // money-weighted annualized return, % (null if uncomputable)
   deposits: NAVDeposit[];
   monthly: NAVMonthlySnapshot[];
   daily: NAVDailyPoint[];

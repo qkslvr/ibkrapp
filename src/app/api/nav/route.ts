@@ -13,6 +13,7 @@ import {
 } from "@/lib/portfolio-history";
 import { getCurrentPortfolioValue } from "@/lib/ibkr/current-value";
 import { toUSD } from "@/lib/fx";
+import { xirr } from "@/lib/xirr";
 
 const FLEX_ACTIVITY_QUERY_ID = process.env.IBKR_FLEX_ACTIVITY_QUERY_ID || "";
 const FLEX_NAV_QUERY_ID = process.env.IBKR_FLEX_NAV_QUERY_ID || "";
@@ -281,6 +282,16 @@ export async function GET() {
     const currentCash =
       latestDates.length > 0 ? dailyCash[latestDates[latestDates.length - 1]] ?? 0 : 0;
 
+    // XIRR — money-weighted annualized return: each deposit is cash paid in
+    // (negative) on its date; the current total fund value is the positive
+    // terminal flow today.
+    const latestDate = latestDates[latestDates.length - 1] ?? rawDeposits[rawDeposits.length - 1]?.date;
+    const xirrRate = xirr([
+      ...rawDeposits.map((d) => ({ date: d.date, amount: -d.amount })),
+      ...(latestValue > 0 && latestDate ? [{ date: latestDate, amount: latestValue }] : []),
+    ]);
+    const xirrPct = xirrRate != null ? +(xirrRate * 100).toFixed(2) : null;
+
     const summary: NAVSummary = {
       currentNAV,
       totalUnits,
@@ -289,6 +300,7 @@ export async function GET() {
       currentCash,
       avgCostPerUnit,
       totalReturnPct: ((currentNAV - BASE_NAV) / BASE_NAV) * 100,
+      xirr: xirrPct,
       deposits,
       monthly,
       daily,

@@ -10,6 +10,7 @@ interface MetricCardProps {
   change?: number;
   changeLabel?: string;
   prefix?: string;
+  suffix?: string;
   className?: string;
   size?: "sm" | "md" | "lg";
 }
@@ -20,6 +21,7 @@ export function MetricCard({
   change,
   changeLabel,
   prefix = "$",
+  suffix = "",
   className,
   size = "md",
 }: MetricCardProps) {
@@ -62,6 +64,7 @@ export function MetricCard({
         >
           {prefix}
           {value}
+          {suffix}
         </p>
 
         {change !== undefined && (

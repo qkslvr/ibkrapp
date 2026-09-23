@@ -117,7 +117,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       {/* Hero Metrics */}
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <MetricCard
           title="Total Portfolio Value"
           value={displaySummary.totalValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
@@ -126,11 +126,17 @@ export default function DashboardPage() {
           size="lg"
         />
         <MetricCard
-          title="Total Return"
+          title="Absolute Return"
           value={Math.abs(displaySummary.totalReturn).toLocaleString(undefined, { maximumFractionDigits: 0 })}
           prefix={displaySummary.totalReturn >= 0 ? "+$" : "-$"}
           change={displaySummary.totalReturnPercent}
           changeLabel="all time"
+        />
+        <MetricCard
+          title="XIRR · annualized"
+          prefix=""
+          value={nav?.xirr != null ? `${nav.xirr >= 0 ? "+" : ""}${nav.xirr.toFixed(1)}` : "—"}
+          suffix={nav?.xirr != null ? "%" : ""}
         />
         <MetricCard
           title="Today's Change"
