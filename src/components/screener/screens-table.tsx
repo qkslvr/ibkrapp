@@ -45,6 +45,13 @@ export function ScreensTable({ rows, metrics, defaultSort }: {
     defaultSort.startsWith("pe") || defaultSort === "below" ? "asc" : "desc",
   );
   const [text, setText] = useState("");
+  const [sector, setSector] = useState("All");
+
+  const sectors = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const r of rows) counts.set(r.sector || "Unknown", (counts.get(r.sector || "Unknown") ?? 0) + 1);
+    return [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+  }, [rows]);
 
   // reset the sort when the screen (its default) changes
   useEffect(() => {
@@ -83,6 +90,7 @@ export function ScreensTable({ rows, metrics, defaultSort }: {
   const processed = useMemo(() => {
     const q = text.trim().toLowerCase();
     const filtered = rows.filter((r) => {
+      if (sector !== "All" && (r.sector || "Unknown") !== sector) return false;
       if (!q) return true;
       return (
         r.symbol.toLowerCase().includes(q) ||
@@ -100,7 +108,7 @@ export function ScreensTable({ rows, metrics, defaultSort }: {
       return (av - bv) * mul;
     });
     return { total: filtered.length, rows: sorted.slice(0, RENDER_CAP) };
-  }, [rows, text, sortKey, dir, cols]);
+  }, [rows, text, sector, sortKey, dir, cols]);
 
   const SortBtn = ({ k, label, hint }: { k: string; label: string; hint?: string }) => {
     const active = sortKey === k;
@@ -121,8 +129,18 @@ export function ScreensTable({ rows, metrics, defaultSort }: {
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative w-full max-w-[18rem]">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Filter ticker, company or sector…" value={text} onChange={(e) => setText(e.target.value)} className="h-9 bg-secondary/50 pl-9 text-sm" />
+            <Input placeholder="Filter ticker or company…" value={text} onChange={(e) => setText(e.target.value)} className="h-9 bg-secondary/50 pl-9 text-sm" />
           </div>
+          <select
+            value={sector}
+            onChange={(e) => setSector(e.target.value)}
+            className="h-9 rounded-md border border-border bg-secondary/50 px-3 text-sm text-foreground focus:border-primary/60 focus:outline-none"
+          >
+            <option value="All">All sectors ({rows.length})</option>
+            {sectors.map(([sec, n]) => (
+              <option key={sec} value={sec}>{sec} ({n})</option>
+            ))}
+          </select>
         </div>
         <p className="text-xs text-muted-foreground">
           {processed.total > RENDER_CAP ? `Showing top ${RENDER_CAP} of ${processed.total.toLocaleString()}` : `${processed.total.toLocaleString()} match${processed.total === 1 ? "" : "es"}`}
