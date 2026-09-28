@@ -7,6 +7,7 @@ import {
   TopMover,
   Transaction,
   PerformanceDataPoint,
+  Order,
 } from "@/types";
 
 // Portfolio Summary — snapshot from live IBKR data (2026-05-14)
@@ -196,6 +197,13 @@ export const mockTopMovers: { gainers: TopMover[]; losers: TopMover[] } = {
 
 // Recent Transactions — placeholder (no recent trades in IBKR account)
 export const mockTransactions: Transaction[] = [];
+
+// Open/working orders — demo fallback when the IBKR gateway is offline.
+export const mockOrders: Order[] = [
+  { id: "o1", symbol: "NVDA", side: "BUY", quantity: 200, filled: 0, remaining: 200, price: 210.0, orderType: "LMT", status: "Submitted" },
+  { id: "o2", symbol: "TSM", side: "BUY", quantity: 150, filled: 50, remaining: 100, price: 245.0, orderType: "LMT", status: "PreSubmitted" },
+  { id: "o3", symbol: "MU", side: "SELL", quantity: 100, filled: 0, remaining: 100, price: 132.5, orderType: "LMT", status: "Submitted" },
+];
 
 // Performance Data — snapshot from live IBKR PA data (1M, as of 2026-05-14)
 export const mockPerformanceData: PerformanceDataPoint[] = [

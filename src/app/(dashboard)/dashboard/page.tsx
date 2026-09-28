@@ -9,8 +9,10 @@ import { PortfolioHeatmap } from "@/components/dashboard/portfolio-heatmap";
 import { DividendsWidget } from "@/components/dashboard/dividends-widget";
 import { RiskMetricsWidget } from "@/components/dashboard/risk-metrics";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
+import { OpenOrders } from "@/components/dashboard/open-orders";
 import { usePortfolioSummary } from "@/hooks/usePortfolioSummary";
 import { usePositions } from "@/hooks/usePositions";
+import { useOrders } from "@/hooks/useOrders";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useLiveNav } from "@/hooks/useLiveNav";
 import { mockSectorAllocation } from "@/lib/mock-data";
@@ -35,6 +37,7 @@ export default function DashboardPage() {
   const { data: summary, isLoading: summaryLoading } = usePortfolioSummary();
   const { data: positions, isLoading: positionsLoading } = usePositions();
   const { data: transactions } = useTransactions(30);
+  const { data: orders } = useOrders();
   const live = useLiveNav();
   const nav = live.nav;
 
@@ -177,10 +180,13 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Bottom Widgets */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <DividendsWidget data={dividendInfo} />
-        <RiskMetricsWidget data={riskMetrics} />
+      {/* Bottom Widgets: Dividends + Risk stacked, Open Orders, Recent Activity */}
+      <div className="grid items-start gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="space-y-6">
+          <DividendsWidget data={dividendInfo} />
+          <RiskMetricsWidget data={riskMetrics} />
+        </div>
+        <OpenOrders orders={orders ?? []} />
         <RecentActivity transactions={transactions ?? []} />
       </div>
 

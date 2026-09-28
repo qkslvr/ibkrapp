@@ -168,6 +168,18 @@ class IBKRClient {
     }
   }
 
+  // Live/working orders. Returns null on error (gateway offline) so the caller
+  // can fall back to cache/mock, vs [] which genuinely means "no open orders".
+  async getOrders(): Promise<unknown[] | null> {
+    try {
+      const response = await this.client.get("/iserver/account/orders");
+      return response.data?.orders ?? [];
+    } catch (error) {
+      console.error("Failed to fetch orders:", error);
+      return null;
+    }
+  }
+
   // Get account trades/transactions
   async getTrades(days: number = 7): Promise<unknown[]> {
     try {

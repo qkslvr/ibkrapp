@@ -1,4 +1,16 @@
 // Portfolio Types
+export interface Order {
+  id: string;
+  symbol: string;
+  side: "BUY" | "SELL";
+  quantity: number; // total size
+  filled: number;
+  remaining: number;
+  price: number | null; // limit/aux price; null for market orders
+  orderType: string; // LMT, MKT, STP, ...
+  status: string; // Submitted, PreSubmitted, PendingSubmit, ...
+}
+
 export interface Position {
   symbol: string;
   name: string;
