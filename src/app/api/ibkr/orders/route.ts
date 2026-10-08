@@ -30,6 +30,9 @@ function transform(raw: unknown[]): Order[] {
       const filled = num(o.filledQuantity ?? o.filled_quantity ?? total - remaining);
       const rawPrice = o.price ?? o.limit_price ?? o.auxPrice;
       const price = rawPrice != null && rawPrice !== "" ? num(rawPrice) : null;
+      // Trailing stops report the trail as auxPrice "20.0%".
+      const aux = String(o.auxPrice ?? "");
+      const trailingPercent = aux.endsWith("%") ? num(aux.slice(0, -1)) : null;
       return {
         id: String(o.orderId ?? o.order_ref ?? o.orderRef ?? `order-${i}`),
         symbol: String(o.ticker ?? o.symbol ?? o.conidex ?? "—"),
@@ -40,9 +43,28 @@ function transform(raw: unknown[]): Order[] {
         price,
         orderType: String(o.orderType ?? o.order_type ?? "").toUpperCase() || "—",
         status,
+        tif: String(o.timeInForce ?? o.tif ?? "") || undefined,
+        trailingPercent,
+        stopPrice: null,
       };
     })
     .filter((o): o is Order => o != null && OPEN_STATUSES.has(o.status.toLowerCase()));
+}
+
+// The order list doesn't carry the live trigger price of a stop; the per-order
+// status endpoint does (once the order is working). Fill it in for stop orders.
+async function attachStopPrices(orders: Order[]): Promise<Order[]> {
+  const stops = orders.filter((o) => /STOP|STP|TRAIL/.test(o.orderType));
+  await Promise.all(
+    stops.map(async (o) => {
+      const d = await ibkrClient.getOrderStatus(o.id);
+      const sp = num(d?.stop_price);
+      if (sp > 0) o.stopPrice = sp;
+      if (o.trailingPercent == null && d?.trailing_amount != null && d?.trailing_amount_unit !== "amt")
+        o.trailingPercent = num(d.trailing_amount) || null;
+    }),
+  );
+  return orders;
 }
 
 export async function GET() {
@@ -50,7 +72,7 @@ export async function GET() {
 
   // Gateway responded (even with no orders) — trust it and refresh the cache.
   if (raw !== null) {
-    const orders = transform(raw);
+    const orders = await attachStopPrices(transform(raw));
     writeCache(CACHE_KEY, orders);
     return NextResponse.json(orders);
   }

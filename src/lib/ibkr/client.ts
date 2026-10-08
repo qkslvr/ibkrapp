@@ -180,6 +180,17 @@ class IBKRClient {
     }
   }
 
+  // Per-order detail (carries the live stop/trigger price for stop orders)
+  async getOrderStatus(orderId: string): Promise<Record<string, unknown> | null> {
+    try {
+      const response = await this.client.get(`/iserver/account/order/status/${orderId}`);
+      return response.data ?? null;
+    } catch (error) {
+      console.error(`Failed to fetch order status ${orderId}:`, error);
+      return null;
+    }
+  }
+
   // Get account trades/transactions
   async getTrades(days: number = 7): Promise<unknown[]> {
     try {

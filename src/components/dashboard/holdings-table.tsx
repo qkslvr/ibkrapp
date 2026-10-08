@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { StockLogo } from "@/components/ui/stock-logo";
-import { Position } from "@/types";
+import { Order, Position } from "@/types";
 import { cn, formatMarketCap } from "@/lib/utils";
 import { Search, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 
@@ -22,6 +22,20 @@ interface HoldingsTableProps {
   // When provided, weights are shown as a share of the WHOLE portfolio
   // (securities + cash), not just the securities sleeve.
   totalPortfolioValue?: number;
+  // Open orders; the working SELL stop per symbol drives the Trailing SL column.
+  orders?: Order[];
+}
+
+// Exit price for a position's protective stop. IBKR only reports the live
+// trigger once the order is working, so before that we estimate it from the
+// current price and the trail % (flagged as an estimate).
+function stopFor(p: Position, o: Order | undefined): { price: number; estimated: boolean } | null {
+  if (!o) return null;
+  if (o.stopPrice != null && o.stopPrice > 0) return { price: o.stopPrice, estimated: false };
+  if (o.trailingPercent != null && p.currentPrice > 0)
+    return { price: p.currentPrice * (1 - o.trailingPercent / 100), estimated: true };
+  if (o.price != null && o.price > 0) return { price: o.price, estimated: false };
+  return null;
 }
 
 type SortKey = keyof Position;
@@ -40,7 +54,7 @@ function pctStr(n: number) {
   return (n >= 0 ? "+" : "") + n.toFixed(1) + "%";
 }
 
-export function HoldingsTable({ positions, totalPortfolioValue }: HoldingsTableProps) {
+export function HoldingsTable({ positions, totalPortfolioValue, orders = [] }: HoldingsTableProps) {
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("marketValue");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
@@ -71,13 +85,22 @@ export function HoldingsTable({ positions, totalPortfolioValue }: HoldingsTableP
   const totalReturnPct = totals.costBasis !== 0 ? (totals.unrealizedPL / totals.costBasis) * 100 : 0;
   const totalWeight = positions.reduce((s, p) => s + weightOf(p), 0);
 
-  // Portfolio-weighted analyst expected return (by |market value|, over the
-  // holdings that have a target).
-  const withTarget = positions.filter((p) => p.expectedReturn != null);
-  const expBase = withTarget.reduce((s, p) => s + Math.abs(p.marketValue), 0);
-  const weightedExpReturn =
-    expBase > 0
-      ? withTarget.reduce((s, p) => s + (p.expectedReturn as number) * (Math.abs(p.marketValue) / expBase), 0)
+  // One working SELL stop per symbol (trailing or plain).
+  const stopOrders = new Map<string, Order>();
+  for (const o of orders) {
+    if (o.side === "SELL" && /STOP|STP|TRAIL/.test(o.orderType) && !stopOrders.has(o.symbol)) stopOrders.set(o.symbol, o);
+  }
+  const distanceToStop = (p: Position) => {
+    const s = stopFor(p, stopOrders.get(p.symbol));
+    return s && p.currentPrice > 0 ? (s.price / p.currentPrice - 1) * 100 : null;
+  };
+
+  // Value-weighted distance to the stops, over covered holdings.
+  const covered = positions.filter((p) => distanceToStop(p) != null);
+  const covBase = covered.reduce((s, p) => s + Math.abs(p.marketValue), 0);
+  const weightedDistance =
+    covBase > 0
+      ? covered.reduce((s, p) => s + (distanceToStop(p) as number) * (Math.abs(p.marketValue) / covBase), 0)
       : null;
 
   const filtered = positions
@@ -181,7 +204,9 @@ export function HoldingsTable({ positions, totalPortfolioValue }: HoldingsTableP
                   </span>
                 </span>
               </TableHead>
-              <SortableHeader label="Exp. Return" sortKeyName="expectedReturn" />
+              <TableHead className="whitespace-nowrap text-right text-xs uppercase tracking-wide text-muted-foreground">
+                Trailing SL
+              </TableHead>
               <SortableHeader label="Weight" sortKeyName="weight" className="pr-4" />
             </TableRow>
           </TableHeader>
@@ -252,23 +277,25 @@ export function HoldingsTable({ positions, totalPortfolioValue }: HoldingsTableP
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
-                    {p.expectedReturn != null ? (
-                      <>
-                        <div
-                          className="font-mono text-sm tabular-nums"
-                          style={{ color: p.expectedReturn >= 0 ? GAIN : LOSS }}
-                        >
-                          {pctStr(p.expectedReturn)}
-                        </div>
-                        {p.analystTarget != null && (
-                          <div className="font-mono text-xs tabular-nums text-muted-foreground">
-                            {money0(p.analystTarget)} tgt
+                    {(() => {
+                      const o = stopOrders.get(p.symbol);
+                      const s = stopFor(p, o);
+                      const d = distanceToStop(p);
+                      if (!s || d == null) return <span className="text-muted-foreground/40">—</span>;
+                      return (
+                        <>
+                          <div className="font-mono text-sm tabular-nums">
+                            {money0(s.price)}
+                            <span className="text-xs text-muted-foreground"> ({pctStr(d)})</span>
                           </div>
-                        )}
-                      </>
-                    ) : (
-                      <span className="text-muted-foreground/40">—</span>
-                    )}
+                          <div className="font-mono text-xs tabular-nums text-muted-foreground">
+                            {o?.trailingPercent != null ? `${o.trailingPercent}% trail` : o?.orderType}
+                            {o?.tif ? ` · ${o.tif}` : ""}
+                            {s.estimated ? " · est." : ""}
+                          </div>
+                        </>
+                      );
+                    })()}
                   </TableCell>
                   <TableCell className="pr-4 text-right">
                     <div className="flex items-center justify-end gap-2">
@@ -302,11 +329,11 @@ export function HoldingsTable({ positions, totalPortfolioValue }: HoldingsTableP
                 </div>
                 <div className="font-mono text-xs tabular-nums text-muted-foreground">{pctStr(totalReturnPct)}</div>
               </TableCell>
-              <TableCell
-                className="text-right font-mono text-sm tabular-nums"
-                style={weightedExpReturn != null ? { color: weightedExpReturn >= 0 ? GAIN : LOSS } : undefined}
-              >
-                {weightedExpReturn != null ? pctStr(weightedExpReturn) : "—"}
+              <TableCell className="text-right">
+                <div className="font-mono text-sm tabular-nums">{weightedDistance != null ? pctStr(weightedDistance) : "—"}</div>
+                <div className="font-mono text-xs tabular-nums text-muted-foreground">
+                  {covered.length}/{positions.length} covered
+                </div>
               </TableCell>
               <TableCell className="pr-4 text-right font-mono text-sm tabular-nums">{totalWeight.toFixed(1)}%</TableCell>
             </TableRow>

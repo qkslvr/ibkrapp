@@ -173,7 +173,7 @@ export default function DashboardPage() {
       <div>
         <h2 className="mb-4 text-lg font-semibold">Holdings</h2>
         {!positionsLoading && positions && (
-          <HoldingsTable positions={positions} totalPortfolioValue={heroPV} />
+          <HoldingsTable positions={positions} totalPortfolioValue={heroPV} orders={orders ?? []} />
         )}
         {positionsLoading && (
           <div className="h-32 rounded-lg bg-card/50 border border-border/50 animate-pulse" />
