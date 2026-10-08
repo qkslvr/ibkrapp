@@ -278,22 +278,14 @@ export function HoldingsTable({ positions, totalPortfolioValue, orders = [] }: H
                   </TableCell>
                   <TableCell className="text-right">
                     {(() => {
-                      const o = stopOrders.get(p.symbol);
-                      const s = stopFor(p, o);
+                      const s = stopFor(p, stopOrders.get(p.symbol));
                       const d = distanceToStop(p);
                       if (!s || d == null) return <span className="text-muted-foreground/40">—</span>;
                       return (
-                        <>
-                          <div className="font-mono text-sm tabular-nums">
-                            {money0(s.price)}
-                            <span className="text-xs text-muted-foreground"> ({pctStr(d)})</span>
-                          </div>
-                          <div className="font-mono text-xs tabular-nums text-muted-foreground">
-                            {o?.trailingPercent != null ? `${o.trailingPercent}% trail` : o?.orderType}
-                            {o?.tif ? ` · ${o.tif}` : ""}
-                            {s.estimated ? " · est." : ""}
-                          </div>
-                        </>
+                        <div className="font-mono text-sm tabular-nums">
+                          {money0(s.price)}
+                          <span className="text-xs text-muted-foreground"> ({pctStr(d)})</span>
+                        </div>
                       );
                     })()}
                   </TableCell>
@@ -329,11 +321,8 @@ export function HoldingsTable({ positions, totalPortfolioValue, orders = [] }: H
                 </div>
                 <div className="font-mono text-xs tabular-nums text-muted-foreground">{pctStr(totalReturnPct)}</div>
               </TableCell>
-              <TableCell className="text-right">
-                <div className="font-mono text-sm tabular-nums">{weightedDistance != null ? pctStr(weightedDistance) : "—"}</div>
-                <div className="font-mono text-xs tabular-nums text-muted-foreground">
-                  {covered.length}/{positions.length} covered
-                </div>
+              <TableCell className="text-right font-mono text-sm tabular-nums">
+                {weightedDistance != null ? pctStr(weightedDistance) : "—"}
               </TableCell>
               <TableCell className="pr-4 text-right font-mono text-sm tabular-nums">{totalWeight.toFixed(1)}%</TableCell>
             </TableRow>
