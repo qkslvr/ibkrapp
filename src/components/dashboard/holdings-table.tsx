@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useCategories } from "@/hooks/useCategories";
 import Link from "next/link";
 import {
   Table,
@@ -15,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { StockLogo } from "@/components/ui/stock-logo";
 import { Order, Position } from "@/types";
 import { cn, formatMarketCap } from "@/lib/utils";
-import { Search, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Search, ArrowUpDown, ArrowUp, ArrowDown, Plus } from "lucide-react";
 
 interface HoldingsTableProps {
   positions: Position[];
@@ -38,6 +39,75 @@ function stopFor(p: Position, o: Order | undefined): { price: number; estimated:
   return null;
 }
 
+const NEW = "__new__";
+
+// Inline category picker: existing categories in a dropdown, plus a
+// "New category" choice that turns the cell into a text input.
+function CategoryCell({
+  value,
+  options,
+  onChange,
+}: {
+  value: string;
+  options: string[];
+  onChange: (category: string) => void;
+}) {
+  const [creating, setCreating] = useState(false);
+  const [draft, setDraft] = useState("");
+
+  const commit = () => {
+    const v = draft.trim();
+    setCreating(false);
+    setDraft("");
+    if (v) onChange(v);
+  };
+
+  if (creating) {
+    return (
+      <Input
+        autoFocus
+        value={draft}
+        placeholder="New category"
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={commit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") commit();
+          if (e.key === "Escape") {
+            setCreating(false);
+            setDraft("");
+          }
+        }}
+        className="h-7 w-32 bg-secondary/60 px-2 text-xs"
+      />
+    );
+  }
+
+  return (
+    <div className="relative inline-flex items-center">
+      <select
+        value={value}
+        onChange={(e) => {
+          if (e.target.value === NEW) setCreating(true);
+          else onChange(e.target.value);
+        }}
+        className={cn(
+          "h-7 cursor-pointer appearance-none rounded-md border border-border/60 bg-secondary/40 py-0 pl-2 pr-6 text-xs outline-none transition-colors hover:bg-secondary/70 focus-visible:ring-1 focus-visible:ring-ring",
+          value ? "text-foreground" : "text-muted-foreground/70",
+        )}
+      >
+        <option value="">{options.length ? "Uncategorised" : "Create category…"}</option>
+        {options.map((c) => (
+          <option key={c} value={c}>
+            {c}
+          </option>
+        ))}
+        <option value={NEW}>+ New category…</option>
+      </select>
+      <Plus className="pointer-events-none absolute right-1.5 h-3 w-3 text-muted-foreground/60" />
+    </div>
+  );
+}
+
 type SortKey = keyof Position;
 type SortOrder = "asc" | "desc";
 
@@ -58,6 +128,9 @@ export function HoldingsTable({ positions, totalPortfolioValue, orders = [] }: H
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("marketValue");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+  const { data: cats, assign } = useCategories();
+  const categoryOptions = cats?.categories ?? [];
+  const categoryOf = (symbol: string) => cats?.bySymbol[symbol] ?? "";
 
   const weightOf = (p: Position) =>
     totalPortfolioValue && totalPortfolioValue > 0
@@ -102,6 +175,13 @@ export function HoldingsTable({ positions, totalPortfolioValue, orders = [] }: H
     covBase > 0
       ? covered.reduce((s, p) => s + (distanceToStop(p) as number) * (Math.abs(p.marketValue) / covBase), 0)
       : null;
+
+  // Cash lost from today's value if every covered holding is sold at its stop.
+  const maxLossAtStop = covered.reduce((s, p) => {
+    const st = stopFor(p, stopOrders.get(p.symbol));
+    return st ? s + (st.price - p.currentPrice) * p.shares : s;
+  }, 0);
+  const valueAtStop = totals.marketValue + maxLossAtStop;
 
   const filtered = positions
     .filter(
@@ -175,6 +255,9 @@ export function HoldingsTable({ positions, totalPortfolioValue, orders = [] }: H
             <TableRow className="border-border/60 hover:bg-transparent">
               <TableHead className="w-8 pl-4 text-right text-xs text-muted-foreground">#</TableHead>
               <SortableHeader label="Symbol" sortKeyName="symbol" align="left" />
+              <TableHead className="whitespace-nowrap text-xs uppercase tracking-wide text-muted-foreground">
+                Category
+              </TableHead>
               <SortableHeader label="Shares" sortKeyName="shares" />
               <SortableHeader label="Price" sortKeyName="currentPrice" />
               <SortableHeader label="Invested" sortKeyName="costBasis" />
@@ -231,6 +314,13 @@ export function HoldingsTable({ positions, totalPortfolioValue, orders = [] }: H
                         <p className="max-w-[150px] truncate text-xs text-muted-foreground">{p.name}</p>
                       </div>
                     </Link>
+                  </TableCell>
+                  <TableCell>
+                    <CategoryCell
+                      value={categoryOf(p.symbol)}
+                      options={categoryOptions}
+                      onChange={(category) => assign.mutate({ symbol: p.symbol, category })}
+                    />
                   </TableCell>
                   <TableCell className="text-right font-mono tabular-nums">
                     {p.shares.toLocaleString(undefined, { maximumFractionDigits: 0 })}
@@ -310,6 +400,7 @@ export function HoldingsTable({ positions, totalPortfolioValue, orders = [] }: H
               <TableCell className="text-xs uppercase tracking-wide text-muted-foreground">Total</TableCell>
               <TableCell />
               <TableCell />
+              <TableCell />
               <TableCell className="text-right font-mono tabular-nums">{money0(totals.costBasis)}</TableCell>
               <TableCell className="text-right font-mono tabular-nums">{money0(totals.marketValue)}</TableCell>
               <TableCell className="text-right font-mono text-sm tabular-nums" style={{ color: totalDayPct >= 0 ? GAIN : LOSS }}>
@@ -321,8 +412,20 @@ export function HoldingsTable({ positions, totalPortfolioValue, orders = [] }: H
                 </div>
                 <div className="font-mono text-xs tabular-nums text-muted-foreground">{pctStr(totalReturnPct)}</div>
               </TableCell>
-              <TableCell className="text-right font-mono text-sm tabular-nums">
-                {weightedDistance != null ? pctStr(weightedDistance) : "—"}
+              <TableCell className="text-right">
+                {weightedDistance != null ? (
+                  <>
+                    <div className="font-mono text-sm tabular-nums" style={{ color: LOSS }}>
+                      {signedMoney0(maxLossAtStop)}
+                      <span className="text-xs text-muted-foreground"> ({pctStr(weightedDistance)})</span>
+                    </div>
+                    <div className="font-mono text-xs tabular-nums text-muted-foreground" title="Securities value if every stop fills">
+                      → {money0(valueAtStop)}
+                    </div>
+                  </>
+                ) : (
+                  "—"
+                )}
               </TableCell>
               <TableCell className="pr-4 text-right font-mono text-sm tabular-nums">{totalWeight.toFixed(1)}%</TableCell>
             </TableRow>
