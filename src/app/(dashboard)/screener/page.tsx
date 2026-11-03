@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { TickerSearch } from "@/components/screener/ticker-search";
 import { ScreensTable } from "@/components/screener/screens-table";
 import { useScreens } from "@/hooks/useScreens";
-import { DEFAULT_SCREEN } from "@/lib/screens";
+const DEFAULT_SCREEN = "all";
 import { ChevronDown } from "lucide-react";
 
 export default function ScreenerPage() {
@@ -24,8 +24,9 @@ export default function ScreenerPage() {
         <h1 className="text-2xl font-bold tracking-tight">Screens</h1>
         <p className="mt-1 max-w-2xl text-muted-foreground">
           Curated momentum &amp; value setups over every US stock with a market cap above{" "}
-          <span className="text-foreground">$1B</span>. Fundamentals and prices are re-indexed nightly;
-          pick a screen and sort any column.
+          <span className="text-foreground">$1B</span>. Fundamentals and prices are re-indexed nightly.
+          The combined view lists every match tagged with its screens; names that entered a screen in
+          the last two days are marked <span className="text-primary">New</span>.
         </p>
       </div>
 

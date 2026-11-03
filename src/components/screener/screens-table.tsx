@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { StockLogo } from "@/components/ui/stock-logo";
 import { Input } from "@/components/ui/input";
-import { formatMarketCap, cn } from "@/lib/utils";
+import { formatMarketCap, cn, isDomestic } from "@/lib/utils";
 import type { ScreenRow, ScreenMetricMeta } from "@/hooks/useScreens";
 import type { Fmt } from "@/lib/screens";
 import { Search, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
@@ -13,6 +13,13 @@ const GOLD = "oklch(0.82 0.13 90)";
 const GAIN = "oklch(0.74 0.19 150)";
 const LOSS = "oklch(0.66 0.21 22)";
 const RENDER_CAP = 400;
+const NEW_DAYS = 2;
+
+function isNew(iso: string | null | undefined): boolean {
+  if (!iso) return false;
+  const age = (Date.now() - new Date(iso).getTime()) / 86_400_000;
+  return age <= NEW_DAYS;
+}
 
 function fmtVal(v: number | null, fmt: Fmt): { text: string; color?: string } {
   if (v == null || Number.isNaN(v)) return { text: "—" };
@@ -46,6 +53,19 @@ export function ScreensTable({ rows, metrics, defaultSort }: {
   );
   const [text, setText] = useState("");
   const [sector, setSector] = useState("All");
+  const [screenFilter, setScreenFilter] = useState("All");
+  const combined = rows.some((r) => r.screens != null);
+
+  const screenOptions = useMemo(() => {
+    const counts = new Map<string, { name: string; n: number }>();
+    for (const r of rows) for (const sc of r.screens ?? []) {
+      const e = counts.get(sc.id) ?? { name: sc.name, n: 0 };
+      e.n++;
+      counts.set(sc.id, e);
+    }
+    return [...counts.entries()];
+  }, [rows]);
+  const newCount = useMemo(() => rows.filter((r) => isNew(r.firstSeen)).length, [rows]);
 
   const sectors = useMemo(() => {
     const counts = new Map<string, number>();
@@ -71,7 +91,23 @@ export function ScreensTable({ rows, metrics, defaultSort }: {
         return <span className="font-mono tabular-nums" style={{ color }}>{t}</span>;
       },
     }));
+    const screensCol: Col[] = combined
+      ? [{
+          key: "screens", label: "Screens", align: "left",
+          num: (r) => r.screens?.length ?? 0,
+          render: (r) => (
+            <span className="flex flex-wrap gap-1">
+              {(r.screens ?? []).map((sc) => (
+                <span key={sc.id} className="whitespace-nowrap rounded-md border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary/90">
+                  {sc.name}
+                </span>
+              ))}
+            </span>
+          ),
+        }]
+      : [];
     return [
+      ...screensCol,
       ...metricCols,
       { key: "pe", label: "P/E", align: "right", num: (r) => r.pe,
         render: (r) => <span className="font-mono tabular-nums text-muted-foreground">{r.pe != null ? r.pe.toFixed(1) : "—"}</span> },
@@ -80,7 +116,7 @@ export function ScreensTable({ rows, metrics, defaultSort }: {
       { key: "marketCap", label: "Mkt Cap", align: "right", num: (r) => r.marketCap,
         render: (r) => <span className="font-mono tabular-nums text-muted-foreground">{formatMarketCap(r.marketCap ?? 0)}</span> },
     ];
-  }, [metrics]);
+  }, [metrics, combined]);
 
   const toggle = (k: string) => {
     if (k === sortKey) setDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -91,6 +127,8 @@ export function ScreensTable({ rows, metrics, defaultSort }: {
     const q = text.trim().toLowerCase();
     const filtered = rows.filter((r) => {
       if (sector !== "All" && (r.sector || "Unknown") !== sector) return false;
+      if (screenFilter === "__new__" && !isNew(r.firstSeen)) return false;
+      if (screenFilter !== "All" && screenFilter !== "__new__" && !r.screens?.some((sc) => sc.id === screenFilter)) return false;
       if (!q) return true;
       return (
         r.symbol.toLowerCase().includes(q) ||
@@ -108,7 +146,7 @@ export function ScreensTable({ rows, metrics, defaultSort }: {
       return (av - bv) * mul;
     });
     return { total: filtered.length, rows: sorted.slice(0, RENDER_CAP) };
-  }, [rows, text, sector, sortKey, dir, cols]);
+  }, [rows, text, sector, screenFilter, sortKey, dir, cols]);
 
   const SortBtn = ({ k, label, hint }: { k: string; label: string; hint?: string }) => {
     const active = sortKey === k;
@@ -141,6 +179,19 @@ export function ScreensTable({ rows, metrics, defaultSort }: {
               <option key={sec} value={sec}>{sec} ({n})</option>
             ))}
           </select>
+          {combined && (
+            <select
+              value={screenFilter}
+              onChange={(e) => setScreenFilter(e.target.value)}
+              className="h-9 rounded-md border border-border bg-secondary/50 px-3 text-sm text-foreground focus:border-primary/60 focus:outline-none"
+            >
+              <option value="All">All screens</option>
+              <option value="__new__">New in last {NEW_DAYS} days ({newCount})</option>
+              {screenOptions.map(([id, { name, n }]) => (
+                <option key={id} value={id}>{name} ({n})</option>
+              ))}
+            </select>
+          )}
         </div>
         <p className="text-xs text-muted-foreground">
           {processed.total > RENDER_CAP ? `Showing top ${RENDER_CAP} of ${processed.total.toLocaleString()}` : `${processed.total.toLocaleString()} match${processed.total === 1 ? "" : "es"}`}
@@ -155,7 +206,7 @@ export function ScreensTable({ rows, metrics, defaultSort }: {
               <th className="px-3 py-2 text-left font-medium"><SortBtn k="symbol" label="Ticker" /></th>
               <th className="px-3 py-2 text-left font-medium"><SortBtn k="sector" label="Sector" /></th>
               {cols.map((c, i) => (
-                <th key={c.key} className={cn("px-2.5 py-2 text-right font-medium", i === 0 && div)}>
+                <th key={c.key} className={cn("px-2.5 py-2 font-medium", c.align === "left" ? "text-left" : "text-right", i === 0 && div)}>
                   <SortBtn k={c.key} label={c.label} hint={c.hint} />
                 </th>
               ))}
@@ -171,7 +222,10 @@ export function ScreensTable({ rows, metrics, defaultSort }: {
                     <span className="min-w-0">
                       <span className="flex items-center gap-1.5 font-mono font-semibold">
                         {r.symbol}
-                        {r.country && r.country !== "United States" && (
+                        {isNew(r.firstSeen) && (
+                          <span className="rounded bg-primary px-1 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-primary-foreground">New</span>
+                        )}
+                        {r.country && !isDomestic(r.country) && (
                           <span className="rounded bg-secondary px-1 py-0.5 text-[9px] font-normal uppercase tracking-wide text-primary/90">{r.country}</span>
                         )}
                       </span>
@@ -181,7 +235,7 @@ export function ScreensTable({ rows, metrics, defaultSort }: {
                 </td>
                 <td className="px-3 text-left text-xs text-muted-foreground">{r.sector || "—"}</td>
                 {cols.map((c, ci) => (
-                  <td key={c.key} className={cn("text-right", ci === 0 && div)}>{c.render(r)}</td>
+                  <td key={c.key} className={cn(c.align === "left" ? "text-left" : "text-right", ci === 0 && div)}>{c.render(r)}</td>
                 ))}
               </tr>
             ))}

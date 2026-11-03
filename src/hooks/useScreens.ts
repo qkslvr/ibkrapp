@@ -18,6 +18,10 @@ export interface ScreenRow {
   marketCap: number | null;
   pe: number | null;
   metrics: Record<string, number | null>;
+  // combined view only: every screen this name matches
+  screens?: { id: string; name: string }[];
+  // ISO date the name entered this screen (most recent entry in combined view)
+  firstSeen?: string | null;
 }
 export interface ScreensResponse {
   status: "computing" | "ready";

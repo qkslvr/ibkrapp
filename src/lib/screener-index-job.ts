@@ -141,6 +141,15 @@ export async function runScreenerIndex(): Promise<void> {
     job.computedAt = Date.now();
     writeCache(CACHE_KEY, job);
     console.log(`[screener-index] done: ${job.done} stocks, ${job.fetched} re-pulled from Finnhub`);
+
+    // Telegram digest of names that entered a screen tonight.
+    try {
+      const { runScreenerAlert } = await import("@/lib/screener-alerts");
+      const r = await runScreenerAlert(job);
+      console.log(`[screener-alerts] ${r.status}, ${r.newEntrants} new entrants`);
+    } catch (e) {
+      console.error("[screener-alerts]", e);
+    }
   } finally {
     running = false;
   }

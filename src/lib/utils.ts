@@ -13,3 +13,10 @@ export function formatMarketCap(value: number): string {
   if (value >= 1e6) return `$${(value / 1e6).toFixed(1)}M`;
   return `$${value.toLocaleString()}`;
 }
+
+/** Finviz reports the home country as "USA" (older exports: "United States"). */
+export function isDomestic(country: string | null | undefined): boolean {
+  if (!country) return true;
+  const c = country.trim().toLowerCase();
+  return c === "usa" || c === "united states" || c === "us";
+}
