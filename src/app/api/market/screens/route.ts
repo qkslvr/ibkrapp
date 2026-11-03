@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getIndex, ensureFresh } from "@/lib/screener-index-job";
-import { SCREENS, getScreen, DEFAULT_SCREEN, type ScreenStock } from "@/lib/screens";
+import { SCREENS, getScreen, DEFAULT_SCREEN, inScope, type ScreenStock } from "@/lib/screens";
 import { readMembership, pairKey } from "@/lib/screener-membership";
 
 // Virtual screen: the union of every screen, with a "which screens" column.
@@ -57,6 +57,7 @@ export async function GET(request: Request) {
 
   if (combined) {
     const rows = index.stocks
+      .filter(inScope)
       .map((s) => {
         const hits = SCREENS.filter((sc) => sc.match(s));
         if (!hits.length) return null;
@@ -79,7 +80,7 @@ export async function GET(request: Request) {
   // "cheaper/further" screens read better ascending; growth screens descending.
   const dir = screen.defaultSort.startsWith("pe") || screen.defaultSort === "below" ? 1 : -1;
   const rows = index.stocks
-    .filter((s) => screen.match(s))
+    .filter((s) => inScope(s) && screen.match(s))
     .map((s) => ({
       ...base(s),
       metrics: Object.fromEntries(screen.metrics.map((m) => [m.key, m.value(s)])) as Record<string, number | null>,

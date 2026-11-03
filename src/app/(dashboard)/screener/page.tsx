@@ -23,7 +23,9 @@ export default function ScreenerPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Screens</h1>
         <p className="mt-1 max-w-2xl text-muted-foreground">
-          Curated momentum &amp; value setups over every US stock with a market cap above{" "}
+          Curated momentum &amp; value setups over every US-listed{" "}
+          <span className="text-foreground">Technology</span> and{" "}
+          <span className="text-foreground">Communication Services</span> stock with a market cap above{" "}
           <span className="text-foreground">$1B</span>. Fundamentals and prices are re-indexed nightly.
           The combined view lists every match tagged with its screens; names that entered a screen in
           the last two days are marked <span className="text-primary">New</span>.

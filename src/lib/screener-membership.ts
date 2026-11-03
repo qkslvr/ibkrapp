@@ -2,7 +2,7 @@
 // the UI can flag fresh entrants and the nightly alert can list only the names
 // that are NEW to any screen since the previous build.
 import { readCache, writeCache } from "@/lib/cache";
-import { SCREENS, type ScreenStock } from "@/lib/screens";
+import { SCREENS, inScope, type ScreenStock } from "@/lib/screens";
 import type { ScreenerIndex } from "@/lib/screener-index-job";
 
 export interface MembershipSnapshot {
@@ -28,6 +28,7 @@ export function readMembership(): MembershipSnapshot | null {
 export function membershipOf(stocks: ScreenStock[]): Map<string, string[]> {
   const out = new Map<string, string[]>();
   for (const s of stocks) {
+    if (!inScope(s)) continue;
     const ids = SCREENS.filter((sc) => sc.match(s)).map((sc) => sc.id);
     if (ids.length) out.set(s.symbol, ids);
   }

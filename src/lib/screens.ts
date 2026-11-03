@@ -47,6 +47,13 @@ export interface Screen {
   match: (s: ScreenStock) => boolean;
 }
 
+// ── scope ────────────────────────────────────────────────────────────────────
+/** The fund only screens tech + communication-services names (Finviz sectors). */
+export const SCREEN_SECTORS = ["Technology", "Communication Services"] as const;
+export function inScope(s: Pick<ScreenStock, "sector">): boolean {
+  return s.sector != null && (SCREEN_SECTORS as readonly string[]).includes(s.sector);
+}
+
 // ── helpers ──────────────────────────────────────────────────────────────────
 /** Multiple of series[0] over series[n] (latest vs n quarters ago), or null. */
 function mult(series: (number | null)[], n: number): number | null {
