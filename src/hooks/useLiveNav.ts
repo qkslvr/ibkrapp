@@ -21,7 +21,7 @@ export interface LiveNav {
   returnPct: number;
   /** Return vs weighted-average cost (money-weighted). */
   returnVsAvgPct: number;
-  /** Intraday change of NAV/unit vs the last official close. */
+  /** Today's move: sum of holdings' (price - prev close) x shares, pre-market aware. */
   todayChangePct: number;
   todayChangeValue: number;
   /** Daily series with a synthetic live "today" point appended when applicable. */
@@ -81,8 +81,25 @@ export function useLiveNav(): LiveNav {
   const returnPct = ((liveNav - BASE_NAV) / BASE_NAV) * 100;
   const returnVsAvgPct =
     nav.avgCostPerUnit > 0 ? ((liveNav - nav.avgCostPerUnit) / nav.avgCostPerUnit) * 100 : 0;
-  const todayChangePct = lastNav > 0 ? ((liveNav - lastNav) / lastNav) * 100 : 0;
-  const todayChangeValue = (todayChangePct / 100) * liveValue;
+  // Today's change = sum of each holding's (price - previous close) x shares.
+  // The price comes from Finviz, which quotes pre-market and after-hours, so
+  // the card moves as soon as extended-hours trading starts and never lumps a
+  // missed day in when the Flex daily series lags behind.
+  const holdingsDayChange =
+    positions && positions.length > 0
+      ? positions.reduce((s, p) => s + (Number.isFinite(p.dayChange) ? p.dayChange : 0), 0)
+      : null;
+  let todayChangeValue: number;
+  let todayChangePct: number;
+  if (holdingsDayChange != null) {
+    todayChangeValue = holdingsDayChange;
+    const prevValue = liveValue - holdingsDayChange;
+    todayChangePct = prevValue !== 0 ? (holdingsDayChange / prevValue) * 100 : 0;
+  } else {
+    // No priced holdings yet: fall back to NAV vs the last official close.
+    todayChangePct = lastNav > 0 ? ((liveNav - lastNav) / lastNav) * 100 : 0;
+    todayChangeValue = (todayChangePct / 100) * liveValue;
+  }
 
   let daily = nav.daily;
   if (isLive) {
