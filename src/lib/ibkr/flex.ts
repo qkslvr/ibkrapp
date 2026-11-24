@@ -51,7 +51,14 @@ const FRESH_MS = 5 * 60 * 1000;
 // instead. Prevents repeated failures from piling up into IBKR's "1025 / too many
 // failed attempts" lockout.
 const COOLDOWN_MS = 10 * 60 * 1000;
+// IBKR answers 1025 "Too many failed attempts" once it has locked the token.
+// Every further request while locked extends the lock, so back off much longer.
+const LOCKOUT_COOLDOWN_MS = 2 * 60 * 60 * 1000;
 const failCooldown = new Map<string, number>();
+const lockedOut = new Set<string>();
+// One in-flight request per query: concurrent page loads share the same promise
+// instead of each sending their own SendRequest.
+const inFlight = new Map<string, Promise<string>>();
 
 // Only contacts Flex on a real, stale page load. Never hits Flex in the background,
 // and always falls back to whatever is cached (at any age) when Flex is unavailable.
@@ -64,18 +71,30 @@ export async function fetchFlexStatement(queryId: string): Promise<string> {
 
   // Stale or missing. Only contact Flex if we're not in a post-failure cooldown.
   const lastFail = failCooldown.get(queryId) ?? 0;
-  const inCooldown = Date.now() - lastFail < COOLDOWN_MS;
+  const cooldown = lockedOut.has(queryId) ? LOCKOUT_COOLDOWN_MS : COOLDOWN_MS;
+  const inCooldown = Date.now() - lastFail < cooldown;
 
   if (!inCooldown) {
+    let p = inFlight.get(queryId);
+    if (!p) {
+      p = (async () => {
+        const ref = await sendRequest(queryId);
+        const xml = await getStatement(ref);
+        writeCache(cacheKey, xml);
+        failCooldown.delete(queryId);
+        lockedOut.delete(queryId);
+        return xml;
+      })();
+      inFlight.set(queryId, p);
+      p.finally(() => inFlight.delete(queryId)).catch(() => {});
+    }
     try {
-      const ref = await sendRequest(queryId);
-      const xml = await getStatement(ref);
-      writeCache(cacheKey, xml);
-      failCooldown.delete(queryId);
-      return xml;
+      return await p;
     } catch (err) {
+      const msg = (err as Error).message;
       failCooldown.set(queryId, Date.now());
-      console.warn("[flex] Flex API failed:", (err as Error).message);
+      if (/Too many failed attempts|1025/.test(msg)) lockedOut.add(queryId);
+      console.warn("[flex] Flex API failed:", msg);
       // fall through to stale cache below
     }
   }
